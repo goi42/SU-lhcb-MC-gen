@@ -373,7 +373,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
     DAVINCI_SCRIPT_CONTENT = '''\
 from Gaudi.Configuration import *
 from Configurables import DaVinci, LHCbApp, DumpFSR
-importOptions("$APPCONFIGOPTS/DaVinci/DV-Stripping{STRIPPING_VERSION}-Stripping-MC-NoPrescaling-DST.py")
+importOptions("$APPCONFIGOPTS/DaVinci/DV-Stripping{STRIPPING_CAMPAIGN}-Stripping-MC-NoPrescaling-DST.py")
 importOptions("$APPCONFIGOPTS/DaVinci/DataType-2016.py")
 importOptions("$APPCONFIGOPTS/DaVinci/InputType-DST.py")
 if {NOPIDTRIG}:
@@ -400,7 +400,7 @@ DumpFSR().AsciiFileName = "dumpfsr_check_output.txt"
 from GaudiConf import IOHelper
 IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
 # OutputStream("DstWriter").Output     =  "DATAFILE='PFN:{DAVINCI_DATA}' TYP='POOL_ROOTTREE' OPT='RECREATE'"  # Doesn't actually do anything
-'''.format(STRIPPING_VERSION=STRIPPING_VERSION, NOPIDTRIG=NOPIDTRIG, NEWCONFIG=NEWCONFIG, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, DAVINCI_ROOT=DAVINCI_ROOT, BRUNEL_DATA=BRUNEL_DATA, DAVINCI_DATA=DAVINCI_DATA)
+'''.format(STRIPPING_CAMPAIGN=STRIPPING_CAMPAIGN, NOPIDTRIG=NOPIDTRIG, NEWCONFIG=NEWCONFIG, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, DAVINCI_ROOT=DAVINCI_ROOT, BRUNEL_DATA=BRUNEL_DATA, DAVINCI_DATA=DAVINCI_DATA)
     stage_list.append(
         {
             'name': 'DaVinci',
@@ -481,7 +481,7 @@ if {NOPIDTRIG}:
     from Configurables import ConfigCDBAccessSvc
     ConfigCDBAccessSvc().File = '{NEWCONFIG}'
 
-stripping = 'stripping{STRIPPING_VERSION}'
+stripping = 'stripping{STRIPPING_CAMPAIGN}'
 # get the configuration dictionary from the database
 config_db = strippingConfiguration(stripping)
 config = dict(config_db)  # need to do this since the config_db is read-only
@@ -551,7 +551,7 @@ MessageSvc().Format = "% F%60W%S%7W%R%T %0W%M"
 IOHelper().inputFiles(["{DAVINCI_DATA}"],clear=True)
 # OutputStream("DstWriter").Output     =  "DATAFILE='PFN:{RESTRIP_DATA}' TYP='POOL_ROOTTREE' OPT='RECREATE'"  # doesn't actually do anything
 
-'''.format(NOPIDTRIG=NOPIDTRIG, STRIPPING_VERSION=STRIPPING_VERSION, NEWCONFIG=NEWCONFIG, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, DAVINCI_DATA=DAVINCI_DATA, RESTRIP_ROOT=RESTRIP_ROOT, RESTRIP_DATA=RESTRIP_DATA)
+'''.format(NOPIDTRIG=NOPIDTRIG, STRIPPING_CAMPAIGN=STRIPPING_CAMPAIGN, NEWCONFIG=NEWCONFIG, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, DAVINCI_DATA=DAVINCI_DATA, RESTRIP_ROOT=RESTRIP_ROOT, RESTRIP_DATA=RESTRIP_DATA)
     stage_list.append(
         {
             'name': 'restrip',
