@@ -153,7 +153,7 @@ for istage, stage in enumerate(stage_list):
         stage_makedirs(stagedir)  # create the directory where scripts will be executed
         for scriptname, scriptcontent in stage['scripts'].iteritems():
             makedirsif(os.path.dirname(scriptname))
-            with open(opj(stagedir, scriptname), 'w') as stagef:
+            with open(scriptname, 'w') as stagef:
                 stagef.write(scriptcontent)
         if stage['scriptonly']:
             f.write("scriptonly option used. Will not start this stage.\n")
