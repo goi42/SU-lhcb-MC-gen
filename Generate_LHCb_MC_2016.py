@@ -13,7 +13,7 @@ from imp import load_source
 
 
 def makedirsif(d):
-    if not os.path.isdir(d):
+    if not os.path.isdir(d) and d != '':
         os.makedirs(d)
 
 
