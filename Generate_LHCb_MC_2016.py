@@ -53,7 +53,7 @@ def incmove(afile, adir, suffix='ConflictedFiles', diroverride=False, i_start=0)
 
 def safecall(acommand):
     sc = subprocess.call([acommand], shell=True, executable='/bin/tcsh')
-    if sc:  # should be 0 if `call` worked
+    if sc != 0:  # should be 0 if `call` worked
         with open(GENERAL_LOG, 'a') as f:
             f.write("subprocess.call({acomm}) failed. Returned {anum} Goodbye!\n".format(acomm=acommand, anum=sc))
         sys.exit()
