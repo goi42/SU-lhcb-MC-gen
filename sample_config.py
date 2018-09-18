@@ -1,54 +1,96 @@
 #!/usr/bin/env python2
 import os
 from os.path import join as opj
+import argparse
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in Generate_LHCb_MC_2016.py')
+
 # -- essential parameters -- #
-SIGNAL_NAME = 'TestProduction'
-RUN_NUMBER = 300000
-GEN_LEVEL = 'all'
-RUN_SYS = '/data2'  # system to run on; path should be absolute
-CLEANSTAGES = True  # CLEANSTAGES deletes data from earlier stages as it goes
-CLEANWORK = True  # CLEANWORK moves files out of work directory
-PRECLEANED = False  # if this script has already been run, you can specify this argument so that it moves appropriate files to the work directory first
-SOME_MISSING = False  # if running a later stage, you may specify this argument to let the script terminate without errors if the input files are missing
-WORK_DIR_EXISTS = False  # BE VERY CAREFUL WHEN USING THIS FLAG: gives permission to run if WORK_DIR already exists! Also allows overwrite of extant Opts directories.
+parser.add_argument('--SIGNAL_NAME', default='TestProduction')
+parser.add_argument('--RUN_NUMBER', type=int, default=300000)
+parser.add_argument('--GEN_LEVEL', default='all',)
+parser.add_argument('--RUN_SYS', default='/data2',
+                    help='system to run on')
+cleangroup = parser.add_argument_group('cleaning options')
+cleangroup.add_argument('--CLEAN_UP', choices=['CLEANSTAGES', 'CLEANWORK', 'both', 'none'], default='both',
+                        help='''CLEANSTAGES deletes data from earlier stages as it goes.
+                             CLEANWORK moves files out of work directory.''')
+cleangroup.add_argument('--PRECLEANED', action='store_true',
+                        help='if this script has already been run, you can specify this argument so that it moves appropriate files to the work directory first')
+cleangroup.add_argument('--SOME_MISSING', action='store_true',
+                        help='if running a later stage, you may specify this argument to let the script terminate without errors if the input files are missing')
+debuggroup = parser.add_argument_group('debugging options')
+debuggroup.add_argument('--SCRIPT_ONLY', action='store_true',
+                        help='creates scripts without running them')
+debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
+                        help='BE VERY CAREFUL WHEN USING THIS FLAG: gives permission to run if WORK_DIR already exists! Also allows overwrite of extant Opts directories.')
 
 # -- parameters for make_stage_list -- #
-SCRIPT_ONLY = False  # flag used to set all stage's scriptonly parameter
 # general
-DDDB_TAG = 'dddb-20170721-3'
-CONDDB_TAG = 'sim-20170721-2-vc-md100'
-COMPRESS = True  # use compression option optimized for deletion of intermediate stages
-MAGNETPOLARITY = None  # 'md', 'mu'  # ensures CONDDB_TAG and BEAM_VERSION use mu or md as appropriate for the specified polarity, e.g., replaces "mu" with "md".
+stagegroup = parser.add_argument_group('general parameters used by stages')
+stagegroup.add_argument('--DDDB_TAG', default='dddb-20170721-3',)
+stagegroup.add_argument('--CONDDB_TAG', default='sim-20170721-2-vc-md100',)
+stagegroup.add_argument('--noCOMPRESS', dest='COMPRESS', action='store_false',
+                        help='usually runs with compression option optimized for deletion of intermediate stages; this turns that off')
+allowedpols = ['md', 'mu']
+stagegroup.add_argument('--MAGNETPOLARITY', default=None, choices=allowedpols,
+                        help='ensures CONDB_VERSION and BEAM_VERSION use mu or md as appropriate for the specified polarity, e.g., replaces "mu" with "md".')
 # Gauss
-EVENT_TYPE = 28196040
-FIRST_EVENT = 1
-NUM_EVENT = 100
-REDECAY = 100
-RICHOFF = False
-BEAM_VERSION = 'Beam6500GeV-md100-2016-nu1.6.py'
-GAUSS_VERSION = 'v49r10'
+gaussgroup = parser.add_argument_group('Gauss parameters')
+gaussgroup.add_argument('--GAUSS_VERSION', default='v49r10')
+gaussgroup.add_argument('--EVENT_TYPE', type=int, default=28196040)
+gaussgroup.add_argument('--FIRST_EVENT', type=int, default=1)
+gaussgroup.add_argument('--NUM_EVENT', type=int, default=100)
+gaussgroup.add_argument('--noREDECAY', dest='REDECAY', action='store_false',
+                        help='turns off ReDecay (ReDecay 100 times by default) in GAUSS_SCRIPT')
+gaussgroup.add_argument('--noRICHOFF', dest='RICHOFF', action='store_false',
+                        help='activates RICH and Cherenkov photons in GAUSS_SCRIPT')
+gaussgroup.add_argument('--noPYTHMOD', dest='PYTHMOD', action='store_false',
+                        help='turns off Pythia modifications in GAUSS_SCRIPT')
+gaussgroup.add_argument('--BEAM_VERSION', default='Beam6500GeV-md100-2016-nu1.6.py')
 # Boole
-BOOLE_VERSION = 'v30r2p1'
+boolegroup = parser.add_argument_group('Boole parameters')
+boolegroup.add_argument('--BOOLE_VERSION', default='v30r2p1')
 # Moore
-MOORE_VERSION = 'v25r4'
+mooregroup = parser.add_argument_group('Moore parameters')
 # Moore L0
-MOOREL0_TCK = '0x160F'
+moorel0group = parser.add_argument_group('Moore L0 parameters')
+moorel0group.add_argument('--MOOREL0_TCK', default='0x160F')
 # Moore HLT1
-MOOREHLT1_TCK = '0x5138160F'
-# Moore HLT2
-MOOREHLT2_TCK = '0x6139160F'
-NOPIDTRIG = False
-NEWCONFIG = '/home/mwilkins/LcLc/MCgeneration/devrun/config.cdb'
+moorehlt1group = parser.add_argument_group('Moore HLT1 parameters')
+moorehlt1group.add_argument('--MOOREHLT1_TCK', default='0x5138160F')
+# Moore HLT1
+moorehlt2group = parser.add_argument_group('Moore HLT2 parameters')
+moorehlt2group.add_argument('--MOOREHLT2_TCK', default='0x6139160F')
+moorehlt2group.add_argument('--noNOPIDTRIG', dest='NOPIDTRIG', action='store_false',
+                            help='leaves PID active in HLT2 trigger lines (removes nopidtrig from the stage list AND tells later stages to use the original TCK)')
+moorehlt2group.add_argument('--NEWCONFIG', default='/home/mwilkins/LcLc/MCgeneration/devrun/config.cdb',
+                            help='config.cdb with new TCK inside to use if NOPIDTRIG active (active by default). Script assumes newtck = (oldtck | 0x0c000000)')
 # Brunel
-BRUNEL_VERSION = 'v50r3'
+brunelgroup = parser.add_argument_group('Brunel parameters')
+brunelgroup.add_argument('--BRUNEL_VERSION', default='v50r3')
 # Stripping
-DAVINCI_STRIPPING_VERSION = 'v41r4p4'
-STRIPPING_CAMPAIGN = '28r1'
+strippinggroup = parser.add_argument_group('Stripping parameters')
+strippinggroup.add_argument('--DAVINCI_STRIPPING_VERSION', default='v41r4p4')
+strippinggroup.add_argument('--STRIPPING_CAMPAIGN', default='28r1')
 # allstuple and tuple
-TUPOPTS = '/home/mwilkins/LcLc/options/LcLc.py'
-DAVINCI_TUPLE_VERSION = 'v42r6p1'
+tupgroup = parser.add_argument_group('Allstuple and Tuple parameters')
+tupgroup.add_argument('--DAVINCI_TUPLE_VERSION', default='v42r6p1')
+tupgroup.add_argument('--TUPOPTS', default='/home/mwilkins/LcLc/options/LcLc.py',
+                      help='options script to-be-copied for tuple (AllStreams and otherwise) creation')
 # slim
-SLIMOPTS = ['/home/mwilkins/LcLc/analysis/prep_files.py', '/home/mwilkins/LcLc/analysis/fileprep']
+slimgroup = parser.add_argument_group('Slim parameters')
+slimgroup.add_argument('--SLIMOPTS', default=['/home/mwilkins/LcLc/analysis/prep_files.py', '/home/mwilkins/LcLc/analysis/fileprep'], nargs=2,
+                       help='python script to-be-copied for tuple slimming and a directory with modules to-be-imported')
+
+args = parser.parse_args([])
+
+# -- evaluate arguments -- #
+for arg in vars(args):
+    exec('{ARG} = args.{ARG}'.format(ARG=arg))
+CLEANSTAGES  = True if any(CLEAN_UP == x for x in ['CLEANSTAGES', 'both']) else False
+CLEANWORK    = True if any(CLEAN_UP == x for x in ['CLEANWORK', 'both']) else False
+
 
 # -- check arguments -- #
 if NOPIDTRIG and not all([MOOREHLT2_TCK == '0x6139160F', os.path.basename(NEWCONFIG) == 'config.cdb']):
