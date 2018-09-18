@@ -109,8 +109,6 @@ parser.add_argument('--ALL_EXCEPT', action='store_true',
                     Use with "all" is equivalent to running with GEN_LEVEL "None" ''')
 parser.add_argument('--RUN_SYS', default='/data2',
                     help='system to run on')
-parser.add_argument('--GENLOGAPP', default='',
-                    help='specify a special flag to add to the end of the GENERAL_LOG and ERROR_LOG name; helps avoid conflicts when running over stages in multiple batches')
 scriptgroup = parser.add_argument_group('script controls')
 scriptgroup.add_argument('--noCOMPRESS', dest='COMPRESS', action='store_false',
                          help='usually runs with compression option optimized for deletion of intermediate stages; this turns that off')
@@ -217,7 +215,7 @@ STAGE_{ST} = start_val
          )
     if st in GEN_LEVEL:
         exec('STAGE_{ST} = set_val'.format(ST=st.upper()))
-GENERAL_LOG = opj(WORK_DIR, BASE_NAME + '_{0}_general{1}.log'.format(DATE, GENLOGAPP))
+GENERAL_LOG = opj(WORK_DIR, BASE_NAME + '_{0}_general.log'.format(DATE))
 GAUSS_DATA     = opj(WORK_DIR, BASE_NAME + '_gauss.sim')
 BOOLE_DATA     = opj(WORK_DIR, BASE_NAME + '_boole.digi')
 MOOREL0_DATA   = opj(WORK_DIR, BASE_NAME + '_moorel0.digi')
