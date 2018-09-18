@@ -161,7 +161,7 @@ for istage, stage in enumerate(stage_list):
         f.write('starting {name} stage\n'.format(name=stage['name']))
     
     if PRECLEANED and istage > 0:
-        wkfile = stage_list[istage - 1]['data']
+        wkfile = stage_list[istage - 1]['dataname']
         wkdir  = os.path.dirname(wkfile)
         flnm   = os.path.basename(wkfile)
         fnfile = opj(DATA_DIR, flnm)
@@ -180,11 +180,11 @@ for istage, stage in enumerate(stage_list):
         else:
             raise Exception('PRECLEANED file {FILE} not found for stage {STAGE}'.format(FILE=wkfile, STAGE=stage['name']))
     
-    if istage == 0 or os.path.isfile(stage_list[istage - 1]['data']):
+    if istage == 0 or os.path.isfile(stage_list[istage - 1]['dataname']):
         safecall(PRE_SCRIPT + ' && ' + stage['call_string'])
     else:
         with open(GENERAL_LOG, 'a') as f:
-            f.write("\nCannot find {data}\n".format(data=stage_list[istage - 1]['data']))
+            f.write("\nCannot find {data}\n".format(data=stage_list[istage - 1]['dataname']))
         if SOME_MISSING:
             with open(GENERAL_LOG, 'a') as f:
                 f.write("But SOME_MISSING option used. Moving on...\n")
@@ -210,7 +210,7 @@ Finish {name} @   {DATE}
 if CLEANWORK:
     with open(GENERAL_LOG, 'a') as f:
         f.write(str(os.listdir(WORK_DIR)))
-    for datafile in [x['data'] for x in stage_list]:
+    for datafile in [x['dataname'] for x in stage_list]:
         if os.path.exists(datafile):
             shutil_safemove(datafile, DATA_DIR, diroverride=True)
     for f in os.listdir(WORK_DIR):
