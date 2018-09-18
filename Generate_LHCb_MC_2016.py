@@ -213,9 +213,8 @@ if CLEANWORK:
     for datafile in [x['dataname'] for x in stage_list]:
         if os.path.exists(datafile):
             shutil_safemove(datafile, DATA_DIR, diroverride=True)
-    for f in os.listdir(WORK_DIR):
-        if os.path.isfile(f):
-            shutil_safemove(f, LOG_DIR)
+    for f in os.listdir(WORK_DIR):  # move everything else to logdir
+        shutil_safemove(f, LOG_DIR, diroverride=True)
             
     os.chdir('../')
     shutil.rmtree(WORK_DIR)
