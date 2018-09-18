@@ -1,0 +1,11 @@
+Executable = Generate_LHCb_MC_2016.py
+SignalName = X2LcLc
+EventType  = 28196040
+NumEvent   = 100
+FirstEvent = 1
+StartRun   = 100000
+RunNumber  = $$([$(StartRun)+$(process)])
+Arguments  = --SIGNAL_NAME $(SignalName) --EVENT_TYPE $(EventType) --RUN_NUMBER $(RunNumber) --FIRST_EVENT $(FirstEvent) --NUM_EVENT $(NumEvent)
+# Error      = error_$(SignalName)_$(RunNumber)_$(cluster)_$(process).log  # be very careful if not using this...
+# Requirements = target.name =!= 'wn-13-207.lhcb.phy.syr.edu'
+Queue 10000
