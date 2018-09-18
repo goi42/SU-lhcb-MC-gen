@@ -67,6 +67,14 @@ def stage_makedirs(d):
     os.makedirs(d)
 
 
+def capture_stdouterr(log):
+    import os
+    import sys
+    with open(log, 'a') as f:
+        os.dup2(f.fileno(), sys.stdout.fileno())
+        os.dup2(f.fileno(), sys.stderr.fileno())
+
+
 ######################################################################
 #  This is a template of LHCb MC generation
 #      Michael Wilkinson: Jan 11, 2018
@@ -117,10 +125,8 @@ for d in (DATA_DIR, LOG_DIR, WORK_DIR):
         os.makedirs(d)
 os.chdir(WORK_DIR)  # passed references in this script are absolute, but the output is generally sent to the current working directory
 
-# -- redirect error output -- #
-with open(GENERAL_LOG, 'a') as f:
-    os.dup2(f.fileno(), sys.stdout.fileno())
-    os.dup2(f.fileno(), sys.stderr.fileno())
+# -- redirect stdout and stderr
+capture_stdouterr(GENERAL_LOG)
 
 # -- write parameter values to the log -- #
 with open(GENERAL_LOG, 'w') as f:
@@ -149,7 +155,7 @@ for istage, stage in enumerate(stage_list):
         with open(GENERAL_LOG, 'a') as f:
             f.write('{name} stage not selected to run. Next stage...\n'.format(name=stage['name']))
         continue
-    
+        
     # declare stage parameters
     stagedir = opj(WORK_DIR, stage['dirname'])
     stagedata = opj(WORK_DIR, stage['dataname'])
@@ -188,7 +194,12 @@ for istage, stage in enumerate(stage_list):
             raise Exception('PRECLEANED file {FILE} not found for stage {STAGE}'.format(FILE=wkfile, STAGE=stage['name']))
     
     if istage == 0 or os.path.isfile(stage_list[istage - 1]['dataname']):
+        # redirect stdout and stderr
+        capture_stdouterr(opj(WORK_DIR, stage['log']))
+        # run stage
         safecall(PRE_SCRIPT + ' && ' + stage['call_string'])
+        # redirect stdout and stderr
+        capture_stdouterr(GENERAL_LOG)
     else:
         with open(GENERAL_LOG, 'a') as f:
             f.write("\nCannot find {data}\n".format(data=stage_list[istage - 1]['dataname']))
