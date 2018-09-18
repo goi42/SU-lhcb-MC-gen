@@ -101,6 +101,14 @@ LOG_DIR   = '%s/%s/log/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)  # beca
 # -- set environment parameters missing in Condor -- #
 PRE_SCRIPT = 'setenv HOME /home/{USER} && setenv PATH /bin:/usr/bin:/usr/local/bin && setenv LC_ALL C && set MCGEN_DIR = /home/{USER}/lhcbAnal/MCGen && setenv User_release_area /home/{USER}/lhcbAnal && setenv APPCONFIGOPTS /cvmfs/lhcb.cern.ch/lib/lhcb/DBASE/AppConfig/v3r340/options && source /cvmfs/lhcb.cern.ch/group_login.csh'.format(USER=USER)
 
+# -- check, make, and change directories -- #
+if os.path.isdir(WORK_DIR) and not WORK_DIR_EXISTS:
+    raise IOError(WORK_DIR + " exists")
+for d in (DATA_DIR, LOG_DIR, WORK_DIR):
+    if not os.path.isdir(d):
+        os.makedirs(d)
+os.chdir(WORK_DIR)  # passed references in this script are absolute, but the output is generally sent to the current working directory
+
 # COME BACK TO THIS
 GENERAL_LOG = opj(WORK_DIR, BASE_NAME + '_{0}_general.log'.format(DATE))
 # -- redirect error output -- #
@@ -126,14 +134,6 @@ WORK_DIR_EXISTS: \t\t {WORK_DIR_EXISTS}
 make_stage_list: \t\t {make_stage_list}
 ====================================================
 '''.format(NODE=NODE, DATE=DATE, SIGNAL_NAME=SIGNAL_NAME, RUN_NUMBER=RUN_NUMBER, GEN_LEVEL=GEN_LEVEL, RUN_SYS=RUN_SYS, CLEANSTAGES=CLEANSTAGES, CLEANWORK=CLEANWORK, PRECLEANED=PRECLEANED, SOME_MISSING=SOME_MISSING, WORK_DIR_EXISTS=WORK_DIR_EXISTS, make_stage_list=make_stage_list,))
-
-# -- check, make, and change directories -- #
-if os.path.isdir(WORK_DIR) and not WORK_DIR_EXISTS:
-    raise IOError(WORK_DIR + " exists")
-for d in (DATA_DIR, LOG_DIR, WORK_DIR):
-    if not os.path.isdir(d):
-        os.makedirs(d)
-os.chdir(WORK_DIR)  # passed references in this script are absolute, but the output is generally sent to the current working directory
 
 # -- run stages -- #
 stage_list = make_stage_list(BASE_NAME)
