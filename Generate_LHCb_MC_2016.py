@@ -110,7 +110,6 @@ for d in (DATA_DIR, LOG_DIR, WORK_DIR):
         os.makedirs(d)
 os.chdir(WORK_DIR)  # passed references in this script are absolute, but the output is generally sent to the current working directory
 
-# COME BACK TO THIS
 # -- redirect error output -- #
 with open(GENERAL_LOG, 'a') as f:
     os.dup2(f.fileno(), sys.stdout.fileno())
