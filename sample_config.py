@@ -376,7 +376,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
     DAVINCI_LOG = BASE_NAME + '_davinci.log'
     DAVINCI_ROOT = BASE_NAME + '_davinci.root'
     DAVINCI_SCRIPT_NAME = opj(DAVINCI_DIR, 'myDavinci.py')
-    DAVINCI_DATA = '000000.AllStreams.dst',  # this is produced by the script--do not modify unless the script change
+    DAVINCI_DATA = '000000.AllStreams.dst'  # this is produced by the script--do not modify unless the script change
     DAVINCI_SCRIPT_CONTENT = '''\
 from Gaudi.Configuration import *
 from Configurables import DaVinci, LHCbApp, DumpFSR
@@ -466,7 +466,7 @@ restripped = False
     RESTRIP_LOG = BASE_NAME + '_restrip.log'
     RESTRIP_ROOT = BASE_NAME + '_restrip.root'
     RESTRIP_SCRIPT_NAME = opj(RESTRIP_DIR, 'myRestrip.py')
-    RESTRIP_DATA = 'RestrippedMC.Charm.dst',  # this is produced by the script--do not modify unless the script change
+    RESTRIP_DATA = 'RestrippedMC.Charm.dst'  # this is produced by the script--do not modify unless the script change
     RESTRIP_SCRIPT_CONTENT = '''\
 from Gaudi.Configuration import *
 from Configurables import DaVinci
