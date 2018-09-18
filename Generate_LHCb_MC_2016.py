@@ -57,11 +57,11 @@ def stage_makedirs(d):
 class ChoicesInList(argparse.Action):
     'based on https://stackoverflow.com/a/8624107/4655426'
     def __call__(self, parser, args, values, option_string=None):
-        # -- ensure valid_choices
+        # -- ensure valid_choices -- #
         for v in values:
             if v not in valid_choices:
                 raise parser.error('invalid choice of GEN_LEVEL {val}!\nValid choices are {vcs}'.format(val=v, vcs=valid_choices))
-        # -- ensure exclusive_choices
+        # -- ensure exclusive_choices -- #
         found = False
         for ec in exclusive_choices:
             if ec in values and found:
@@ -82,12 +82,12 @@ class ChoicesInList(argparse.Action):
 #            Updated for 2016 MC by Scott Ely: Aug 30, 2017
 ######################################################################
 
-# -- basic info
+# -- basic info -- #
 DATE = str(datetime.datetime.now()).replace(' ', '_')
 USER = getpass.getuser()
 NODE = socket.gethostname()
 
-# -- set or pass job parameters
+# -- set or pass job parameters -- #
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--SIGNAL_NAME', default='TestProduction')
@@ -158,13 +158,13 @@ debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
 
 args = parser.parse_args()
 
-# -- evaluate arguments
+# -- evaluate arguments -- #
 for arg in vars(args):
     exec('{ARG} = args.{ARG}'.format(ARG=arg))
 CLEANSTAGES  = True if any(CLEAN_UP == x for x in ['CLEANSTAGES', 'both']) else False
 CLEANWORK    = True if any(CLEAN_UP == x for x in ['CLEANWORK', 'both']) else False
 
-# -- check arguments
+# -- check arguments -- #
 if NOPIDTRIG and not all([MOOREHLT2_TCK == '0x6139160F', os.path.basename(NEWCONFIG) == 'config.cdb']):
     raise parser.error('NOPIDTRIG uses a config.cdb generated with certain assumptions. See script.')
 if NOPIDTRIG:
@@ -181,17 +181,17 @@ if MAGNETPOLARITY is not None:
         if eval(thingtocheck_string).count(rightpol) != 1:
             raise parser.error('{TH} ({THSTR}) does not contain exactly one appearance of {POL}!'.format(TH=eval(thingtocheck_string), THSTR=thingtocheck_string, POL=rightpol))
 
-# -- Directory and files
+# -- Directory and files -- #
 BASE_NAME = '%s_%d' % (SIGNAL_NAME, RUN_NUMBER)
 WORK_DIR  = '%s/%s/work/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)
 DATA_DIR  = '%s/%s/data/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)  # because the output dst all have the same name
 LOG_DIR   = '%s/%s/log/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)  # because some log output files have the same name
 
-# -- set environment parameters missing in Condor
+# -- set environment parameters missing in Condor -- #
 PRE_SCRIPT = 'setenv HOME /home/{USER} && setenv PATH /bin:/usr/bin:/usr/local/bin && setenv LC_ALL C && set MCGEN_DIR = /home/{USER}/lhcbAnal/MCGen && setenv User_release_area /home/{USER}/lhcbAnal && setenv APPCONFIGOPTS /cvmfs/lhcb.cern.ch/lib/lhcb/DBASE/AppConfig/v3r340/options && source /cvmfs/lhcb.cern.ch/group_login.csh'.format(USER=USER)
 PRE_SCRIPT += ' && setenv PYTHONPATH $HOME/algorithms/python:$PYTHONPATH'  # declares stuff used by scripts called here
 
-# -- Steer running and set parameters
+# -- Steer running and set parameters -- #
 if "all" in GEN_LEVEL:
     GEN_LEVEL = copy(other_choices)  # other_choices declares all available stages
 # e.g., STAGE_GAUSS = True if Gauss is supposed to run
@@ -220,12 +220,12 @@ RESTRIP_DATA   = opj(WORK_DIR, 'RestrippedMC.Charm.dst')  # this is produced by 
 TUPLE_DATA     = opj(WORK_DIR, BASE_NAME + '_tuple.root')
 SLIM_DATA      = opj(WORK_DIR, BASE_NAME + '_slim')
 
-# -- redirect error output
+# -- redirect error output -- #
 with open(GENERAL_LOG, 'a') as f:
     os.dup2(f.fileno(), sys.stdout.fileno())
     os.dup2(f.fileno(), sys.stderr.fileno())
 
-# -- write argument values to the log
+# -- write argument values to the log -- #
 with open(GENERAL_LOG, 'w') as f:
     f.write('''\
 ====================================================
@@ -240,10 +240,10 @@ START@:\t\t{DATE}
 ====================================================
 ''')
 
-# -- declare stages/scripts
+# -- declare stages/scripts -- #
 stage_dict = []
 
-# -- check, make, and change directories
+# -- check, make, and change directories -- #
 if os.path.isdir(WORK_DIR) and not WORK_DIR_EXISTS:
     raise IOError(WORK_DIR + " exists")
 for d in (DATA_DIR, LOG_DIR, WORK_DIR):
@@ -252,7 +252,7 @@ for d in (DATA_DIR, LOG_DIR, WORK_DIR):
 
 os.chdir(WORK_DIR)  # passed references in this script are absolute, but the output is generally sent to the current working directory
 
-# -- Gauss script
+# -- Gauss script -- #
 if STAGE_GAUSS:
     with open(GENERAL_LOG, 'a') as f:
         f.write("making gauss script\n")
@@ -303,7 +303,7 @@ stage_dict.append(
     }
 )
 
-# -- Boole script
+# -- Boole script -- #
 if STAGE_BOOLE:
     with open(GENERAL_LOG, 'a') as f:
         f.write("making boole script\n")
@@ -346,7 +346,7 @@ stage_dict.append(
     }
 )
 
-# -- Moore script for L0
+# -- Moore script for L0 -- #
 if STAGE_MOOREL0:
     stage_makedirs(MOOREL0_DIR)
     with open(GENERAL_LOG, 'a') as f:
@@ -394,7 +394,7 @@ stage_dict.append(
     }
 )
 
-# -- Moore script for Hlt1
+# -- Moore script for Hlt1 -- #
 if STAGE_MOOREHLT1:
     stage_makedirs(MOOREHLT1_DIR)
     with open(GENERAL_LOG, 'a') as f:
@@ -441,7 +441,7 @@ stage_dict.append(
     }
 )
 
-# -- Moore script for Hlt2
+# -- Moore script for Hlt2 -- #
 if STAGE_MOOREHLT2:
     stage_makedirs(MOOREHLT2_DIR)
     with open(GENERAL_LOG, 'a') as f:
@@ -491,7 +491,7 @@ stage_dict.append(
     }
 )
 
-# -- Brunel script
+# -- Brunel script -- #
 if STAGE_BRUNEL:
     with open(GENERAL_LOG, 'a') as f:
         f.write("making brunel script\n")
@@ -539,7 +539,7 @@ stage_dict.append(
     }
 )
 
-# -- DaVinci script
+# -- DaVinci script -- #
 if STAGE_DAVINCI:
     with open(GENERAL_LOG, 'a') as f:
         f.write("making davinci script\n")
@@ -587,7 +587,7 @@ stage_dict.append(
     }
 )
 
-# -- allstuple script
+# -- allstuple script -- #
 if STAGE_ALLSTUPLE:
     with open(GENERAL_LOG, 'a') as f:
         f.write("making allstuple script\n")
@@ -623,7 +623,7 @@ stage_dict.append(
     }
 )
 
-# -- restrip script
+# -- restrip script -- #
 if STAGE_RESTRIP:
     with open(GENERAL_LOG, 'a') as f:
         f.write("making restrip script\n")
@@ -734,7 +734,7 @@ stage_dict.append(
     }
 )
 
-# -- tuple script
+# -- tuple script -- #
 if STAGE_TUPLE:
     with open(GENERAL_LOG, 'a') as f:
         f.write("making tuple script\n")
@@ -770,7 +770,7 @@ stage_dict.append(
     }
 )
 
-# -- slim script
+# -- slim script -- #
 if STAGE_SLIM:
     with open(GENERAL_LOG, 'a') as f:
         f.write("making slim script\n")
@@ -795,7 +795,7 @@ if SCRIPT_ONLY:
         f.write("SCRIPT_ONLY option used. Goodbye!\n")
     sys.exit()
 
-# -- Run Scripts
+# -- Run Scripts -- #
 for istage, stage in enumerate(stage_dict):
     if not stage['run']:
         with open(GENERAL_LOG, 'a') as f:
@@ -855,7 +855,7 @@ Finish {name} @   {DATE}
 ====================================================
 '''.format(name=stage['name'], DATE=DATE))
 
-# -- mv files to final location and cleanup
+# -- mv files to final location and cleanup -- #
 if CLEANWORK:
     with open(GENERAL_LOG, 'a') as f:
         f.write(str(os.listdir(WORK_DIR)))
