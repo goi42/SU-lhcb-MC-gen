@@ -218,7 +218,6 @@ STAGE_{ST} = start_val
     if st in GEN_LEVEL:
         exec('STAGE_{ST} = set_val'.format(ST=st.upper()))
 GENERAL_LOG = opj(WORK_DIR, BASE_NAME + '_{0}_general{1}.log'.format(DATE, GENLOGAPP))
-ERROR_LOG   = opj(WORK_DIR, BASE_NAME + '_error{0}.log'.format(GENLOGAPP))
 GAUSS_DATA     = opj(WORK_DIR, BASE_NAME + '_gauss.sim')
 BOOLE_DATA     = opj(WORK_DIR, BASE_NAME + '_boole.digi')
 MOOREL0_DATA   = opj(WORK_DIR, BASE_NAME + '_moorel0.digi')
@@ -232,7 +231,8 @@ TUPLE_DATA     = opj(WORK_DIR, BASE_NAME + '_tuple.root')
 SLIM_DATA      = opj(WORK_DIR, BASE_NAME + '_slim')
 
 # -- redirect error output
-with open(ERROR_LOG, 'a') as f:
+with open(GENERAL_LOG, 'a') as f:
+    os.dup2(f.fileno(), sys.stdout.fileno())
     os.dup2(f.fileno(), sys.stderr.fileno())
 
 # -- write argument values to the log
