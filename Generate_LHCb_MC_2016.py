@@ -187,14 +187,6 @@ WORK_DIR  = '%s/%s/work/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)
 DATA_DIR  = '%s/%s/data/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)  # because the output dst all have the same name
 LOG_DIR   = '%s/%s/log/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)  # because some log output files have the same name
 
-if os.path.isdir(WORK_DIR) and not WORK_DIR_EXISTS:
-    raise IOError(WORK_DIR + " exists")
-for d in (DATA_DIR, LOG_DIR, WORK_DIR):
-    if not os.path.isdir(d):
-        os.makedirs(d)
-
-os.chdir(WORK_DIR)  # passed references in this script are absolute, but the output is generally sent to the current working directory
-
 # -- set environment parameters missing in Condor
 PRE_SCRIPT = 'setenv HOME /home/{USER} && setenv PATH /bin:/usr/bin:/usr/local/bin && setenv LC_ALL C && set MCGEN_DIR = /home/{USER}/lhcbAnal/MCGen && setenv User_release_area /home/{USER}/lhcbAnal && setenv APPCONFIGOPTS /cvmfs/lhcb.cern.ch/lib/lhcb/DBASE/AppConfig/v3r340/options && source /cvmfs/lhcb.cern.ch/group_login.csh'.format(USER=USER)
 PRE_SCRIPT += ' && setenv PYTHONPATH $HOME/algorithms/python:$PYTHONPATH'  # declares stuff used by scripts called here
@@ -250,6 +242,15 @@ START@:\t\t{DATE}
 
 # -- declare stages/scripts
 stage_dict = []
+
+# -- check, make, and change directories
+if os.path.isdir(WORK_DIR) and not WORK_DIR_EXISTS:
+    raise IOError(WORK_DIR + " exists")
+for d in (DATA_DIR, LOG_DIR, WORK_DIR):
+    if not os.path.isdir(d):
+        os.makedirs(d)
+
+os.chdir(WORK_DIR)  # passed references in this script are absolute, but the output is generally sent to the current working directory
 
 # -- Gauss script
 if STAGE_GAUSS:
