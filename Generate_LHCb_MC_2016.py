@@ -92,11 +92,12 @@ SOME_MISSING    = load_source('SOME_MISSING', configfile).SOME_MISSING
 WORK_DIR_EXISTS = load_source('WORK_DIR_EXISTS', configfile).WORK_DIR_EXISTS
 make_stage_list = load_source('make_stage_list', configfile).make_stage_list
 
-# -- Directory and files -- #
-BASE_NAME = '%s_%d' % (SIGNAL_NAME, RUN_NUMBER)
-WORK_DIR  = '%s/%s/work/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)
-DATA_DIR  = '%s/%s/data/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)  # because the output dst all have the same name
-LOG_DIR   = '%s/%s/log/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)  # because some log output files have the same name
+# -- Directories and files -- #
+BASE_NAME   = '%s_%d' % (SIGNAL_NAME, RUN_NUMBER)
+WORK_DIR    = '%s/%s/work/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)
+DATA_DIR    = '%s/%s/data/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)  # because the output dst all have the same name
+LOG_DIR     = '%s/%s/log/%s/%d' % (RUN_SYS, USER, SIGNAL_NAME, RUN_NUMBER)  # because some log output files have the same name
+GENERAL_LOG = opj(WORK_DIR, BASE_NAME + '_{0}_general.log'.format(DATE))
 
 # -- set environment parameters missing in Condor -- #
 PRE_SCRIPT = 'setenv HOME /home/{USER} && setenv PATH /bin:/usr/bin:/usr/local/bin && setenv LC_ALL C && set MCGEN_DIR = /home/{USER}/lhcbAnal/MCGen && setenv User_release_area /home/{USER}/lhcbAnal && setenv APPCONFIGOPTS /cvmfs/lhcb.cern.ch/lib/lhcb/DBASE/AppConfig/v3r340/options && source /cvmfs/lhcb.cern.ch/group_login.csh'.format(USER=USER)
@@ -110,7 +111,6 @@ for d in (DATA_DIR, LOG_DIR, WORK_DIR):
 os.chdir(WORK_DIR)  # passed references in this script are absolute, but the output is generally sent to the current working directory
 
 # COME BACK TO THIS
-GENERAL_LOG = opj(WORK_DIR, BASE_NAME + '_{0}_general.log'.format(DATE))
 # -- redirect error output -- #
 with open(GENERAL_LOG, 'a') as f:
     os.dup2(f.fileno(), sys.stdout.fileno())
