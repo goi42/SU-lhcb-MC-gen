@@ -60,7 +60,7 @@ def safecall(acommand):
         
 
 def stage_makedirs(d):
-    '''if WORK_DIR_EXISTS (argparse flag), removes directory before making it. Primarily useful for creating a stage's option files.
+    '''if WORK_DIR_EXISTS (flag from configfile), removes directory before making it. Primarily useful for creating a stage's option files.
     '''
     if WORK_DIR_EXISTS and os.path.exists(d):
         shutil.rmtree(d)
