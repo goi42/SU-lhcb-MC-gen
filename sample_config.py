@@ -53,6 +53,7 @@ boolegroup = parser.add_argument_group('Boole parameters')
 boolegroup.add_argument('--BOOLE_VERSION', default='v30r2p1')
 # Moore
 mooregroup = parser.add_argument_group('Moore parameters')
+mooregroup.add_argument('--MOORE_VERSION', default='v25r4')
 # Moore L0
 moorel0group = parser.add_argument_group('Moore L0 parameters')
 moorel0group.add_argument('--MOOREL0_TCK', default='0x160F')
