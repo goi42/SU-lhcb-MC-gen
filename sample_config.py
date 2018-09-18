@@ -148,13 +148,48 @@ if {COMPRESS}:  # COMPRESS option set in generation script
 importOptions("$DECFILESROOT/options/{EVENT_TYPE}.py")  # needs to be called BEFORE setting up Pythia8, else will use Pythia6 production tool
 importOptions("$LBPYTHIA8ROOT/options/Pythia8.py")
 
+if {PYTHMOD}:  # PYTHMOD option set in generation script
+    # -- modify Pythia8 to only generate from Charmonium processes -- #
+    from Configurables import Pythia8Production
+
+    Pythia8TurnOffMinbias = [ "SoftQCD:all = off" ]
+    Pythia8TurnOffMinbias += [ "Bottomonium:all = off" ]
+    Pythia8TurnOffMinbias += [ "Charmonium:all = on" ]
+
+    gen = Generation()
+    gen.addTool( MinimumBias , name = "MinimumBias" )
+    gen.MinimumBias.ProductionTool = "Pythia8Production"
+    gen.MinimumBias.addTool( Pythia8Production , name = "Pythia8Production" )
+    gen.MinimumBias.Pythia8Production.Commands += Pythia8TurnOffMinbias
+
+    gen.addTool( Inclusive , name = "Inclusive" )
+    gen.Inclusive.ProductionTool = "Pythia8Production"
+    gen.Inclusive.addTool( Pythia8Production , name = "Pythia8Production" )
+    gen.Inclusive.Pythia8Production.Commands += Pythia8TurnOffMinbias
+
+    gen.addTool( SignalPlain , name = "SignalPlain" )
+    gen.SignalPlain.ProductionTool = "Pythia8Production"
+    gen.SignalPlain.addTool( Pythia8Production , name = "Pythia8Production" )
+    gen.SignalPlain.Pythia8Production.Commands += Pythia8TurnOffMinbias
+
+    gen.addTool( SignalRepeatedHadronization , name = "SignalRepeatedHadronization" )
+    gen.SignalRepeatedHadronization.ProductionTool = "Pythia8Production"
+    gen.SignalRepeatedHadronization.addTool( Pythia8Production , name = "Pythia8Production" )
+    gen.SignalRepeatedHadronization.Pythia8Production.Commands += Pythia8TurnOffMinbias
+
+    gen.addTool( Special , name = "Special" )
+    gen.Special.ProductionTool = "Pythia8Production"
+    gen.Special.addTool( Pythia8Production , name = "Pythia8Production" )
+    gen.Special.Pythia8Production.Commands += Pythia8TurnOffMinbias
+    # -- END  -- #
+
 if {REDECAY}:  # REDECAY option set in generation script
     importOptions("$APPCONFIGROOT/options/Gauss/ReDecay-100times.py")
 # importOptions("$GAUSSOPTS/Gauss-2016.py")  # would overwrite some options set above
 
 HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
 
-'''.format(RUN_NUMBER=RUN_NUMBER, FIRST_EVENT=FIRST_EVENT, NUM_EVENT=NUM_EVENT, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, GAUSS_DATA=GAUSS_DATA, BEAM_VERSION=BEAM_VERSION, COMPRESS=COMPRESS, REDECAY=REDECAY, RICHOFF=RICHOFF, EVENT_TYPE=EVENT_TYPE, GAUSS_ROOT=GAUSS_ROOT)
+'''.format(RUN_NUMBER=RUN_NUMBER, FIRST_EVENT=FIRST_EVENT, NUM_EVENT=NUM_EVENT, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, GAUSS_DATA=GAUSS_DATA, BEAM_VERSION=BEAM_VERSION, COMPRESS=COMPRESS, REDECAY=REDECAY, PYTHMOD=PYTHMOD, RICHOFF=RICHOFF, EVENT_TYPE=EVENT_TYPE, GAUSS_ROOT=GAUSS_ROOT)
     stage_list.append(
         {
             'name': 'Gauss',
