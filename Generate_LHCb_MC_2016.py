@@ -17,32 +17,39 @@ def makedirsif(d):
         os.makedirs(d)
 
 
-def makedirs_inc(basedir, suffix, i_start=0):
-    basedir = basedir.rstrip('/')
-    if not os.path.isdir(basedir):
-        raise TypeError
-    i = i_start
-    succeeded = False
-    while not succeeded:
-        try:
-            os.makedirs(basedir + '_' + suffix + str(i))
-            succeeded = True
-        except OSError:
-            i += 1
-    return basedir + '_' + suffix + str(i)
-
-
-def shutil_safemove(afile, adir, suffix='ConflictedFiles', diroverride=False):
-    if not (os.path.isfile(afile) and os.path.isdir(adir)):
-        if os.path.isdir(afile) and os.path.isdir(adir) and diroverride:
+def incmove(afile, adir, suffix='ConflictedFiles', diroverride=False, i_start=0):
+    '''moves afile to adir
+    if adir/afile exists, moves to adir_suffix<i>, where <i> is the first integer directory without afile in it
+    diroverride alows afile to be a directory instead of a file
+    '''
+    from os.path import isfile, isdir
+    import shutil
+    
+    if not (isfile(afile) and isdir(adir)):
+        if isdir(afile) and isdir(adir) and diroverride:
             pass
         else:
             raise TypeError('\n{F} is a file? {Ft}\n{D} is a dir? {Dt}\ndiroverride? {DOR}'.format(F=afile, Ft=str(os.path.isfile(afile)), D=adir, Dt=str(os.path.isdir(adir)), DOR=diroverride))
+    
+    def incmove_suffix(afile, adir, suffix, i):
+        suffdir = '{adir}_{suff}{i}'.format(adir=adir.strip('/'), suff=suffix, i=i)
+        makedirsif(suffdir)
+        try:
+            shutil.move(afile, suffdir)
+        except shutil.Error as e:
+            if all(x in str(e) for x in ('Destination path', 'already exists')):
+                incmove_suffix(afile, adir, suffix, i + 1)
+            else:
+                raise
+    
     try:
         shutil.move(afile, adir)
-    except shutil.Error:
-        shutil.move(afile, makedirs_inc(adir, suffix))
-        
+    except shutil.Error as e:
+        if all(x in str(e) for x in ('Destination path', 'already exists')):
+            incmove_suffix(afile, adir, suffix, i_start)
+        else:
+            raise
+
 
 def safecall(acommand):
     sc = subprocess.call([acommand], shell=True, executable='/bin/tcsh')
@@ -212,9 +219,9 @@ if CLEANWORK:
         f.write(str(os.listdir(WORK_DIR)))
     for datafile in [x['dataname'] for x in stage_list]:
         if os.path.exists(datafile):
-            shutil_safemove(datafile, DATA_DIR, diroverride=True)
+            incmove(datafile, DATA_DIR, diroverride=True)
     for f in os.listdir(WORK_DIR):  # move everything else to logdir
-        shutil_safemove(f, LOG_DIR, diroverride=True)
+        incmove(f, LOG_DIR, diroverride=True)
             
     os.chdir('../')
     shutil.rmtree(WORK_DIR)
