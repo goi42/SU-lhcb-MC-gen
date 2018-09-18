@@ -408,7 +408,7 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
             'scripts': {DAVINCI_SCRIPT_NAME: DAVINCI_SCRIPT_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_STRIPPING_VERSION} gaudirun.py {DAVINCI_SCRIPT_NAME} | tee {DAVINCI_LOG}'.format(DAVINCI_STRIPPING_VERSION=DAVINCI_STRIPPING_VERSION, DAVINCI_SCRIPT_NAME=DAVINCI_SCRIPT_NAME, DAVINCI_LOG=DAVINCI_LOG),
             'to_remove': [BRUNEL_DATA],
-            'dataname': DAVINCI_DATAs
+            'dataname': DAVINCI_DATA,
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -559,7 +559,7 @@ IOHelper().inputFiles(["{DAVINCI_DATA}"],clear=True)
             'scripts': {RESTRIP_SCRIPT_NAME: RESTRIP_SCRIPT_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_STRIPPING_VERSION} gaudirun.py {RESTRIP_SCRIPT_NAME} | tee {RESTRIP_LOG}'.format(DAVINCI_STRIPPING_VERSION=DAVINCI_STRIPPING_VERSION, RESTRIP_SCRIPT_NAME=RESTRIP_SCRIPT_NAME, RESTRIP_LOG=RESTRIP_LOG),
             'to_remove': ['tmp_stripping_config.db', 'RestrippedMC.Bhadron.dst', 'RestrippedMC.BhadronCompleteEvent.dst', 'RestrippedMC.Leptonic.dst', 'RestrippedMC.CharmCompleteEvent.dst', 'RestrippedMC.Radiative.dst', 'RestrippedMC.Dimuon.dst'],  # do not delete initial DaVinci output, do delete extra streams (trying to stop their generation produced errors, but they aren't needed), do delete file created by shelve
-            'dataname': RESTRIP_DATAs
+            'dataname': RESTRIP_DATA,
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
