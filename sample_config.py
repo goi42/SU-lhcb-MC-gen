@@ -452,7 +452,7 @@ restripped = False
         {
             'name': 'allstuple',
             'dirname': ALLSTUPLE_DIR,
-            'scripts': {ALLSTUPLE_SCRIPT_NAME: ALLSTUPLE_SCRIPT_CONTENT, 'steering.py': ALLSTUPLE_STEERING_CONTENT},
+            'scripts': {ALLSTUPLE_SCRIPT_NAME: ALLSTUPLE_SCRIPT_CONTENT, opj(ALLSTUPLE_DIR, 'steering.py'): ALLSTUPLE_STEERING_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} gaudirun.py {ALLSTUPLE_SCRIPT_NAME} | tee {ALLSTUPLE_LOG}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, ALLSTUPLE_SCRIPT_NAME=ALLSTUPLE_SCRIPT_NAME, ALLSTUPLE_LOG=ALLSTUPLE_LOG),
             'to_remove': [],  # bad idea to delete DST...
             'dataname': ALLSTUPLE_DATA,
