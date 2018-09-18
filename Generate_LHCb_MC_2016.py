@@ -135,7 +135,7 @@ make_stage_list: \t\t {make_stage_list}
 '''.format(NODE=NODE, DATE=DATE, SIGNAL_NAME=SIGNAL_NAME, RUN_NUMBER=RUN_NUMBER, GEN_LEVEL=GEN_LEVEL, RUN_SYS=RUN_SYS, CLEANSTAGES=CLEANSTAGES, CLEANWORK=CLEANWORK, PRECLEANED=PRECLEANED, SOME_MISSING=SOME_MISSING, WORK_DIR_EXISTS=WORK_DIR_EXISTS, make_stage_list=make_stage_list,))
 
 # -- run stages -- #
-stage_list = make_stage_list(BASE_NAME)
+stage_list = make_stage_list(USER, BASE_NAME)
 for istage, stage in enumerate(stage_list):
     # is this stage selected to run?
     if not stage['run']:

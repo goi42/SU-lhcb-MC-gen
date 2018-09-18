@@ -68,7 +68,7 @@ if MAGNETPOLARITY is not None:
 
 
 # -- create stage_list -- #
-def make_stage_list(BASE_NAME):
+def make_stage_list(USER, BASE_NAME):
     stage_list = []
     
     additional_pre_script = 'setenv PYTHONPATH $HOME/algorithms/python:$PYTHONPATH && '  # declares stuff used by scripts called here
