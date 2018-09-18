@@ -76,6 +76,7 @@ def make_stage_list(BASE_NAME):
     GAUSS_LOG = BASE_NAME + '_gauss.log'
     GAUSS_ROOT = BASE_NAME + '_gauss.root'
     GAUSS_SCRIPT_NAME = 'myGauss.py'
+    GAUSS_DATA = BASE_NAME + '_gauss.sim'
     GAUSS_SCRIPT_CONTENT = '''\
 from Gauss.Configuration import *
 from Configurables import LHCbApp, CondDB, Gauss
@@ -117,7 +118,7 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
             'scripts': {GAUSS_SCRIPT_NAME: GAUSS_SCRIPT_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best --user-area /home/{USER}/cmtuser Gauss/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME} | tee {GAUSS_LOG}'.format(USER=USER, GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME, GAUSS_LOG=GAUSS_LOG),
             'to_remove': [],
-            'dataname': BASE_NAME + '_gauss.sim',
+            'dataname': GAUSS_DATA,
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -127,6 +128,7 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
     BOOLE_LOG = BASE_NAME + '_boole.log'
     BOOLE_ROOT = BASE_NAME + '_boole.root'
     BOOLE_SCRIPT_NAME = 'myBoole.py'
+    BOOLE_DATA = BASE_NAME + '_boole.digi'
     BOOLE_SCRIPT_CONTENT = '''\
 from Gaudi.Configuration import *
 from Configurables import LHCbApp, L0Conf, Boole
@@ -160,7 +162,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'scripts': {BOOLE_SCRIPT_NAME: BOOLE_SCRIPT_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best Boole/{BOOLE_VERSION} gaudirun.py {BOOLE_SCRIPT_NAME} | tee {BOOLE_LOG}'.format(BOOLE_VERSION=BOOLE_VERSION, BOOLE_SCRIPT_NAME=BOOLE_SCRIPT_NAME, BOOLE_LOG=BOOLE_LOG),
             'to_remove': [GAUSS_DATA],
-            'dataname': BASE_NAME + '_boole.digi',
+            'dataname': BOOLE_DATA,
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -170,6 +172,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
     MOOREL0_LOG = BASE_NAME + '_moorel0.log'
     MOOREL0_ROOT = BASE_NAME + '_moorel0.root'
     MOOREL0_SCRIPT_NAME = 'myMoorel0.py'
+    MOOREL0_DATA = BASE_NAME + '_moorel0.digi'
     MOOREL0_SCRIPT_CONTENT = '''\
 from Gaudi.Configuration import importOptions
 from Configurables import L0App, L0Conf
@@ -208,7 +211,7 @@ L0App().outputFile = '{MOOREL0_DATA}'
             'scripts': {MOOREL0_SCRIPT_NAME: MOOREL0_SCRIPT_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREL0_SCRIPT_NAME} | tee {MOOREL0_LOG}'.format(MOORE_VERSION=MOORE_VERSION, MOOREL0_SCRIPT_NAME=MOOREL0_SCRIPT_NAME, MOOREL0_LOG=MOOREL0_LOG),
             'to_remove': [BOOLE_DATA],
-            'dataname': BASE_NAME + '_moorel0.digi',
+            'dataname': MOOREL0_DATA,
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -218,6 +221,7 @@ L0App().outputFile = '{MOOREL0_DATA}'
     MOOREHLT1_LOG = BASE_NAME + '_moorehlt1.log'
     MOOREHLT1_ROOT = BASE_NAME + '_moorehlt1.root'
     MOOREHLT1_SCRIPT_NAME = 'myMoorehlt1.py'
+    MOOREHLT1_DATA = BASE_NAME + '_moorehlt1.digi'
     MOOREHLT1_SCRIPT_CONTENT = '''\
 from Gaudi.Configuration import importOptions
 from Configurables import Moore, L0App, L0Conf, HltConf
@@ -255,7 +259,7 @@ Moore().outputFile = '{MOOREHLT1_DATA}'
             'scripts': {MOOREHLT1_SCRIPT_NAME: MOOREHLT1_SCRIPT_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT1_SCRIPT_NAME} | tee {MOOREHLT1_LOG}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT1_SCRIPT_NAME=MOOREHLT1_SCRIPT_NAME, MOOREHLT1_LOG=MOOREHLT1_LOG),
             'to_remove': [MOOREL0_DATA],
-            'dataname': BASE_NAME + '_moorehlt1.digi',
+            'dataname': MOOREHLT1_DATA,
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -265,6 +269,7 @@ Moore().outputFile = '{MOOREHLT1_DATA}'
     MOOREHLT2_LOG = BASE_NAME + '_moorehlt2.log'
     MOOREHLT2_ROOT = BASE_NAME + '_moorehlt2.root'
     MOOREHLT2_SCRIPT_NAME = 'myMoorehlt2.py'
+    MOOREHLT2_DATA = BASE_NAME + '_moorehlt2.digi'
     MOOREHLT2_SCRIPT_CONTENT = '''\
 from Gaudi.Configuration import importOptions
 from Configurables import Moore, L0App, L0Conf, HltConf, HltConfigSvc
@@ -305,7 +310,7 @@ Moore().outputFile = '{MOOREHLT2_DATA}'
             'scripts': {MOOREHLT2_SCRIPT_NAME: MOOREHLT2_SCRIPT_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT2_SCRIPT_NAME} | tee {MOOREHLT2_LOG}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT2_SCRIPT_NAME=MOOREHLT2_SCRIPT_NAME, MOOREHLT2_LOG=MOOREHLT2_LOG),
             'to_remove': [MOOREHLT1_DATA],
-            'dataname': BASE_NAME + '_moorehlt2.digi',
+            'dataname': MOOREHLT2_DATA,
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -315,6 +320,7 @@ Moore().outputFile = '{MOOREHLT2_DATA}'
     BRUNEL_LOG = BASE_NAME + '_brunel.log'
     BRUNEL_ROOT = BASE_NAME + '_brunel.root'
     BRUNEL_SCRIPT_NAME = 'myBrunel.py'
+    BRUNEL_DATA = BASE_NAME + '_brunel.dst'
     BRUNEL_SCRIPT_CONTENT = '''\
 from Gaudi.Configuration import *
 from Configurables import Brunel, LHCbApp, L0Conf
@@ -353,7 +359,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'scripts': {BRUNEL_SCRIPT_NAME: BRUNEL_SCRIPT_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best Brunel/{BRUNEL_VERSION} gaudirun.py {BRUNEL_SCRIPT_NAME} | tee {BRUNEL_LOG}'.format(BRUNEL_VERSION=BRUNEL_VERSION, BRUNEL_SCRIPT_NAME=BRUNEL_SCRIPT_NAME, BRUNEL_LOG=BRUNEL_LOG),
             'to_remove': [MOOREHLT2_DATA],
-            'dataname': BASE_NAME + '_brunel.dst',
+            'dataname': BRUNEL_DATA,
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -363,6 +369,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
     DAVINCI_LOG = BASE_NAME + '_davinci.log'
     DAVINCI_ROOT = BASE_NAME + '_davinci.root'
     DAVINCI_SCRIPT_NAME = 'myDavinci.py'
+    DAVINCI_DATA = '000000.AllStreams.dst',  # this is produced by the script--do not modify unless the script change
     DAVINCI_SCRIPT_CONTENT = '''\
 from Gaudi.Configuration import *
 from Configurables import DaVinci, LHCbApp, DumpFSR
@@ -401,7 +408,7 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
             'scripts': {DAVINCI_SCRIPT_NAME: DAVINCI_SCRIPT_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_STRIPPING_VERSION} gaudirun.py {DAVINCI_SCRIPT_NAME} | tee {DAVINCI_LOG}'.format(DAVINCI_STRIPPING_VERSION=DAVINCI_STRIPPING_VERSION, DAVINCI_SCRIPT_NAME=DAVINCI_SCRIPT_NAME, DAVINCI_LOG=DAVINCI_LOG),
             'to_remove': [BRUNEL_DATA],
-            'dataname': '000000.AllStreams.dst',  # this is produced by the script--do not modify unless the script changes
+            'dataname': DAVINCI_DATAs
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -411,6 +418,7 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
     ALLSTUPLE_LOG = BASE_NAME + '_allstuple.log'
     ALLSTUPLE_ROOT = BASE_NAME + '_allstuple.root'
     ALLSTUPLE_SCRIPT_NAME = 'myAllstuple.py'
+    ALLSTUPLE_DATA = BASE_NAME + '_allstuple.root'
     if os.path.basename(TUPOPTS) != 'LcLc.py':
         raise Exception('script designed with LcLc.py in mind, i.e., it writes steering.py in a particular way. You have selected {TUPOPTS}. See script.'.format(TUPOPTS=TUPOPTS))
     # steering.py is picked up by LcLc.py aka TUPOPTS
@@ -439,7 +447,7 @@ restripped = False
             'scripts': {ALLSTUPLE_SCRIPT_NAME: ALLSTUPLE_SCRIPT_CONTENT, 'steering.py': ALLSTUPLE_STEERING_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} gaudirun.py {ALLSTUPLE_SCRIPT_NAME} | tee {ALLSTUPLE_LOG}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, ALLSTUPLE_SCRIPT_NAME=ALLSTUPLE_SCRIPT_NAME, ALLSTUPLE_LOG=ALLSTUPLE_LOG),
             'to_remove': [],  # bad idea to delete DST...
-            'dataname': BASE_NAME + '_allstuple.root',
+            'dataname': ALLSTUPLE_DATA,
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -449,6 +457,7 @@ restripped = False
     RESTRIP_LOG = BASE_NAME + '_restrip.log'
     RESTRIP_ROOT = BASE_NAME + '_restrip.root'
     RESTRIP_SCRIPT_NAME = 'myRestrip.py'
+    RESTRIP_DATA = 'RestrippedMC.Charm.dst',  # this is produced by the script--do not modify unless the script change
     RESTRIP_SCRIPT_CONTENT = '''\
 from Gaudi.Configuration import *
 from Configurables import DaVinci
@@ -549,8 +558,8 @@ IOHelper().inputFiles(["{DAVINCI_DATA}"],clear=True)
             'dirname': 'restripOpts',
             'scripts': {RESTRIP_SCRIPT_NAME: RESTRIP_SCRIPT_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_STRIPPING_VERSION} gaudirun.py {RESTRIP_SCRIPT_NAME} | tee {RESTRIP_LOG}'.format(DAVINCI_STRIPPING_VERSION=DAVINCI_STRIPPING_VERSION, RESTRIP_SCRIPT_NAME=RESTRIP_SCRIPT_NAME, RESTRIP_LOG=RESTRIP_LOG),
-            'to_remove': [opj(WORK_DIR, x) for x in ['tmp_stripping_config.db', 'RestrippedMC.Bhadron.dst', 'RestrippedMC.BhadronCompleteEvent.dst', 'RestrippedMC.Leptonic.dst', 'RestrippedMC.CharmCompleteEvent.dst', 'RestrippedMC.Radiative.dst', 'RestrippedMC.Dimuon.dst']],  # do not delete initial DaVinci output, do delete extra streams (trying to stop their generation produced errors, but they aren't needed), do delete file created by shelve
-            'dataname': 'RestrippedMC.Charm.dst',  # this is produced by the script--do not modify unless the script changes
+            'to_remove': ['tmp_stripping_config.db', 'RestrippedMC.Bhadron.dst', 'RestrippedMC.BhadronCompleteEvent.dst', 'RestrippedMC.Leptonic.dst', 'RestrippedMC.CharmCompleteEvent.dst', 'RestrippedMC.Radiative.dst', 'RestrippedMC.Dimuon.dst'],  # do not delete initial DaVinci output, do delete extra streams (trying to stop their generation produced errors, but they aren't needed), do delete file created by shelve
+            'dataname': RESTRIP_DATAs
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -560,6 +569,7 @@ IOHelper().inputFiles(["{DAVINCI_DATA}"],clear=True)
     TUPLE_LOG = BASE_NAME + '_tuple.log'
     TUPLE_ROOT = BASE_NAME + '_tuple.root'
     TUPLE_SCRIPT_NAME = 'myTuple.py'
+    TUPLE_DATA = BASE_NAME + '_tuple.root'
     if os.path.basename(TUPOPTS) != 'LcLc.py':
         raise Exception('script designed with LcLc.py in mind, i.e., it writes steering.py in a particular way. You have selected {TUPOPTS}. See script.'.format(TUPOPTS=TUPOPTS))
     # steering.py is picked up by LcLc.py aka TUPOPTS
@@ -588,7 +598,7 @@ restripped = True
             'scripts': {TUPLE_SCRIPT_NAME: TUPLE_SCRIPT_CONTENT, 'steering.py': TUPLE_STEERING_CONTENT},
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} gaudirun.py {TUPLE_SCRIPT_NAME} | tee {TUPLE_LOG}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, TUPLE_SCRIPT_NAME=TUPLE_SCRIPT_NAME, TUPLE_LOG=TUPLE_LOG),
             'to_remove': [],  # bad idea to delete DST...
-            'dataname': BASE_NAME + '_tuple.root',
+            'dataname': TUPLE_DATA,
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -598,6 +608,7 @@ restripped = True
     SLIM_LOG = BASE_NAME + '_slim.log'
     SLIM_ROOT = BASE_NAME + '_slim.root'
     SLIM_SCRIPT_NAME = 'mySlim.py'
+    SLIM_DATA = BASE_NAME + '_slim'
     if os.path.basename(SLIMOPTS[0]) != 'prep_files.py':
         raise Exception('script designed with prep_files.py in mind, i.e., it uses particular commandline options. You have selected {SLIMOPTS}. See script.'.format(SLIMOPTS=SLIMOPTS))
     SLIM_SCRIPT_CONTENT = None
@@ -615,7 +626,7 @@ restripped = True
             'scripts': dict({SLIM_SCRIPT_NAME: SLIM_SCRIPT_CONTENT}, **dict_of_support_files),
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} python {SLIM_SCRIPT_NAME} MC 16 --failgracefully --outfolder {SLIM_DATA} --input {TUPLE_DATA} X2LcLcTree/DecayTree --logfilename {SLIM_LOG}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, SLIM_SCRIPT_NAME=SLIM_SCRIPT_NAME, SLIM_DATA=SLIM_DATA, TUPLE_DATA=TUPLE_DATA, SLIM_LOG=SLIM_LOG),
             'to_remove': [],  # bad idea to delete tuple file...
-            'dataname': BASE_NAME + '_slim',
+            'dataname': SLIM_DATA,
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
