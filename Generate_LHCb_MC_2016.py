@@ -83,7 +83,7 @@ class ChoicesInList(argparse.Action):
 ######################################################################
 
 # -- basic info
-DATE = str(datetime.datetime.now())
+DATE = str(datetime.datetime.now()).replace(' ', '_')
 USER = getpass.getuser()
 NODE = socket.gethostname()
 
@@ -217,7 +217,7 @@ STAGE_{ST} = start_val
          )
     if st in GEN_LEVEL:
         exec('STAGE_{ST} = set_val'.format(ST=st.upper()))
-GENERAL_LOG = opj(WORK_DIR, BASE_NAME + '_general{0}.log'.format(GENLOGAPP))
+GENERAL_LOG = opj(WORK_DIR, BASE_NAME + '_{0}_general{1}.log'.format(DATE, GENLOGAPP))
 ERROR_LOG   = opj(WORK_DIR, BASE_NAME + '_error{0}.log'.format(GENLOGAPP))
 GAUSS_DATA     = opj(WORK_DIR, BASE_NAME + '_gauss.sim')
 BOOLE_DATA     = opj(WORK_DIR, BASE_NAME + '_boole.digi')
