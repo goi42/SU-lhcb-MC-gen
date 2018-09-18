@@ -617,6 +617,8 @@ restripped = True
     slimoptsdirname = SLIMOPTS[1].strip('/').split('/')[-1]
     dict_of_support_files = {}
     for fname in os.listdir(SLIMOPTS[1]):
+        if fname == 'experimental':
+            continue
         with open(opj(SLIMOPTS[1], fname), 'r') as f:
             dict_of_support_files[opj(slimoptsdirname, fname)] = f.read()
     stage_list.append(
