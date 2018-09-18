@@ -1,4 +1,4 @@
-from os import listdir
+import os
 from os.path import join as opj
 # -- essential parameters -- #
 SIGNAL_NAME = 'TestProduction'
@@ -616,7 +616,7 @@ restripped = True
         SLIM_SCRIPT_CONTENT = f.read()
     slimoptsdirname = SLIMOPTS[1].strip('/').split('/')[-1]
     dict_of_support_files = {}
-    for fname in listdir(SLIMOPTS[1]):
+    for fname in os.listdir(SLIMOPTS[1]):
         with open(opj(SLIMOPTS[1], fname), 'r') as f:
             dict_of_support_files[opj(slimoptsdirname, fname)] = f.read()
     stage_list.append(
