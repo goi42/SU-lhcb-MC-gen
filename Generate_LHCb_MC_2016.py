@@ -241,7 +241,7 @@ START@:\t\t{DATE}
 ''')
 
 # -- declare stages/scripts -- #
-stage_dict = []
+stage_list = []
 
 # -- check, make, and change directories -- #
 if os.path.isdir(WORK_DIR) and not WORK_DIR_EXISTS:
@@ -292,7 +292,7 @@ if {REDECAY}:  # REDECAY option set in generation script
 HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
 
 '''.format(RUN_NUMBER=RUN_NUMBER, FIRST_EVENT=FIRST_EVENT, NUM_EVENT=NUM_EVENT, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, GAUSS_DATA=GAUSS_DATA, BEAM_VERSION=BEAM_VERSION, COMPRESS=COMPRESS, REDECAY=REDECAY, RICHOFF=RICHOFF, EVENT_TYPE=EVENT_TYPE, GAUSS_ROOT=GAUSS_ROOT))
-stage_dict.append(
+stage_list.append(
     {
         'name': 'Gauss',
         'script': GAUSS_SCRIPT,
@@ -335,7 +335,7 @@ importOptions("$APPCONFIGOPTS/Boole/Boole-SetOdinRndTrigger.py")  # idk whether 
 L0Conf().TCK = '{MOOREL0_TCK}'
 FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
 '''.format(DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, GAUSS_DATA=GAUSS_DATA, BOOLE_DATA=BOOLE_DATA, BOOLE_ROOT=BOOLE_ROOT, COMPRESS=COMPRESS, MOOREL0_TCK=MOOREL0_TCK))
-stage_dict.append(
+stage_list.append(
     {
         'name': 'Boole',
         'script': BOOLE_SCRIPT,
@@ -383,7 +383,7 @@ IOHelper('ROOT').inputFiles(['{BOOLE_DATA}'],clear=True)
 L0App().outputFile = '{MOOREL0_DATA}'
 
 '''.format(MOOREL0_TCK=MOOREL0_TCK, COMPRESS=COMPRESS, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, BOOLE_DATA=BOOLE_DATA, MOOREL0_ROOT=MOOREL0_ROOT, MOOREL0_DATA=MOOREL0_DATA))
-stage_dict.append(
+stage_list.append(
     {
         'name': 'Moore L0',
         'script': MOOREL0_SCRIPT,
@@ -430,7 +430,7 @@ IOHelper('ROOT').inputFiles(['{MOOREL0_DATA}'],clear=True)
 Moore().outputFile = '{MOOREHLT1_DATA}'
 
 '''.format(MOOREHLT1_TCK=MOOREHLT1_TCK, COMPRESS=COMPRESS, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, MOOREL0_DATA=MOOREL0_DATA, MOOREHLT1_ROOT=MOOREHLT1_ROOT, MOOREHLT1_DATA=MOOREHLT1_DATA))
-stage_dict.append(
+stage_list.append(
     {
         'name': 'Moore HLT1',
         'script': MOOREHLT1_SCRIPT,
@@ -480,7 +480,7 @@ IOHelper('ROOT').inputFiles(['{MOOREHLT1_DATA}'],clear=True)
 Moore().outputFile = '{MOOREHLT2_DATA}'
 
 '''.format(COMPRESS=COMPRESS, NOPIDTRIG=NOPIDTRIG, newTCKdir=os.path.dirname(NEWCONFIG), WORK_DIR=WORK_DIR, MOOREHLT2_TCK=MOOREHLT2_TCK, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, MOOREHLT1_DATA=MOOREHLT1_DATA, MOOREHLT2_DATA=MOOREHLT2_DATA))
-stage_dict.append(
+stage_list.append(
     {
         'name': 'Moore HLT2',
         'script': MOOREHLT2_SCRIPT,
@@ -528,7 +528,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
 
 
 '''.format(NOPIDTRIG=NOPIDTRIG, NEWCONFIG=NEWCONFIG, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, COMPRESS=COMPRESS, BOOLE_DATA=BOOLE_DATA, MOOREHLT2_DATA=MOOREHLT2_DATA, BRUNEL_DATA=BRUNEL_DATA, BRUNEL_ROOT=BRUNEL_ROOT))
-stage_dict.append(
+stage_list.append(
     {
         'name': 'Brunel',
         'script': BRUNEL_SCRIPT,
@@ -576,7 +576,7 @@ from GaudiConf import IOHelper
 IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
 # OutputStream("DstWriter").Output     =  "DATAFILE='PFN:{DAVINCI_DATA}' TYP='POOL_ROOTTREE' OPT='RECREATE'"  # Doesn't actually do anything
 '''.format(STRIPPING_VERSION=STRIPPING_VERSION, NOPIDTRIG=NOPIDTRIG, NEWCONFIG=NEWCONFIG, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, DAVINCI_ROOT=DAVINCI_ROOT, BRUNEL_DATA=BRUNEL_DATA, DAVINCI_DATA=DAVINCI_DATA))
-stage_dict.append(
+stage_list.append(
     {
         'name': 'DaVinci',
         'script': DAVINCI_SCRIPT,
@@ -612,7 +612,7 @@ restripped = False
 '''.format(DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, DAVINCI_DATA=DAVINCI_DATA, ALLSTUPLE_DATA=ALLSTUPLE_DATA, NEWCONFIGorNone='"{0}"'.format(NEWCONFIG) if NOPIDTRIG else None)
         )
     shutil.copyfile(TUPOPTS, ALLSTUPLE_SCRIPT)  # use pre-written options file rather than writing a new one
-stage_dict.append(
+stage_list.append(
     {
         'name': 'allstuple',
         'script': ALLSTUPLE_SCRIPT,
@@ -723,7 +723,7 @@ IOHelper().inputFiles(["{DAVINCI_DATA}"],clear=True)
 # OutputStream("DstWriter").Output     =  "DATAFILE='PFN:{RESTRIP_DATA}' TYP='POOL_ROOTTREE' OPT='RECREATE'"  # doesn't actually do anything
 
 '''.format(NOPIDTRIG=NOPIDTRIG, STRIPPING_VERSION=STRIPPING_VERSION, NEWCONFIG=NEWCONFIG, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, DAVINCI_DATA=DAVINCI_DATA, RESTRIP_ROOT=RESTRIP_ROOT, RESTRIP_DATA=RESTRIP_DATA))
-stage_dict.append(
+stage_list.append(
     {
         'name': 'restrip',
         'script': RESTRIP_SCRIPT,
@@ -759,7 +759,7 @@ restripped = True
 '''.format(DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, RESTRIP_DATA=RESTRIP_DATA, TUPLE_DATA=TUPLE_DATA, NEWCONFIGorNone='"{0}"'.format(NEWCONFIG) if NOPIDTRIG else None)
         )
     shutil.copyfile(TUPOPTS, TUPLE_SCRIPT)  # use pre-written options file rather than writing a new one
-stage_dict.append(
+stage_list.append(
     {
         'name': 'tuple',
         'script': TUPLE_SCRIPT,
@@ -779,7 +779,7 @@ if STAGE_SLIM:
         raise Exception('script designed with prep_files.py in mind, i.e., it uses particular commandline options. You have selected {SLIMOPTS}. See script.'.format(SLIMOPTS=SLIMOPTS))
     shutil.copyfile(SLIMOPTS[0], SLIM_SCRIPT)  # use pre-written slim file rather than writing a new one
     shutil.copytree(SLIMOPTS[1], opj(SLIM_DIR, SLIMOPTS[1].strip('/').split('/')[-1]))  # use pre-written slim import directory rather than writing a new one
-stage_dict.append(
+stage_list.append(
     {
         'name': 'slim',
         'script': SLIM_SCRIPT,
@@ -796,7 +796,7 @@ if SCRIPT_ONLY:
     sys.exit()
 
 # -- Run Scripts -- #
-for istage, stage in enumerate(stage_dict):
+for istage, stage in enumerate(stage_list):
     if not stage['run']:
         with open(GENERAL_LOG, 'a') as f:
             f.write('{name} stage not selected to run. Next stage...\n'.format(name=stage['name']))
@@ -810,7 +810,7 @@ for istage, stage in enumerate(stage_dict):
             f.writelines(fin.readlines())
 
     if PRECLEANED and istage > 0:
-        wkfile = stage_dict[istage - 1]['data']
+        wkfile = stage_list[istage - 1]['data']
         wkdir  = os.path.dirname(wkfile)
         flnm   = os.path.basename(wkfile)
         fnfile = opj(DATA_DIR, flnm)
@@ -829,11 +829,11 @@ for istage, stage in enumerate(stage_dict):
         else:
             raise Exception('PRECLEANED file {FILE} not found for stage {STAGE}'.format(FILE=wkfile, STAGE=stage['name']))
             
-    if istage == 0 or os.path.isfile(stage_dict[istage - 1]['data']):
+    if istage == 0 or os.path.isfile(stage_list[istage - 1]['data']):
         safecall(PRE_SCRIPT + ' && ' + stage['call_string'])
     else:
         with open(GENERAL_LOG, 'a') as f:
-            f.write("\nCannot find {data}\n".format(data=stage_dict[istage - 1]['data']))
+            f.write("\nCannot find {data}\n".format(data=stage_list[istage - 1]['data']))
         if SOME_MISSING:
             with open(GENERAL_LOG, 'a') as f:
                 f.write("But SOME_MISSING option used. Moving on...\n")
@@ -859,7 +859,7 @@ Finish {name} @   {DATE}
 if CLEANWORK:
     with open(GENERAL_LOG, 'a') as f:
         f.write(str(os.listdir(WORK_DIR)))
-    for datafile in [x['data'] for x in stage_dict]:
+    for datafile in [x['data'] for x in stage_list]:
         if os.path.exists(datafile):
             shutil_safemove(datafile, DATA_DIR, diroverride=True)
     for f in os.listdir(WORK_DIR):
