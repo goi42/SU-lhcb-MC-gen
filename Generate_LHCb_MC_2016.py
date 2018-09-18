@@ -207,7 +207,7 @@ STAGE_{ST} = start_val
          )
     if st in GEN_LEVEL:
         exec('STAGE_{ST} = set_val'.format(ST=st.upper()))
-GENERAL_LOG = opj(WORK_DIR, BASE_NAME + '_{0}_general.log'.format(DATE))
+GENERAL_LOG = opj(WORK_DIR, BASE_NAME + '_%s_general.log' % DATE)
 GAUSS_DATA     = opj(WORK_DIR, BASE_NAME + '_gauss.sim')
 BOOLE_DATA     = opj(WORK_DIR, BASE_NAME + '_boole.digi')
 MOOREL0_DATA   = opj(WORK_DIR, BASE_NAME + '_moorel0.digi')
