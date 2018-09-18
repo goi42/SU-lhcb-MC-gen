@@ -438,7 +438,7 @@ newTCK = {NEWCONFIGorNone}
 restripped = False
 '''.format(DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, DAVINCI_DATA=DAVINCI_DATA, ALLSTUPLE_DATA=ALLSTUPLE_DATA, NEWCONFIGorNone='"{0}"'.format(NEWCONFIG) if NOPIDTRIG else None)
     ALLSTUPLE_SCRIPT_CONTENT = None
-    with open(TUPOTS, 'r') as f:
+    with open(TUPOPTS, 'r') as f:
         ALLSTUPLE_SCRIPT_CONTENT = f.read()  # use pre-written options file rather than writing a new one
     stage_list.append(
         {
@@ -589,7 +589,7 @@ newTCK = {NEWCONFIGorNone}
 restripped = True
 '''.format(DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, RESTRIP_DATA=RESTRIP_DATA, TUPLE_DATA=TUPLE_DATA, NEWCONFIGorNone='"{0}"'.format(NEWCONFIG) if NOPIDTRIG else None)
     TUPLE_SCRIPT_CONTENT = None
-    with open(TUPOTS, 'r') as f:
+    with open(TUPOPTS, 'r') as f:
         TUPLE_SCRIPT_CONTENT = f.read()  # use pre-written options file rather than writing a new one
     stage_list.append(
         {
