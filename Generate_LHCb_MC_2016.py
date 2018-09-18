@@ -108,20 +108,24 @@ with open(GENERAL_LOG, 'a') as f:
     os.dup2(f.fileno(), sys.stdout.fileno())
     os.dup2(f.fileno(), sys.stderr.fileno())
 
-# -- write argument values to the log -- #
+# -- write parameter values to the log -- #
 with open(GENERAL_LOG, 'w') as f:
     f.write('''\
 ====================================================
 NODE:\t\t{NODE}
 START@:\t\t{DATE}
-'''.format(NODE=NODE, DATE=DATE))
-    
-    for arg in sorted(vars(args)):
-        f.write('{ARG}:\t\t{VAL}\n'.format(ARG=arg, VAL=eval(arg)))
-    
-    f.write('''\
+SIGNAL_NAME: \t\t {SIGNAL_NAME}
+RUN_NUMBER: \t\t {RUN_NUMBER}
+GEN_LEVEL: \t\t {GEN_LEVEL}
+RUN_SYS: \t\t {RUN_SYS}
+CLEANSTAGES: \t\t {CLEANSTAGES}
+CLEANWORK: \t\t {CLEANWORK}
+PRECLEANED: \t\t {PRECLEANED}
+SOME_MISSING: \t\t {SOME_MISSING}
+WORK_DIR_EXISTS: \t\t {WORK_DIR_EXISTS}
+make_stage_list: \t\t {make_stage_list}
 ====================================================
-''')
+'''.format(NODE=NODE, DATE=DATE, SIGNAL_NAME=SIGNAL_NAME, RUN_NUMBER=RUN_NUMBER, GEN_LEVEL=GEN_LEVEL, RUN_SYS=RUN_SYS, CLEANSTAGES=CLEANSTAGES, CLEANWORK=CLEANWORK, PRECLEANED=PRECLEANED, SOME_MISSING=SOME_MISSING, WORK_DIR_EXISTS=WORK_DIR_EXISTS, make_stage_list=make_stage_list,))
 
 # -- check, make, and change directories -- #
 if os.path.isdir(WORK_DIR) and not WORK_DIR_EXISTS:
