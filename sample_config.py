@@ -70,6 +70,8 @@ if MAGNETPOLARITY is not None:
 # -- create stage_list -- #
 def make_stage_list(BASE_NAME):
     stage_list = []
+    
+    additional_pre_script = 'setenv PYTHONPATH $HOME/algorithms/python:$PYTHONPATH && '  # declares stuff used by scripts called here
     # -- Gauss stage -- #
     GAUSS_LOG = BASE_NAME + '_gauss.log'
     GAUSS_ROOT = BASE_NAME + '_gauss.root'
@@ -112,7 +114,7 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
             'name': 'Gauss',
             'dirname': 'GaussOpts',
             'scripts': {'myGauss.py': GAUSS_SCRIPT_CONTENT},
-            'call_string': 'lb-run -c best --user-area /home/{USER}/cmtuser Gauss/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT} | tee {GAUSS_LOG}'.format(USER=USER, GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT=GAUSS_SCRIPT, GAUSS_LOG=GAUSS_LOG),
+            'call_string': additional_pre_script + 'lb-run -c best --user-area /home/{USER}/cmtuser Gauss/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT} | tee {GAUSS_LOG}'.format(USER=USER, GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT=GAUSS_SCRIPT, GAUSS_LOG=GAUSS_LOG),
             'to_remove': [],
             'dataname': BASE_NAME + '_gauss.sim',
             'run': True,
@@ -154,7 +156,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'name': 'Boole',
             'dirname': 'BooleOpts',
             'scripts': {'myBoole.py': BOOLE_SCRIPT_CONTENT},
-            'call_string': 'lb-run -c best Boole/{BOOLE_VERSION} gaudirun.py {BOOLE_SCRIPT} | tee {BOOLE_LOG}'.format(BOOLE_VERSION=BOOLE_VERSION, BOOLE_SCRIPT=BOOLE_SCRIPT, BOOLE_LOG=BOOLE_LOG),
+            'call_string': additional_pre_script + 'lb-run -c best Boole/{BOOLE_VERSION} gaudirun.py {BOOLE_SCRIPT} | tee {BOOLE_LOG}'.format(BOOLE_VERSION=BOOLE_VERSION, BOOLE_SCRIPT=BOOLE_SCRIPT, BOOLE_LOG=BOOLE_LOG),
             'to_remove': [GAUSS_DATA],
             'dataname': BASE_NAME + '_boole.digi',
             'run': True,
@@ -201,7 +203,7 @@ L0App().outputFile = '{MOOREL0_DATA}'
             'name': 'Moore L0',
             'dirname': 'MooreOpts L0',
             'scripts': {'myMoorel0.py': MOOREL0_SCRIPT_CONTENT},
-            'call_string': 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREL0_SCRIPT} | tee {MOOREL0_LOG}'.format(MOORE_VERSION=MOORE_VERSION, MOOREL0_SCRIPT=MOOREL0_SCRIPT, MOOREL0_LOG=MOOREL0_LOG),
+            'call_string': additional_pre_script + 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREL0_SCRIPT} | tee {MOOREL0_LOG}'.format(MOORE_VERSION=MOORE_VERSION, MOOREL0_SCRIPT=MOOREL0_SCRIPT, MOOREL0_LOG=MOOREL0_LOG),
             'to_remove': [BOOLE_DATA],
             'dataname': BASE_NAME + '_moorel0.digi',
             'run': True,
@@ -247,7 +249,7 @@ Moore().outputFile = '{MOOREHLT1_DATA}'
             'name': 'Moore HLT1',
             'dirname': 'MooreOpts HLT1',
             'scripts': {MOOREHLT1_SCRIPT_NAME: MOOREHLT1_SCRIPT_CONTENT},
-            'call_string': 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT1_SCRIPT} | tee {MOOREHLT1_LOG}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT1_SCRIPT=MOOREHLT1_SCRIPT, MOOREHLT1_LOG=MOOREHLT1_LOG),
+            'call_string': additional_pre_script + 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT1_SCRIPT} | tee {MOOREHLT1_LOG}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT1_SCRIPT=MOOREHLT1_SCRIPT, MOOREHLT1_LOG=MOOREHLT1_LOG),
             'to_remove': [MOOREL0_DATA],
             'dataname': BASE_NAME + '_moorehlt1.digi',
             'run': True,
@@ -294,7 +296,7 @@ Moore().outputFile = '{MOOREHLT2_DATA}'
             'name': 'Moore HLT2',
             'dirname': 'MooreOpts HLT2',
             'scripts': {MOOREHLT2_SCRIPT_NAME: MOOREHLT2_SCRIPT_CONTENT},
-            'call_string': 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT2_SCRIPT} | tee {MOOREHLT2_LOG}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT2_SCRIPT=MOOREHLT2_SCRIPT, MOOREHLT2_LOG=MOOREHLT2_LOG),
+            'call_string': additional_pre_script + 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT2_SCRIPT} | tee {MOOREHLT2_LOG}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT2_SCRIPT=MOOREHLT2_SCRIPT, MOOREHLT2_LOG=MOOREHLT2_LOG),
             'to_remove': [MOOREHLT1_DATA],
             'dataname': BASE_NAME + '_moorehlt2.digi',
             'run': True,
@@ -341,7 +343,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'name': 'Brunel',
             'dirname': 'BrunelOpts',
             'scripts': {BRUNEL_SCRIPT_NAME: BRUNEL_SCRIPT_CONTENT},
-            'call_string': 'lb-run -c best Brunel/{BRUNEL_VERSION} gaudirun.py {BRUNEL_SCRIPT} | tee {BRUNEL_LOG}'.format(BRUNEL_VERSION=BRUNEL_VERSION, BRUNEL_SCRIPT=BRUNEL_SCRIPT, BRUNEL_LOG=BRUNEL_LOG),
+            'call_string': additional_pre_script + 'lb-run -c best Brunel/{BRUNEL_VERSION} gaudirun.py {BRUNEL_SCRIPT} | tee {BRUNEL_LOG}'.format(BRUNEL_VERSION=BRUNEL_VERSION, BRUNEL_SCRIPT=BRUNEL_SCRIPT, BRUNEL_LOG=BRUNEL_LOG),
             'to_remove': [MOOREHLT2_DATA],
             'dataname': BASE_NAME + '_brunel.dst',
             'run': True,
@@ -388,7 +390,7 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
             'name': 'DaVinci',
             'dirname': 'DaVinciOpts',
             'scripts': {DAVINCI_SCRIPT_NAME: DAVINCI_SCRIPT_CONTENT},
-            'call_string': 'lb-run -c best DaVinci/{DAVINCI_STRIPPING_VERSION} gaudirun.py {DAVINCI_SCRIPT} | tee {DAVINCI_LOG}'.format(DAVINCI_STRIPPING_VERSION=DAVINCI_STRIPPING_VERSION, DAVINCI_SCRIPT=DAVINCI_SCRIPT, DAVINCI_LOG=DAVINCI_LOG),
+            'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_STRIPPING_VERSION} gaudirun.py {DAVINCI_SCRIPT} | tee {DAVINCI_LOG}'.format(DAVINCI_STRIPPING_VERSION=DAVINCI_STRIPPING_VERSION, DAVINCI_SCRIPT=DAVINCI_SCRIPT, DAVINCI_LOG=DAVINCI_LOG),
             'to_remove': [BRUNEL_DATA],
             'dataname': '000000.AllStreams.dst',  # this is produced by the script--do not modify unless the script changes
             'run': True,
@@ -425,7 +427,7 @@ restripped = False
             'name': 'allstuple',
             'dirname': 'allstupleOpts',
             'scripts': {'myAllstuple.py': ALLSTUPLE_SCRIPT_CONTENT, 'steering.py': ALLSTUPLE_STEERING_CONTENT},
-            'call_string': 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} gaudirun.py {ALLSTUPLE_SCRIPT} | tee {ALLSTUPLE_LOG}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, ALLSTUPLE_SCRIPT=ALLSTUPLE_SCRIPT, ALLSTUPLE_LOG=ALLSTUPLE_LOG),
+            'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} gaudirun.py {ALLSTUPLE_SCRIPT} | tee {ALLSTUPLE_LOG}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, ALLSTUPLE_SCRIPT=ALLSTUPLE_SCRIPT, ALLSTUPLE_LOG=ALLSTUPLE_LOG),
             'to_remove': [],  # bad idea to delete DST...
             'dataname': BASE_NAME + '_allstuple.root',
             'run': True,
@@ -535,7 +537,7 @@ IOHelper().inputFiles(["{DAVINCI_DATA}"],clear=True)
             'name': 'restrip',
             'dirname': 'restripOpts',
             'scripts': {'myRestrip.py': RESTRIP_SCRIPT_CONTENT},
-            'call_string': 'lb-run -c best DaVinci/{DAVINCI_STRIPPING_VERSION} gaudirun.py {RESTRIP_SCRIPT} | tee {RESTRIP_LOG}'.format(DAVINCI_STRIPPING_VERSION=DAVINCI_STRIPPING_VERSION, RESTRIP_SCRIPT=RESTRIP_SCRIPT, RESTRIP_LOG=RESTRIP_LOG),
+            'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_STRIPPING_VERSION} gaudirun.py {RESTRIP_SCRIPT} | tee {RESTRIP_LOG}'.format(DAVINCI_STRIPPING_VERSION=DAVINCI_STRIPPING_VERSION, RESTRIP_SCRIPT=RESTRIP_SCRIPT, RESTRIP_LOG=RESTRIP_LOG),
             'to_remove': [opj(WORK_DIR, x) for x in ['tmp_stripping_config.db', 'RestrippedMC.Bhadron.dst', 'RestrippedMC.BhadronCompleteEvent.dst', 'RestrippedMC.Leptonic.dst', 'RestrippedMC.CharmCompleteEvent.dst', 'RestrippedMC.Radiative.dst', 'RestrippedMC.Dimuon.dst']],  # do not delete initial DaVinci output, do delete extra streams (trying to stop their generation produced errors, but they aren't needed), do delete file created by shelve
             'dataname': 'RestrippedMC.Charm.dst',  # this is produced by the script--do not modify unless the script changes
             'run': True,
@@ -572,7 +574,7 @@ restripped = True
             'name': 'tuple',
             'dirname': 'tupleOpts',
             'scripts': {'myTuple.py': TUPLE_SCRIPT_CONTENT, 'steering.py': TUPLE_STEERING_CONTENT},
-            'call_string': 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} gaudirun.py {TUPLE_SCRIPT} | tee {TUPLE_LOG}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, TUPLE_SCRIPT=TUPLE_SCRIPT, TUPLE_LOG=TUPLE_LOG),
+            'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} gaudirun.py {TUPLE_SCRIPT} | tee {TUPLE_LOG}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, TUPLE_SCRIPT=TUPLE_SCRIPT, TUPLE_LOG=TUPLE_LOG),
             'to_remove': [],  # bad idea to delete DST...
             'dataname': BASE_NAME + '_tuple.root',
             'run': True,
@@ -598,7 +600,7 @@ restripped = True
             'name': 'slim',
             'dirname': 'slimOpts',
             'scripts': dict({'mySlim.py': SLIM_SCRIPT_CONTENT}, **dict_of_support_files),
-            'call_string': 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} python {SLIM_SCRIPT} MC 16 --failgracefully --outfolder {SLIM_DATA} --input {TUPLE_DATA} X2LcLcTree/DecayTree --logfilename {SLIM_LOG}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, SLIM_SCRIPT=SLIM_SCRIPT, SLIM_DATA=SLIM_DATA, TUPLE_DATA=TUPLE_DATA, SLIM_LOG=SLIM_LOG),
+            'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} python {SLIM_SCRIPT} MC 16 --failgracefully --outfolder {SLIM_DATA} --input {TUPLE_DATA} X2LcLcTree/DecayTree --logfilename {SLIM_LOG}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, SLIM_SCRIPT=SLIM_SCRIPT, SLIM_DATA=SLIM_DATA, TUPLE_DATA=TUPLE_DATA, SLIM_LOG=SLIM_LOG),
             'to_remove': [],  # bad idea to delete tuple file...
             'dataname': BASE_NAME + '_slim',
             'run': True,
