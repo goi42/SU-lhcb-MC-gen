@@ -17,7 +17,7 @@ SCRIPT_ONLY = False  # flag used to set all stage's scriptonly parameter
 DDDB_TAG = 'dddb-20170721-3'
 CONDDB_TAG = 'sim-20170721-2-vc-md100'
 COMPRESS = True  # use compression option optimized for deletion of intermediate stages
-MAGNETPOLARITY = None  # 'md', 'mu'  # ensures CONDB_VERSION and BEAM_VERSION use mu or md as appropriate for the specified polarity, e.g., replaces "mu" with "md".
+MAGNETPOLARITY = None  # 'md', 'mu'  # ensures CONDDB_TAG and BEAM_VERSION use mu or md as appropriate for the specified polarity, e.g., replaces "mu" with "md".
 # Gauss
 EVENT_TYPE = 28196040
 FIRST_EVENT = 1
@@ -59,7 +59,7 @@ if MAGNETPOLARITY is not None:
         raise Exception('something has gone wrong in the script. There should only be 2 allowed polarities.')
     rightpol = MAGNETPOLARITY
     wrongpol = allowedpols[0] if allowedpols.index(rightpol) == 1 else allowedpols[1]
-    for thingtocheck_string in ('CONDB_VERSION', 'BEAM_VERSION'):
+    for thingtocheck_string in ('CONDDB_TAG', 'BEAM_VERSION'):
         if eval(thingtocheck_string).count(wrongpol) > 1:
             raise parser.error('{TH} ({THSTR}) has {POL} appearing more than once!'.format(TH=eval(thingtocheck_string), THSTR=thingtocheck_string, POL=wrongpol))
         exec('{THSTR} = {THSTR}.replace(wrongpol, rightpol)'.format(THSTR=thingtocheck_string))
@@ -84,8 +84,8 @@ GaussGen.RunNumber        = {RUN_NUMBER}
 GaussGen.FirstEventNumber = {FIRST_EVENT}
 GaussGen.OutputLevel      = 4
 LHCbApp().EvtMax          = {NUM_EVENT}
-LHCbApp().DDDBtag         = "{DDDB_VERSION}"
-LHCbApp().CondDBtag       = "{CONDB_VERSION}"
+LHCbApp().DDDBtag         = "{DDDB_TAG}"
+LHCbApp().CondDBtag       = "{CONDDB_TAG}"
 
 OutputStream("GaussTape").Output = "DATAFILE='PFN:{GAUSS_DATA}' TYP='POOL_ROOTTREE' OPT='RECREATE'"
 
@@ -108,7 +108,7 @@ if {REDECAY}:  # REDECAY option set in generation script
 
 HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
 
-'''.format(RUN_NUMBER=RUN_NUMBER, FIRST_EVENT=FIRST_EVENT, NUM_EVENT=NUM_EVENT, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, GAUSS_DATA=GAUSS_DATA, BEAM_VERSION=BEAM_VERSION, COMPRESS=COMPRESS, REDECAY=REDECAY, RICHOFF=RICHOFF, EVENT_TYPE=EVENT_TYPE, GAUSS_ROOT=GAUSS_ROOT)
+'''.format(RUN_NUMBER=RUN_NUMBER, FIRST_EVENT=FIRST_EVENT, NUM_EVENT=NUM_EVENT, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, GAUSS_DATA=GAUSS_DATA, BEAM_VERSION=BEAM_VERSION, COMPRESS=COMPRESS, REDECAY=REDECAY, RICHOFF=RICHOFF, EVENT_TYPE=EVENT_TYPE, GAUSS_ROOT=GAUSS_ROOT)
     stage_list.append(
         {
             'name': 'Gauss',
@@ -129,8 +129,8 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
 from Gaudi.Configuration import *
 from Configurables import LHCbApp, L0Conf, Boole
 
-LHCbApp().DDDBtag   = "{DDDB_VERSION}"
-LHCbApp().CondDBtag = "{CONDB_VERSION}"
+LHCbApp().DDDBtag   = "{DDDB_TAG}"
+LHCbApp().CondDBtag = "{CONDDB_TAG}"
 
 EventSelector().Input                = ["DATAFILE='PFN:{GAUSS_DATA}' TYP='POOL_ROOTTREE' OPT='READ'"]
 OutputStream("DigiWriter").Output    =  "DATAFILE='PFN:{BOOLE_DATA}' TYP='POOL_ROOTTREE' OPT='RECREATE'"
@@ -150,7 +150,7 @@ importOptions("$APPCONFIGOPTS/Boole/Boole-SetOdinRndTrigger.py")  # idk whether 
 
 L0Conf().TCK = '{MOOREL0_TCK}'
 FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
-'''.format(DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, GAUSS_DATA=GAUSS_DATA, BOOLE_DATA=BOOLE_DATA, BOOLE_ROOT=BOOLE_ROOT, COMPRESS=COMPRESS, MOOREL0_TCK=MOOREL0_TCK)
+'''.format(DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, GAUSS_DATA=GAUSS_DATA, BOOLE_DATA=BOOLE_DATA, BOOLE_ROOT=BOOLE_ROOT, COMPRESS=COMPRESS, MOOREL0_TCK=MOOREL0_TCK)
     stage_list.append(
         {
             'name': 'Boole',
@@ -180,8 +180,8 @@ importOptions("$APPCONFIGOPTS/L0App/DataType-2016.py")
 if {COMPRESS}:  # COMPRESS option set in generation script
     importOptions("$APPCONFIGOPTS/Persistency/Compression-ZLIB-1.py")
 
-L0App().DDDBtag   = "{DDDB_VERSION}"
-L0App().CondDBtag = "{CONDB_VERSION}"
+L0App().DDDBtag   = "{DDDB_TAG}"
+L0App().CondDBtag = "{CONDDB_TAG}"
 
 #####
 L0App().Simulation = True
@@ -197,7 +197,7 @@ IOHelper('ROOT').inputFiles(['{BOOLE_DATA}'],clear=True)
 #HistogramPersistencySvc().OutputFile = "{MOOREL0_ROOT}"
 L0App().outputFile = '{MOOREL0_DATA}'
 
-'''.format(MOOREL0_TCK=MOOREL0_TCK, COMPRESS=COMPRESS, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, BOOLE_DATA=BOOLE_DATA, MOOREL0_ROOT=MOOREL0_ROOT, MOOREL0_DATA=MOOREL0_DATA)
+'''.format(MOOREL0_TCK=MOOREL0_TCK, COMPRESS=COMPRESS, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, BOOLE_DATA=BOOLE_DATA, MOOREL0_ROOT=MOOREL0_ROOT, MOOREL0_DATA=MOOREL0_DATA)
     stage_list.append(
         {
             'name': 'Moore L0',
@@ -234,8 +234,8 @@ Moore().CheckOdin = False
 Moore().WriterRequires = []
 Moore().Simulation = True
 
-Moore().DDDBtag   = "{DDDB_VERSION}"
-Moore().CondDBtag = "{CONDB_VERSION}"
+Moore().DDDBtag   = "{DDDB_TAG}"
+Moore().CondDBtag = "{CONDDB_TAG}"
 
 Moore().EvtMax     = -1
 from GaudiConf import IOHelper
@@ -243,7 +243,7 @@ IOHelper('ROOT').inputFiles(['{MOOREL0_DATA}'],clear=True)
 #HistogramPersistencySvc().OutputFile = "{MOOREHLT1_ROOT}"
 Moore().outputFile = '{MOOREHLT1_DATA}'
 
-'''.format(MOOREHLT1_TCK=MOOREHLT1_TCK, COMPRESS=COMPRESS, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, MOOREL0_DATA=MOOREL0_DATA, MOOREHLT1_ROOT=MOOREHLT1_ROOT, MOOREHLT1_DATA=MOOREHLT1_DATA)
+'''.format(MOOREHLT1_TCK=MOOREHLT1_TCK, COMPRESS=COMPRESS, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, MOOREL0_DATA=MOOREL0_DATA, MOOREHLT1_ROOT=MOOREHLT1_ROOT, MOOREHLT1_DATA=MOOREHLT1_DATA)
     stage_list.append(
         {
             'name': 'Moore HLT1',
@@ -282,15 +282,15 @@ Moore().Split = 'Hlt2'
 Moore().CheckOdin = False
 Moore().WriterRequires = []
 Moore().Simulation = True
-Moore().DDDBtag   = "{DDDB_VERSION}"
-Moore().CondDBtag = "{CONDB_VERSION}"
+Moore().DDDBtag   = "{DDDB_TAG}"
+Moore().CondDBtag = "{CONDDB_TAG}"
 Moore().EvtMax = -1
 from GaudiConf import IOHelper
 IOHelper('ROOT').inputFiles(['{MOOREHLT1_DATA}'],clear=True)
 
 Moore().outputFile = '{MOOREHLT2_DATA}'
 
-'''.format(COMPRESS=COMPRESS, NOPIDTRIG=NOPIDTRIG, newTCKdir=os.path.dirname(NEWCONFIG), WORK_DIR=WORK_DIR, MOOREHLT2_TCK=MOOREHLT2_TCK, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, MOOREHLT1_DATA=MOOREHLT1_DATA, MOOREHLT2_DATA=MOOREHLT2_DATA)
+'''.format(COMPRESS=COMPRESS, NOPIDTRIG=NOPIDTRIG, newTCKdir=os.path.dirname(NEWCONFIG), WORK_DIR=WORK_DIR, MOOREHLT2_TCK=MOOREHLT2_TCK, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, MOOREHLT1_DATA=MOOREHLT1_DATA, MOOREHLT2_DATA=MOOREHLT2_DATA)
     stage_list.append(
         {
             'name': 'Moore HLT2',
@@ -314,8 +314,8 @@ if {NOPIDTRIG}:
     from Configurables import ConfigCDBAccessSvc
     ConfigCDBAccessSvc().File = '{NEWCONFIG}'
 
-LHCbApp().DDDBtag   = "{DDDB_VERSION}"
-LHCbApp().CondDBtag = "{CONDB_VERSION}"
+LHCbApp().DDDBtag   = "{DDDB_TAG}"
+LHCbApp().CondDBtag = "{CONDDB_TAG}"
 
 if {COMPRESS}:  # COMPRESS option set in generation script
     importOptions("$APPCONFIGOPTS/Persistency/Compression-ZLIB-1.py")
@@ -337,7 +337,7 @@ L0Conf.EnsureKnownTCK = False # not sure this is necessary
 FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
 
 
-'''.format(NOPIDTRIG=NOPIDTRIG, NEWCONFIG=NEWCONFIG, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, COMPRESS=COMPRESS, BOOLE_DATA=BOOLE_DATA, MOOREHLT2_DATA=MOOREHLT2_DATA, BRUNEL_DATA=BRUNEL_DATA, BRUNEL_ROOT=BRUNEL_ROOT)
+'''.format(NOPIDTRIG=NOPIDTRIG, NEWCONFIG=NEWCONFIG, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, COMPRESS=COMPRESS, BOOLE_DATA=BOOLE_DATA, MOOREHLT2_DATA=MOOREHLT2_DATA, BRUNEL_DATA=BRUNEL_DATA, BRUNEL_ROOT=BRUNEL_ROOT)
     stage_list.append(
         {
             'name': 'Brunel',
@@ -364,8 +364,8 @@ if {NOPIDTRIG}:
     from Configurables import ConfigCDBAccessSvc
     ConfigCDBAccessSvc().File = '{NEWCONFIG}'
 
-DaVinci().DDDBtag   = "{DDDB_VERSION}"
-DaVinci().CondDBtag = "{CONDB_VERSION}"
+DaVinci().DDDBtag   = "{DDDB_TAG}"
+DaVinci().CondDBtag = "{CONDDB_TAG}"
 DaVinci().Simulation = True
 DaVinci().HistogramFile = "{DAVINCI_ROOT}"
 DaVinci().EvtMax = -1
@@ -384,7 +384,7 @@ DumpFSR().AsciiFileName = "dumpfsr_check_output.txt"
 from GaudiConf import IOHelper
 IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
 # OutputStream("DstWriter").Output     =  "DATAFILE='PFN:{DAVINCI_DATA}' TYP='POOL_ROOTTREE' OPT='RECREATE'"  # Doesn't actually do anything
-'''.format(STRIPPING_VERSION=STRIPPING_VERSION, NOPIDTRIG=NOPIDTRIG, NEWCONFIG=NEWCONFIG, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, DAVINCI_ROOT=DAVINCI_ROOT, BRUNEL_DATA=BRUNEL_DATA, DAVINCI_DATA=DAVINCI_DATA)
+'''.format(STRIPPING_VERSION=STRIPPING_VERSION, NOPIDTRIG=NOPIDTRIG, NEWCONFIG=NEWCONFIG, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, DAVINCI_ROOT=DAVINCI_ROOT, BRUNEL_DATA=BRUNEL_DATA, DAVINCI_DATA=DAVINCI_DATA)
     stage_list.append(
         {
             'name': 'DaVinci',
@@ -412,13 +412,13 @@ smalltest = False
 MCtruthonly = False
 Lconly = False
 year = '2016'
-dbtag = '{DDDB_VERSION}'
-cdbtag = '{CONDB_VERSION}'
+dbtag = '{DDDB_TAG}'
+cdbtag = '{CONDDB_TAG}'
 condor_run = ['{DAVINCI_DATA}']
 tuplename = '{ALLSTUPLE_DATA}'
 newTCK = {NEWCONFIGorNone}
 restripped = False
-'''.format(DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, DAVINCI_DATA=DAVINCI_DATA, ALLSTUPLE_DATA=ALLSTUPLE_DATA, NEWCONFIGorNone='"{0}"'.format(NEWCONFIG) if NOPIDTRIG else None)
+'''.format(DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, DAVINCI_DATA=DAVINCI_DATA, ALLSTUPLE_DATA=ALLSTUPLE_DATA, NEWCONFIGorNone='"{0}"'.format(NEWCONFIG) if NOPIDTRIG else None)
     ALLSTUPLE_SCRIPT_CONTENT = None
     with open(TUPOTS, 'r') as f:
         ALLSTUPLE_SCRIPT_CONTENT = f.read()  # use pre-written options file rather than writing a new one
@@ -514,8 +514,8 @@ DaVinci().SkipEvents = 0
 DaVinci().PrintFreq = 1000
 DaVinci().EvtMax = -1
 DaVinci().InputType = "DST"
-DaVinci().DDDBtag   = "{DDDB_VERSION}"
-DaVinci().CondDBtag = "{CONDB_VERSION}"
+DaVinci().DDDBtag   = "{DDDB_TAG}"
+DaVinci().CondDBtag = "{CONDDB_TAG}"
 DaVinci().Simulation = True
 DaVinci().HistogramFile = "{RESTRIP_ROOT}"
 DaVinci().Lumi = False
@@ -531,7 +531,7 @@ MessageSvc().Format = "% F%60W%S%7W%R%T %0W%M"
 IOHelper().inputFiles(["{DAVINCI_DATA}"],clear=True)
 # OutputStream("DstWriter").Output     =  "DATAFILE='PFN:{RESTRIP_DATA}' TYP='POOL_ROOTTREE' OPT='RECREATE'"  # doesn't actually do anything
 
-'''.format(NOPIDTRIG=NOPIDTRIG, STRIPPING_VERSION=STRIPPING_VERSION, NEWCONFIG=NEWCONFIG, DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, DAVINCI_DATA=DAVINCI_DATA, RESTRIP_ROOT=RESTRIP_ROOT, RESTRIP_DATA=RESTRIP_DATA)
+'''.format(NOPIDTRIG=NOPIDTRIG, STRIPPING_VERSION=STRIPPING_VERSION, NEWCONFIG=NEWCONFIG, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, DAVINCI_DATA=DAVINCI_DATA, RESTRIP_ROOT=RESTRIP_ROOT, RESTRIP_DATA=RESTRIP_DATA)
     stage_list.append(
         {
             'name': 'restrip',
@@ -559,13 +559,13 @@ smalltest = False
 MCtruthonly = False
 Lconly = False
 year = '2016'
-dbtag = '{DDDB_VERSION}'
-cdbtag = '{CONDB_VERSION}'
+dbtag = '{DDDB_TAG}'
+cdbtag = '{CONDDB_TAG}'
 condor_run = ['{RESTRIP_DATA}']
 tuplename = '{TUPLE_DATA}'
 newTCK = {NEWCONFIGorNone}
 restripped = True
-'''.format(DDDB_VERSION=DDDB_VERSION, CONDB_VERSION=CONDB_VERSION, RESTRIP_DATA=RESTRIP_DATA, TUPLE_DATA=TUPLE_DATA, NEWCONFIGorNone='"{0}"'.format(NEWCONFIG) if NOPIDTRIG else None)
+'''.format(DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, RESTRIP_DATA=RESTRIP_DATA, TUPLE_DATA=TUPLE_DATA, NEWCONFIGorNone='"{0}"'.format(NEWCONFIG) if NOPIDTRIG else None)
     TUPLE_SCRIPT_CONTENT = None
     with open(TUPOTS, 'r') as f:
         TUPLE_SCRIPT_CONTENT = f.read()  # use pre-written options file rather than writing a new one
