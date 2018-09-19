@@ -5,6 +5,37 @@ import argparse
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in Generate_LHCb_MC_2016.py')
 
+# GEN_LEVEL choices, used in ChoicesInList and argument declaration below
+exclusive_choices = ['all', 'none']  # cannot have more than one of these and cannot use these with other_choices; set GEL_LEVEL to other_choices or [], respectively
+other_choices = ['gauss', 'boole', 'moorel0', 'moorehlt1', 'moorehlt2', 'brunel', 'davinci', 'allstuple', 'restrip', 'tuple', 'slim']
+valid_choices = exclusive_choices + other_choices
+
+
+class ChoicesInList(argparse.Action):
+    'based on https://stackoverflow.com/a/8624107/4655426'
+    def __call__(self, parser, args, values, option_string=None):
+        # -- ensure valid_choices
+        for v in values:
+            if v not in valid_choices:
+                raise parser.error('invalid choice of GEN_LEVEL {val}!\nValid choices are {vcs}'.format(val=v, vcs=valid_choices))
+        # -- ensure exclusive_choices
+        found = False
+        for ec in exclusive_choices:
+            if ec in values and found:
+                raise parser.error('cannot have more than one of {ecs} in GEN_LEVEL'.format(ecs=exclusive_choices))
+            elif ec in values:
+                found = True
+        if any(x in exclusive_choices for x in values) and any(x in other_choices for x in values):
+            raise parser.error('cannot have any {ecs} in GEN_LEVEL while also having any {ocs}!\nYou have {vs}'.format(ecs=exclusive_choices, ocs=other_choices, vs=values))
+        # -- handle 'all' and 'none'
+        if values == ['all']:
+            values = other_choices
+        elif values == ['none']:
+            values = []
+        
+        setattr(args, self.dest, values)
+
+
 # -- essential parameters -- #
 parser.add_argument('configfile', type=str,
                     help='')
@@ -28,8 +59,8 @@ debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
 
 # -- parameters for make_stage_list -- #
 # general
-parser.add_argument('--GEN_LEVEL', default='all',
-                    help='')
+parser.add_argument('--GEN_LEVEL', nargs='*', default=['all'], action=ChoicesInList, type=str.lower, choices=valid_choices,  # valid_choices is set in the ChoicesInList declaration above
+                    help='select what stages to run')
 stagegroup = parser.add_argument_group('general parameters used by stages')
 stagegroup.add_argument('--DDDB_TAG', default='dddb-20170721-3',)
 stagegroup.add_argument('--CONDDB_TAG', default='sim-20170721-2-vc-md100',)
@@ -204,7 +235,7 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
             'call_string': additional_pre_script + 'lb-run -c best --user-area /home/{USER}/cmtuser Gauss/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(USER=USER, GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
             'to_remove': [],
             'dataname': GAUSS_DATA,
-            'run': True,
+            'run': GAUSS_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
     )
@@ -251,7 +282,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'call_string': additional_pre_script + 'lb-run -c best Boole/{BOOLE_VERSION} gaudirun.py {BOOLE_SCRIPT_NAME}'.format(BOOLE_VERSION=BOOLE_VERSION, BOOLE_SCRIPT_NAME=BOOLE_SCRIPT_NAME),
             'to_remove': [GAUSS_DATA],
             'dataname': BOOLE_DATA,
-            'run': True,
+            'run': BOOLE_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
     )
@@ -303,7 +334,7 @@ L0App().outputFile = '{MOOREL0_DATA}'
             'call_string': additional_pre_script + 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREL0_SCRIPT_NAME}'.format(MOORE_VERSION=MOORE_VERSION, MOOREL0_SCRIPT_NAME=MOOREL0_SCRIPT_NAME),
             'to_remove': [BOOLE_DATA],
             'dataname': MOOREL0_DATA,
-            'run': True,
+            'run': MOOREL0_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
     )
@@ -354,7 +385,7 @@ Moore().outputFile = '{MOOREHLT1_DATA}'
             'call_string': additional_pre_script + 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT1_SCRIPT_NAME}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT1_SCRIPT_NAME=MOOREHLT1_SCRIPT_NAME),
             'to_remove': [MOOREL0_DATA],
             'dataname': MOOREHLT1_DATA,
-            'run': True,
+            'run': MOOREHLT1_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
     )
@@ -408,7 +439,7 @@ Moore().outputFile = '{MOOREHLT2_DATA}'
             'call_string': additional_pre_script + 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT2_SCRIPT_NAME}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT2_SCRIPT_NAME=MOOREHLT2_SCRIPT_NAME),
             'to_remove': [MOOREHLT1_DATA],
             'dataname': MOOREHLT2_DATA,
-            'run': True,
+            'run': MOOREHLT2_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
     )
@@ -460,7 +491,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'call_string': additional_pre_script + 'lb-run -c best Brunel/{BRUNEL_VERSION} gaudirun.py {BRUNEL_SCRIPT_NAME}'.format(BRUNEL_VERSION=BRUNEL_VERSION, BRUNEL_SCRIPT_NAME=BRUNEL_SCRIPT_NAME),
             'to_remove': [MOOREHLT2_DATA],
             'dataname': BRUNEL_DATA,
-            'run': True,
+            'run': BRUNEL_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
     )
@@ -512,7 +543,7 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_STRIPPING_VERSION} gaudirun.py {DAVINCI_SCRIPT_NAME}'.format(DAVINCI_STRIPPING_VERSION=DAVINCI_STRIPPING_VERSION, DAVINCI_SCRIPT_NAME=DAVINCI_SCRIPT_NAME),
             'to_remove': [BRUNEL_DATA],
             'dataname': DAVINCI_DATA,
-            'run': True,
+            'run': DAVINCI_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
     )
@@ -554,7 +585,7 @@ restripped = False
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} gaudirun.py {ALLSTUPLE_SCRIPT_NAME}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, ALLSTUPLE_SCRIPT_NAME=ALLSTUPLE_SCRIPT_NAME),
             'to_remove': [],  # bad idea to delete DST...
             'dataname': ALLSTUPLE_DATA,
-            'run': True,
+            'run': ALLSTUPLE_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
     )
@@ -669,7 +700,7 @@ IOHelper().inputFiles(["{DAVINCI_DATA}"],clear=True)
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_STRIPPING_VERSION} gaudirun.py {RESTRIP_SCRIPT_NAME}'.format(DAVINCI_STRIPPING_VERSION=DAVINCI_STRIPPING_VERSION, RESTRIP_SCRIPT_NAME=RESTRIP_SCRIPT_NAME),
             'to_remove': ['tmp_stripping_config.db', 'RestrippedMC.Bhadron.dst', 'RestrippedMC.BhadronCompleteEvent.dst', 'RestrippedMC.Leptonic.dst', 'RestrippedMC.CharmCompleteEvent.dst', 'RestrippedMC.Radiative.dst', 'RestrippedMC.Dimuon.dst'],  # do not delete initial DaVinci output, do delete extra streams (trying to stop their generation produced errors, but they aren't needed), do delete file created by shelve
             'dataname': RESTRIP_DATA,
-            'run': True,
+            'run': RESTRIP_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
     )
@@ -711,7 +742,7 @@ restripped = True
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} gaudirun.py {TUPLE_SCRIPT_NAME}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, TUPLE_SCRIPT_NAME=TUPLE_SCRIPT_NAME),
             'to_remove': [],  # bad idea to delete DST...
             'dataname': TUPLE_DATA,
-            'run': True,
+            'run': TUPLE_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
     )
@@ -744,7 +775,7 @@ restripped = True
             'call_string': additional_pre_script + 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} python {SLIM_SCRIPT_NAME} MC 16 --failgracefully --outfolder {SLIM_DATA} --input {TUPLE_DATA} X2LcLcTree/DecayTree --logfilename {SLIM_LOG}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, SLIM_SCRIPT_NAME=SLIM_SCRIPT_NAME, SLIM_DATA=SLIM_DATA, TUPLE_DATA=TUPLE_DATA, SLIM_LOG=SLIM_LOG),
             'to_remove': [],  # bad idea to delete tuple file...
             'dataname': SLIM_DATA,
-            'run': True,
+            'run': SLIM_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
     )
