@@ -1,5 +1,5 @@
 Executable = run_stages.py
-ConfigFile = /home/mwilkins/SU-lhcb-MC-gen/sample_config.py
+ConfigFile = /home/mwilkins/SU-lhcb-MC-gen/sample_configuration_files/sample_config_complex.py
 SignalName = test_condor
 EventType  = 28196040
 NumEvent   = 100
