@@ -93,19 +93,20 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('configfile', type=str,
                     help='')
-args = parser.parse_args()
+args = parser.parse_known_args()[0]  # abandon unknown args, assumed to be handled by configfile
 configfile = args.configfile
 
-SIGNAL_NAME     = load_source('SIGNAL_NAME', configfile).SIGNAL_NAME
-RUN_NUMBER      = load_source('RUN_NUMBER', configfile).RUN_NUMBER
-GEN_LEVEL       = load_source('GEN_LEVEL', configfile).GEN_LEVEL
-RUN_SYS         = load_source('RUN_SYS', configfile).RUN_SYS
-CLEANSTAGES     = load_source('CLEANSTAGES', configfile).CLEANSTAGES
-CLEANWORK       = load_source('CLEANWORK', configfile).CLEANWORK
-PRECLEANED      = load_source('PRECLEANED', configfile).PRECLEANED
-SOME_MISSING    = load_source('SOME_MISSING', configfile).SOME_MISSING
-WORK_DIR_EXISTS = load_source('WORK_DIR_EXISTS', configfile).WORK_DIR_EXISTS
-make_stage_list = load_source('make_stage_list', configfile).make_stage_list
+conf = load_source('conf', configfile)
+SIGNAL_NAME     = conf.SIGNAL_NAME
+RUN_NUMBER      = conf.RUN_NUMBER
+GEN_LEVEL       = conf.GEN_LEVEL
+RUN_SYS         = conf.RUN_SYS
+CLEANSTAGES     = conf.CLEANSTAGES
+CLEANWORK       = conf.CLEANWORK
+PRECLEANED      = conf.PRECLEANED
+SOME_MISSING    = conf.SOME_MISSING
+WORK_DIR_EXISTS = conf.WORK_DIR_EXISTS
+make_stage_list = conf.make_stage_list
 
 # -- Directories and files -- #
 BASE_NAME   = '%s_%d' % (SIGNAL_NAME, RUN_NUMBER)

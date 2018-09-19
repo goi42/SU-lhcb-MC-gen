@@ -6,6 +6,8 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in Generate_LHCb_MC_2016.py')
 
 # -- essential parameters -- #
+parser.add_argument('configfile', type=str,
+                    help='')
 parser.add_argument('--SIGNAL_NAME', default='TestProduction')
 parser.add_argument('--RUN_NUMBER', type=int, default=300000)
 parser.add_argument('--GEN_LEVEL', default='all',)
@@ -84,7 +86,7 @@ slimgroup = parser.add_argument_group('Slim parameters')
 slimgroup.add_argument('--SLIMOPTS', default=['/home/mwilkins/LcLc/analysis/prep_files.py', '/home/mwilkins/LcLc/analysis/fileprep'], nargs=2,
                        help='python script to-be-copied for tuple slimming and a directory with modules to-be-imported')
 
-args = parser.parse_args([])
+args = parser.parse_args()
 
 # -- evaluate arguments -- #
 for arg in vars(args):
