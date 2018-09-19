@@ -8,7 +8,7 @@ from moveFiles import moveFiles, runMoveFilesContinuously, parser  # some args o
 
 parser.description = '''\
 Run specified stages of run_stages.py by transferring files from store_sys to run_sys, running, then moving them back.
-Arguments specific to this script are in the 'runastage options' group.
+Arguments specific to this script are in the 'submit_to_condor options' group.
 This script uses a number of arguments from moveFiles.py (with some changes to default values; use --help), but it overrides some of them.
 (minallowed, maxallowed, justdata, lessthan, copyfrom, waittilnotrunning are overriden.
 lessthan is overridden for initial movement and for the final submission chunk (set to 0).
@@ -16,21 +16,21 @@ copyfrom is only overriden for the move back (set to None) (therefore, specifyin
 waittilnotrunning is only overridden for the initial movement (though it doesn't actually matter since justdata gets used anyway).)
 '''
 parser.set_defaults(interval=240, maxwaittime=0, waitcheckdelay=60, lessthan=50, waittostart=True)
-runastagegroup = parser.add_argument_group('runastage options')
-runastagegroup.add_argument('stages',
-                            help='single string, with desired stages separated by spaces')
-runastagegroup.add_argument('--chunks_of', type=int, default=1000,
-                            help='how many jobs to move and submit at a time')
-runastagegroup.add_argument('--donotmovefrom', dest='transfilesfrom', action='store_false',
-                            help='flag to prevent files from being moved from store_sys back to run_sys (default is misleading)')
-runastagegroup.add_argument('--donotmoveto', dest='transfilesto', action='store_false',
-                            help='flag to prevent files from being moved from run_sys to store_sys (default is misleading)')
-runastagegroup.add_argument('--setlowest', type=int, default=None,
-                            help='manually set lowest (inclusive) job number instead of letting the script find it')
-runastagegroup.add_argument('--sethighest', type=int, default=None,
-                            help='manually set highest (exclusive) job number instead of letting the script find it')
-runastagegroup.add_argument('--extraopts', default=None,
-                            help='extra parameters to pass to run_stages.py as though from commandline, e.g., "--noCOMPRESS --noREDECAY" (--PRECLEANED and --SOME_MISSING are always used)')
+submit_to_condorgroup = parser.add_argument_group('submit_to_condor options')
+submit_to_condorgroup.add_argument('stages',
+                                   help='single string, with desired stages separated by spaces')
+submit_to_condorgroup.add_argument('--chunks_of', type=int, default=1000,
+                                   help='how many jobs to move and submit at a time')
+submit_to_condorgroup.add_argument('--donotmovefrom', dest='transfilesfrom', action='store_false',
+                                   help='flag to prevent files from being moved from store_sys back to run_sys (default is misleading)')
+submit_to_condorgroup.add_argument('--donotmoveto', dest='transfilesto', action='store_false',
+                                   help='flag to prevent files from being moved from run_sys to store_sys (default is misleading)')
+submit_to_condorgroup.add_argument('--setlowest', type=int, default=None,
+                                   help='manually set lowest (inclusive) job number instead of letting the script find it')
+submit_to_condorgroup.add_argument('--sethighest', type=int, default=None,
+                                   help='manually set highest (exclusive) job number instead of letting the script find it')
+submit_to_condorgroup.add_argument('--extraopts', default=None,
+                                   help='extra parameters to pass to run_stages.py as though from commandline, e.g., "--noCOMPRESS --noREDECAY" (--PRECLEANED and --SOME_MISSING are always used)')
 args = parser.parse_args()
 
 stages = args.stages
