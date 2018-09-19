@@ -125,7 +125,7 @@ for d in (DATA_DIR, LOG_DIR, WORK_DIR):
         os.makedirs(d)
 os.chdir(WORK_DIR)  # passed references in this script are absolute, but the output is generally sent to the current working directory
 
-# -- redirect stdout and stderr
+# -- redirect stdout and stderr -- #
 capture_stdouterr(GENERAL_LOG)
 
 # -- write parameter values to the log -- #
