@@ -1,7 +1,9 @@
 #!/usr/bin/env python2
 import os
-from os.path import join as opj, abspath
+from os.path import join as opj, abspath, basename
 import argparse
+import __main__
+
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in run_stages.py')
 
@@ -120,7 +122,8 @@ slimgroup.add_argument('--SLIMOPTS', default=['/home/mwilkins/LcLc/analysis/prep
                        help='python script to-be-copied for tuple slimming and a directory with modules to-be-imported')
 
 # -- evaluate and check arguments -- #
-args = parser.parse_args()
+args = parser.parse_args() if basename(__main__.__file__) == 'run_stages.py' else parser.parse_known_args()[0]
+
 
 for arg in vars(args):
     exec('{ARG} = args.{ARG}'.format(ARG=arg))
