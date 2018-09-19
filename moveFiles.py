@@ -23,9 +23,9 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='move completed MC jobs to final destination. Assumes CLEAN_UP. Will ignore a given output if log/ but no data/')
 parser.add_argument('--signal_name', default='X2LcLc',
                     help='name used to sort output')
-parser.add_argument('--old_sys', default='/data2',
+parser.add_argument('--run_sys', default='/data2',
                     help='where files are created')
-parser.add_argument('--new_sys', default='/data5',
+parser.add_argument('--store_sys', default='/data5',
                     help='where files should end up')
 parser.add_argument('--user', default=getpass.getuser(),
                     help='username (used to locate "work", "data", and "log" directories)')
@@ -86,7 +86,7 @@ def cpr(src, dst):
         copy(src, dst)
 
 
-def moveFiles(signal_name=args.signal_name, old_sys=args.old_sys, new_sys=args.new_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed, justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, waittilnotrunning=args.waittilnotrunning):
+def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed, justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, waittilnotrunning=args.waittilnotrunning):
     '''justdata changes behavior in complicated ways--pay attention
     '''
     print '----------------moveFiles-----------------'
@@ -100,7 +100,7 @@ def moveFiles(signal_name=args.signal_name, old_sys=args.old_sys, new_sys=args.n
     thingstr = 'move' if copyfrom is None else 'copy'
     
     # -- print program intentions
-    print 'will {THING} files with signal_name {NAME} from {OLD} to {NEW}'.format(THING=thingstr, NAME=signal_name if allcmNone else cmfrom, OLD=old_sys, NEW=new_sys),
+    print 'will {THING} files with signal_name {NAME} from {OLD} to {NEW}'.format(THING=thingstr, NAME=signal_name if allcmNone else cmfrom, OLD=run_sys, NEW=store_sys),
     if not allcmNone:
         print 'under signal_name {NAME}'.format(NAME=signal_name),
     print 'for user {USER}'.format(USER=user)
@@ -110,16 +110,16 @@ def moveFiles(signal_name=args.signal_name, old_sys=args.old_sys, new_sys=args.n
     wkdir_base = opj(user, 'work', signal_name)
     dtdir_base = opj(user, 'data', signal_name)
     lgdir_base = opj(user, 'log', signal_name)
-    wkdir_old = opj(old_sys, wkdir_base)
-    dtdir_old = opj(old_sys, dtdir_base)
-    lgdir_old = opj(old_sys, lgdir_base)
+    wkdir_old = opj(run_sys, wkdir_base)
+    dtdir_old = opj(run_sys, dtdir_base)
+    lgdir_old = opj(run_sys, lgdir_base)
     if not allcmNone:
         wkdir_old = wkdir_old.replace(signal_name, cmfrom)
         dtdir_old = dtdir_old.replace(signal_name, cmfrom)
         lgdir_old = lgdir_old.replace(signal_name, cmfrom)
-    wkdir_new = opj(new_sys, wkdir_base)
-    dtdir_new = opj(new_sys, dtdir_base)
-    lgdir_new = opj(new_sys, lgdir_base)
+    wkdir_new = opj(store_sys, wkdir_base)
+    dtdir_new = opj(store_sys, dtdir_base)
+    lgdir_new = opj(store_sys, lgdir_base)
     
     def dirtruthtest(d):
         '''checks if d exists as a subdirectory in dtdir_old. if not justdata, also checks that it is in lgdir_old and not in wkdir_old
