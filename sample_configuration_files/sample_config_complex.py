@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 import os
-from os.path import join as opj
+from os.path import join as opj, abspath
 import argparse
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in run_stages.py')
@@ -37,7 +37,7 @@ class ChoicesInList(argparse.Action):
 
 
 # -- essential parameters -- #
-parser.add_argument('configfile', type=str,
+parser.add_argument('configfile', type=abspath,
                     help='')
 parser.add_argument('--SIGNAL_NAME', default='TestProduction')
 parser.add_argument('--RUN_NUMBER', type=int, default=300000)

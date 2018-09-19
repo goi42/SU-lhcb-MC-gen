@@ -1,7 +1,7 @@
 from shutil import move, rmtree
 from subprocess import call
 import os
-from os.path import join as opj
+from os.path import join as opj, abspath
 from time import sleep
 import progressbar
 from moveFiles import moveFiles, runMoveFilesContinuously, parser  # some args overridden--see below; note that store_sys is interpreted as where files begin and end in this script; run_sys is where they are moved to run with run_stages.py
@@ -18,7 +18,7 @@ waittilnotrunning is only overridden for the initial movement (though it doesn't
 '''
 parser.set_defaults(interval=240, maxwaittime=0, waitcheckdelay=60, lessthan=50, waittostart=True)
 submit_to_condorgroup = parser.add_argument_group('submit_to_condor options')
-submit_to_condorgroup.add_argument('configfile',
+submit_to_condorgroup.add_argument('configfile', type=abspath,
                                    help='the configfile you want run_stages to use')
 submit_to_condorgroup.add_argument('--chunks_of', type=int, default=1000,
                                    help='how many jobs to move and submit at a time')

@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 import sys
 import os
-from os.path import join as opj
+from os.path import join as opj, abspath
 from copy import copy
 import shutil
 import datetime
@@ -91,7 +91,7 @@ NODE = socket.gethostname()
 # -- set or pass job parameters -- #
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('configfile', type=str,
+parser.add_argument('configfile', type=abspath,
                     help='')
 args = parser.parse_known_args()[0]  # abandon unknown args, assumed to be handled by configfile
 configfile = args.configfile
