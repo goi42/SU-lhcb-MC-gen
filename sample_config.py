@@ -44,11 +44,12 @@ parser.add_argument('--RUN_NUMBER', type=int, default=300000)
 parser.add_argument('--RUN_SYS', default='/data2',
                     help='system to run on')
 cleangroup = parser.add_argument_group('cleaning options')
-cleangroup.add_argument('--CLEAN_UP', choices=['CLEANSTAGES', 'CLEANWORK', 'both', 'none'], default='both',
-                        help='''CLEANSTAGES deletes data from earlier stages as it goes.
-                             CLEANWORK moves files out of work directory.''')
+cleangroup.add_argument('--noCLEANSTAGES', dest='CLEANSTAGES', action='store_false',
+                        help='deletes data from earlier stages as it goes.')
+cleangroup.add_argument('--noCLEANWORK', dest='CLEANWORK', action='store_false',
+                        help='moves files out of work directory.')
 cleangroup.add_argument('--PRECLEANED', action='store_true',
-                        help='if this script has already been run, you can specify this argument so that it moves appropriate files to the work directory first')
+                        help='if this script has already been run with CLEANWORK active, you can specify this argument so that it moves appropriate files to the work directory first')
 cleangroup.add_argument('--SOME_MISSING', action='store_true',
                         help='if running a later stage, you may specify this argument to let the script terminate without errors if the input files are missing')
 debuggroup = parser.add_argument_group('debugging options')
@@ -123,9 +124,6 @@ args = parser.parse_args()
 
 for arg in vars(args):
     exec('{ARG} = args.{ARG}'.format(ARG=arg))
-
-CLEANSTAGES  = True if any(CLEAN_UP == x for x in ['CLEANSTAGES', 'both']) else False
-CLEANWORK    = True if any(CLEAN_UP == x for x in ['CLEANWORK', 'both']) else False
 
 if NOPIDTRIG and not all([MOOREHLT2_TCK == '0x6139160F', os.path.basename(NEWCONFIG) == 'config.cdb']):
     raise parser.error('NOPIDTRIG uses a config.cdb generated with certain assumptions. See script.')
