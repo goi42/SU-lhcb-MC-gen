@@ -20,7 +20,7 @@ class AtLeastZero(argparse.Action):
 
 
 parser = argparse.ArgumentParser(
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='move completed MC jobs to final destination. Assumes CLEAN_UP. Will ignore a given output if log/ but no data/')
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='move completed MC jobs to final destination. Assumes CLEANWORK was used in run_stages.py. Will ignore a given output if log/ but no data/')
 parser.add_argument('signal_name',
                     help='name used to sort output')
 parser.add_argument('--run_sys', default='/data2',
