@@ -3,7 +3,7 @@ import os
 from os.path import join as opj
 import argparse
 parser = argparse.ArgumentParser(
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in Generate_LHCb_MC_2016.py')
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in run_stages.py')
 
 # GEN_LEVEL choices, used in ChoicesInList and argument declaration below
 exclusive_choices = ['all', 'none']  # cannot have more than one of these and cannot use these with other_choices; set GEL_LEVEL to other_choices or [], respectively

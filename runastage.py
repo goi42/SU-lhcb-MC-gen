@@ -7,7 +7,7 @@ import progressbar
 from moveFiles import moveFiles, runMoveFilesContinuously, parser  # some args overridden--see below; note that new_sys is interpreted as where files begin and end in this script; old_sys is where they are moved to run with Generate_*.py
 
 parser.description = '''\
-Run specified stages of Generate_LHCb_MC_2016.py by transferring files from new_sys to old_sys, running, then moving them back.
+Run specified stages of run_stages.py by transferring files from new_sys to old_sys, running, then moving them back.
 This script uses a number of arguments from moveFiles.py, but it overrides some of them.
 (minallowed, maxallowed, justdata, lessthan, copyfrom, waittilnotrunning are overriden.
 lessthan is overridden for initial movement and for the final submission chunk (set to 0).
@@ -30,9 +30,9 @@ runastagegroup.add_argument('--setlowest', type=int, default=None,
 runastagegroup.add_argument('--sethighest', type=int, default=None,
                             help='manually set highest (exclusive) job number instead of letting the script find it')
 runastagegroup.add_argument('--GENLOGAPP', default='',
-                            help='GENLOGAPP parameter to pass to Generate_LHCb_MC_2016.py')
+                            help='GENLOGAPP parameter to pass to run_stages.py')
 runastagegroup.add_argument('--extraopts', default=None,
-                            help='extra parameters to pass to Generate_LHCb_MC_2016.py as though from commandline, e.g., "--noCOMPRESS --noREDECAY" (--PRECLEANED and --SOME_MISSING are always used)')
+                            help='extra parameters to pass to run_stages.py as though from commandline, e.g., "--noCOMPRESS --noREDECAY" (--PRECLEANED and --SOME_MISSING are always used)')
 args = parser.parse_args()
 
 stages = args.stages
@@ -76,7 +76,7 @@ for minnum in looprange:
         if args.extraopts:
             argstring += ' ' + args.extraopts
         f.write('''\
-Executable = Generate_LHCb_MC_2016.py
+Executable = run_stages.py
 SignalName = {jobname}
 EventType  = 28196040
 NumEvent   = 100
