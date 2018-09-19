@@ -4,7 +4,7 @@ import os
 from os.path import join as opj
 from time import sleep
 import progressbar
-from moveFiles import moveFiles, runMoveFilesContinuously, parser  # some args overridden--see below; note that store_sys is interpreted as where files begin and end in this script; run_sys is where they are moved to run with Generate_*.py
+from moveFiles import moveFiles, runMoveFilesContinuously, parser  # some args overridden--see below; note that store_sys is interpreted as where files begin and end in this script; run_sys is where they are moved to run with run_stages.py
 
 parser.description = '''\
 Run specified stages of run_stages.py by transferring files from store_sys to run_sys, running, then moving them back.
