@@ -217,7 +217,7 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
     return endstep()
     
     
-def runMoveFilesContinuously(user=args.user, interval=args.interval, MaxWaitTime=args.maxwaittime, waittostart=args.waittostart, waitcheckdelay=args.waitcheckdelay, *largs, **kwargs):
+def runMoveFilesContinuously(user=args.user, interval=args.interval, maxwaittime=args.maxwaittime, waittostart=args.waittostart, waitcheckdelay=args.waitcheckdelay, *largs, **kwargs):
     '''runs moveFiles(user=user, *largs, **kwargs) continuously (see parser description and help)
     '''
     import time
@@ -227,11 +227,11 @@ def runMoveFilesContinuously(user=args.user, interval=args.interval, MaxWaitTime
         return str(tm).split('.')[0]
     
     starttime = datetime.datetime.now()
-    endtime = starttime + datetime.timedelta(seconds=MaxWaitTime) if MaxWaitTime else None
+    endtime = starttime + datetime.timedelta(seconds=maxwaittime) if maxwaittime else None
     
     print 'starting at {}'.format(starttime)
     print 'will run moveFiles continuously until finished',
-    print 'or until {}'.format(endtime) if MaxWaitTime else ''
+    print 'or until {}'.format(endtime) if maxwaittime else ''
     
     done = False  # has moveFiles finished?
     jobs_started = False if waittostart else True  # have any jobs started running?
@@ -240,8 +240,8 @@ def runMoveFilesContinuously(user=args.user, interval=args.interval, MaxWaitTime
             done = moveFiles(user=user, *largs, **kwargs)
         if not done:
             now = datetime.datetime.now()
-            if MaxWaitTime and now >= endtime:
-                print 'MaxWaitTime reached at {}'.format(now)
+            if maxwaittime and now >= endtime:
+                print 'maxwaittime reached at {}'.format(now)
                 if not jobs_started:
                     print 'Something is wrong. Why have the jobs not started?'
                 return False
@@ -265,7 +265,7 @@ def runMoveFilesContinuously(user=args.user, interval=args.interval, MaxWaitTime
             waited = now - starttime
             nexttime = now + ntdelt
             print 'Have waited {}. It is now {}. Will try again after {} at {}.'.format(chopd(waited), chopd(now), chopd(ntdelt), chopd(nexttime)),
-            print 'Will end after {}.'.format(chopd(endtime)) if MaxWaitTime else 'No endtime set.'
+            print 'Will end after {}.'.format(chopd(endtime)) if maxwaittime else 'No endtime set.'
             time.sleep(ntdelt.total_seconds())
     
     print 'finished at {}'.format(datetime.datetime.now())
