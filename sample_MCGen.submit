@@ -7,7 +7,6 @@ FirstEvent = 1
 StartRun   = 100000
 RunNumber  = $$([$(StartRun)+$(process)])
 Arguments  = $(ConfigFile) --SIGNAL_NAME $(SignalName) --EVENT_TYPE $(EventType) --RUN_NUMBER $(RunNumber) --FIRST_EVENT $(FirstEvent) --NUM_EVENT $(NumEvent)
+# be very careful when/if not using Error...
 Error      = error_$(SignalName)_$(RunNumber)_$(cluster)_$(process).log
-# be very careful if not using this...
-# Requirements = target.name =!= 'wn-13-207.lhcb.phy.syr.edu'
 Queue 10
