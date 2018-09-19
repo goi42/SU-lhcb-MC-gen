@@ -92,13 +92,13 @@ for minnum in looprange:
             raise Exception('problem with moveFiles. [{}, {})'.format(minnum, maxnum))
     
     print 'writing condor_submit file...'
-    submissionfilename = incfilename('MCGen.submit')
+    submissionfilename = incfilename('MCGen_{}.submit'.format(signal_name))
     with open(submissionfilename, 'w') as f:
         f.write('Executable = run_stages.py\n')
         f.write('ConfigFile = {}\n'.format(args.configfile))
         f.write('StartRun   = {}\n'.format(minnum))
         f.write('RunNumber  = $$([$(StartRun)+$(process)])\n')
-        f.write('Arguments  = $(ConfigFile) --RUN_NUMBER $(RunNumber) --PRECLEANED --SOME_MISSING {}\n'.format(args_for_configfile))
+        f.write('Arguments  = $(ConfigFile) --SIGNAL_NAME {} --RUN_NUMBER $(RunNumber) --PRECLEANED --SOME_MISSING {}\n'.format(args.signal_name, args_for_configfile))
         f.write('Queue {}\n'.format(args.chunks_of))
     
     print 'submitting jobs...'
