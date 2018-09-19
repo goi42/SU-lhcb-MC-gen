@@ -85,11 +85,11 @@ for minnum in looprange:
     submissionfilename = incfilename('MCGen.submit')
     with open(submissionfilename, 'w') as f:
         f.write('Executable = run_stages.py\n')
-        f.write('ConfigFile = {0}\n'.format(args.configfile))
-        f.write('StartRun   = {0}\n'.format(minnum))
+        f.write('ConfigFile = {}\n'.format(args.configfile))
+        f.write('StartRun   = {}\n'.format(minnum))
         f.write('RunNumber  = $$([$(StartRun)+$(process)])\n')
         f.write('Arguments  = $(ConfigFile) --RUN_NUMBER $(RunNumber) --PRECLEANED --SOME_MISSING\n')
-        f.write('Queue {0}\n'.format(args.chunks_of))
+        f.write('Queue {}\n'.format(args.chunks_of))
     
     print 'submitting jobs...'
     succeeded = 0 == call(['condor_submit {}'.format(submissionfilename)], shell=True)  # returns 0 if successful
