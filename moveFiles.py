@@ -59,7 +59,7 @@ contgroup.add_argument('--waittostart', action='store_true',
                        help='will wait for jobs to start before initial call to moveFiles\nNOTE: this function only checks whether the USER has ANY jobs running')
 contgroup.add_argument('--waitcheckdelay', default=1, type=float,
                        help='how long to wait between checks in seconds if waittostart set')
-args = parser.parse_args() if IsMain else parser.parse_args(args=[])
+args = parser.parse_args() if IsMain else parser.parse_args(args=['DUMMYSIGNALNAME'])
 
 
 def nojobsrunning(user):
