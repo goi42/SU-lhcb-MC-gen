@@ -24,15 +24,15 @@ parser = argparse.ArgumentParser(
 parser.add_argument('signal_name',
                     help='name used to sort output')
 parser.add_argument('--run_sys', default='/data2',
-                    help='where files are created')
+                    help='system where files are created')
 parser.add_argument('--store_sys', default='/data6',
-                    help='where files should end up')
+                    help='system where files should be stored')
 parser.add_argument('--user', default=getpass.getuser(),
                     help='username (used to locate "work", "data", and "log" directories)')
 parser.add_argument('--minallowed', default=None, type=int,
-                    help='minimum allowed subdirectory, inclusive')
+                    help='minimum allowed subdirectory number, inclusive')
 parser.add_argument('--maxallowed', default=None, type=int,
-                    help='maximum allowed subdirectory, exclusive')
+                    help='maximum allowed subdirectory number, exclusive')
 parser.add_argument('--waittilnotrunning', action='store_true',
                     help='''If this flag is set, moveFiles will not return True just because the work directories are missing.
                     This can be useful if there are other jobs running for the user that might delay these jobs from starting.
@@ -43,18 +43,18 @@ parser.add_argument('--justdata', action='store_true',
                     help='option to just move data without checking work directories or moving log directories or checking running jobs')
 f = parser.add_mutually_exclusive_group()  # ensure copyfrom and movefrom are not both set
 f.add_argument('--copyfrom', default=None,
-               help='option to copy files from an old name instead of moving them. parameter should be the signal_name for the original run.')
+               help='option to copy files from an old name instead of moving them. parameter should be the signal_name for the original run. (signal_name will be name these files end up with.)')
 f.add_argument('--movefrom', default=None,
-               help='option to move files from an old name to a new name. parameter should be the signal_name for the original run.')
+               help='option to move files from an old name to a new name. parameter should be the signal_name for the original run. (signal_name will be name these files end up with.)')
 contgroup = parser.add_argument_group('arguments for running continuously')
 contgroup.add_argument('--continuous', action='store_true',
-                       help='runs over and over at specified interval until WORK_DIR is empty or MaxWaitTime exceeded')
+                       help='runs over and over at specified interval until WORK_DIR is empty or maxwaittime exceeded')
 contgroup.add_argument('--lessthan', default=0, type=int, action=AtLeastZero,
                        help='if there are fewer jobs than this running for the user, moveFiles returns True (and runMoveFilesContinuously starts the next iteration); a value of 0 ignores this')
 contgroup.add_argument('--interval', type=float, default=1800,
                        help='time to wait (in seconds) if --continuous used')
 contgroup.add_argument('--maxwaittime', default=0, type=float,
-                       help='time after which to give up if --continuous used and WORK_DIR not empty; will not give up by default')
+                       help='time after which to give up (in seconds) if --continuous used and WORK_DIR not empty; will not give up by default')
 contgroup.add_argument('--waittostart', action='store_true',
                        help='will wait for jobs to start before initial call to moveFiles\nNOTE: this function only checks whether the USER has ANY jobs running')
 contgroup.add_argument('--waitcheckdelay', default=1, type=float,
