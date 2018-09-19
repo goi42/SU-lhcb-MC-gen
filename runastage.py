@@ -11,7 +11,7 @@ Run specified stages of run_stages.py by transferring files from new_sys to old_
 This script uses a number of arguments from moveFiles.py, but it overrides some of them.
 (minallowed, maxallowed, justdata, lessthan, copyfrom, waittilnotrunning are overriden.
 lessthan is overridden for initial movement and for the final submission chunk (set to 0).
-copyfrom is only overriden for the move back (set to None) (therefore, specifying copyfrom copies from new_sys to old_sys but then moves them from new_sys to old_sys under jobname).
+copyfrom is only overriden for the move back (set to None) (therefore, specifying copyfrom copies from new_sys to old_sys but then moves them from new_sys to old_sys under signal_name).
 waittilnotrunning is only overridden for the initial movement (though it doesn't actually matter since justdata gets used anyway).)
 Arguments specific to this script are in the 'runastage options' group.
 '''
@@ -36,7 +36,7 @@ runastagegroup.add_argument('--extraopts', default=None,
 args = parser.parse_args()
 
 stages = args.stages
-startpath = '{start_sys}/mwilkins/data/{jobname}/'.format(start_sys=args.new_sys if args.transfilesfrom else args.old_sys, jobname=args.jobname if args.copyfrom is None else args.copyfrom)
+startpath = '{start_sys}/mwilkins/data/{signal_name}/'.format(start_sys=args.new_sys if args.transfilesfrom else args.old_sys, signal_name=args.signal_name if args.copyfrom is None else args.copyfrom)
 
 if all([args.setlowest, args.sethighest]):
     intlistdirs = range(args.setlowest, args.sethighest)
@@ -63,12 +63,12 @@ for minnum in looprange:
     
     if args.transfilesfrom:
         print 'moving files from {} to {}...'.format(args.new_sys, args.old_sys)
-        succeeded = moveFiles(new_sys=args.old_sys, old_sys=args.new_sys, minallowed=minnum, maxallowed=maxnum, justdata=True, waittilnotrunning=False, jobname=args.jobname, user=args.user, lessthan=args.lessthan, copyfrom=args.copyfrom)  # returns True when done
+        succeeded = moveFiles(new_sys=args.old_sys, old_sys=args.new_sys, minallowed=minnum, maxallowed=maxnum, justdata=True, waittilnotrunning=False, signal_name=args.signal_name, user=args.user, lessthan=args.lessthan, copyfrom=args.copyfrom)  # returns True when done
         if not succeeded:
             raise Exception('problem with moveFiles. [{}, {})'.format(minnum, maxnum))
     
     print 'writing condor_submit file...'
-    submissionfilename = 'MCGen_{}_{}.submit'.format(stages.replace(' ', '-'), args.jobname)
+    submissionfilename = 'MCGen_{}_{}.submit'.format(stages.replace(' ', '-'), args.signal_name)
     with open(submissionfilename, 'w') as f:
         argstring = '--SIGNAL_NAME $(SignalName) --EVENT_TYPE $(EventType) --RUN_NUMBER $(RunNumber) --FIRST_EVENT $(FirstEvent) --NUM_EVENT $(NumEvent) --GEN_LEVEL {stages} --PRECLEANED --SOME_MISSING'.format(stages=stages)
         if args.GENLOGAPP:
@@ -77,7 +77,7 @@ for minnum in looprange:
             argstring += ' ' + args.extraopts
         f.write('''\
 Executable = run_stages.py
-SignalName = {jobname}
+SignalName = {signal_name}
 EventType  = 28196040
 NumEvent   = 100
 FirstEvent = 1
@@ -85,7 +85,7 @@ StartRun   = {minnum}
 RunNumber  = $$([$(StartRun)+$(process)])
 Arguments  = {argstring}
 Queue {chunks_of}
-'''.format(jobname=args.jobname, minnum=minnum, argstring=argstring, chunks_of=args.chunks_of))
+'''.format(signal_name=args.signal_name, minnum=minnum, argstring=argstring, chunks_of=args.chunks_of))
     
     print 'submitting jobs...'
     succeeded = 0 == call(['condor_submit {}'.format(submissionfilename)], shell=True)  # returns 0 if successful
@@ -95,7 +95,7 @@ Queue {chunks_of}
     if args.transfilesto:
         print 'moving files back...'
         lt = 0 if minnum == looprange[-1] else args.lessthan
-        succeeded = runMoveFilesContinuously(lessthan=lt, justdata=False, minallowed=None, maxallowed=None, copyfrom=None, jobname=args.jobname, old_sys=args.old_sys, new_sys=args.new_sys, user=args.user, interval=args.interval, MaxWaitTime=args.maxwaittime, waittostart=args.waittostart, waitcheckdelay=args.waitcheckdelay, waittilnotrunning=args.waittilnotrunning, )  # returns True when done
+        succeeded = runMoveFilesContinuously(lessthan=lt, justdata=False, minallowed=None, maxallowed=None, copyfrom=None, signal_name=args.signal_name, old_sys=args.old_sys, new_sys=args.new_sys, user=args.user, interval=args.interval, MaxWaitTime=args.maxwaittime, waittostart=args.waittostart, waitcheckdelay=args.waitcheckdelay, waittilnotrunning=args.waittilnotrunning, )  # returns True when done
         if not succeeded:
             raise Exception('problem with runMoveFilesContinuously. [{}, {})'.format(minnum, maxnum))
 print '----------------done-----------------'

@@ -21,7 +21,7 @@ class AtLeastZero(argparse.Action):
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='move completed MC jobs to final destination. Assumes CLEAN_UP. Will ignore a given output if log/ but no data/')
-parser.add_argument('--jobname', default='X2LcLc',
+parser.add_argument('--signal_name', default='X2LcLc',
                     help='name used to sort output')
 parser.add_argument('--old_sys', default='/data2',
                     help='where files are created')
@@ -41,9 +41,9 @@ parser.add_argument('--waittilnotrunning', action='store_true',
                     ''')
 f = parser.add_mutually_exclusive_group()  # ensure copyfrom and movefrom are not both set
 f.add_argument('--copyfrom', default=None,
-               help='option to copy files from an old name instead of moving them. parameter should be the jobname for the original run.')
+               help='option to copy files from an old name instead of moving them. parameter should be the signal_name for the original run.')
 f.add_argument('--movefrom', default=None,
-               help='option to move files from an old name to a new name. parameter should be the jobname for the original run.')
+               help='option to move files from an old name to a new name. parameter should be the signal_name for the original run.')
 g = parser.add_mutually_exclusive_group()
 g.add_argument('--justdata', action='store_true',
                help='option to just move data without checking work directories or moving log directories or checking running jobs')
@@ -86,7 +86,7 @@ def cpr(src, dst):
         copy(src, dst)
 
 
-def moveFiles(jobname=args.jobname, old_sys=args.old_sys, new_sys=args.new_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed, justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, waittilnotrunning=args.waittilnotrunning):
+def moveFiles(signal_name=args.signal_name, old_sys=args.old_sys, new_sys=args.new_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed, justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, waittilnotrunning=args.waittilnotrunning):
     '''justdata changes behavior in complicated ways--pay attention
     '''
     print '----------------moveFiles-----------------'
@@ -100,23 +100,23 @@ def moveFiles(jobname=args.jobname, old_sys=args.old_sys, new_sys=args.new_sys, 
     thingstr = 'move' if copyfrom is None else 'copy'
     
     # -- print program intentions
-    print 'will {THING} files with jobname {NAME} from {OLD} to {NEW}'.format(THING=thingstr, NAME=jobname if allcmNone else cmfrom, OLD=old_sys, NEW=new_sys),
+    print 'will {THING} files with signal_name {NAME} from {OLD} to {NEW}'.format(THING=thingstr, NAME=signal_name if allcmNone else cmfrom, OLD=old_sys, NEW=new_sys),
     if not allcmNone:
-        print 'under jobname {NAME}'.format(NAME=jobname),
+        print 'under signal_name {NAME}'.format(NAME=signal_name),
     print 'for user {USER}'.format(USER=user)
     if any(x is not None for x in [minallowed, maxallowed]):
         print 'subdirs [{}, {})'.format(minallowed, maxallowed)
     
-    wkdir_base = opj(user, 'work', jobname)
-    dtdir_base = opj(user, 'data', jobname)
-    lgdir_base = opj(user, 'log', jobname)
+    wkdir_base = opj(user, 'work', signal_name)
+    dtdir_base = opj(user, 'data', signal_name)
+    lgdir_base = opj(user, 'log', signal_name)
     wkdir_old = opj(old_sys, wkdir_base)
     dtdir_old = opj(old_sys, dtdir_base)
     lgdir_old = opj(old_sys, lgdir_base)
     if not allcmNone:
-        wkdir_old = wkdir_old.replace(jobname, cmfrom)
-        dtdir_old = dtdir_old.replace(jobname, cmfrom)
-        lgdir_old = lgdir_old.replace(jobname, cmfrom)
+        wkdir_old = wkdir_old.replace(signal_name, cmfrom)
+        dtdir_old = dtdir_old.replace(signal_name, cmfrom)
+        lgdir_old = lgdir_old.replace(signal_name, cmfrom)
     wkdir_new = opj(new_sys, wkdir_base)
     dtdir_new = opj(new_sys, dtdir_base)
     lgdir_new = opj(new_sys, lgdir_base)
@@ -193,7 +193,7 @@ def moveFiles(jobname=args.jobname, old_sys=args.old_sys, new_sys=args.new_sys, 
             # -- loop over things
             for oldthname in os.listdir(oldd):
                 oldth = opj(oldd, oldthname)
-                newthname = oldthname if allcmNone else oldthname.replace(cmfrom, jobname)
+                newthname = oldthname if allcmNone else oldthname.replace(cmfrom, signal_name)
                 newth = opj(newd, newthname)
                 
                 # -- check to make sure new things do not exist
