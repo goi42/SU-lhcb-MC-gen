@@ -1,5 +1,5 @@
 Executable = Generate_LHCb_MC_2016.py
-ConfigFile = sample_config.py
+ConfigFile = /home/mwilkins/SU-lhcb-MC-gen/sample_config.py
 SignalName = test_condor
 EventType  = 28196040
 NumEvent   = 100
