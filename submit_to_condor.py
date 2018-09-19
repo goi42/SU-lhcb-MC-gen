@@ -4,6 +4,7 @@ import os
 from os.path import join as opj, abspath
 from time import sleep
 import progressbar
+from imp import load_source
 from moveFiles import moveFiles, runMoveFilesContinuously, parser  # some args overridden--see below; note that store_sys is interpreted as where files begin and end in this script; run_sys is where they are moved to run with run_stages.py
 
 # -- make adjustments to parser -- #
@@ -32,7 +33,16 @@ submit_to_condorgroup.add_argument('--sethighest', type=int, default=None,
                                    help='manually set highest (exclusive) job number instead of letting the script find it')
 
 # -- evaluate args -- #
-args = parser.parse_args()
+allargs = parser.parse_known_args()  # unknown args are assumed to be handled by the configfile
+args = allargs[0]
+conf = load_source('conf', args.configfile)
+try:
+    configparser = getattr(conf, 'parser')
+    args_for_configfile = ' '.join(allargs[1])  # arguments unknown to this script as a string to pass run_stages.py
+except AttributeError:
+    configparser = None
+    args_for_configfile = ''
+
 startpath = '{start_sys}/mwilkins/data/{signal_name}/'.format(start_sys=args.store_sys if args.transfilesfrom else args.run_sys, signal_name=args.signal_name if args.copyfrom is None else args.copyfrom)
 if all([args.setlowest, args.sethighest]):
     intlistdirs = range(args.setlowest, args.sethighest)
@@ -88,7 +98,7 @@ for minnum in looprange:
         f.write('ConfigFile = {}\n'.format(args.configfile))
         f.write('StartRun   = {}\n'.format(minnum))
         f.write('RunNumber  = $$([$(StartRun)+$(process)])\n')
-        f.write('Arguments  = $(ConfigFile) --RUN_NUMBER $(RunNumber) --PRECLEANED --SOME_MISSING\n')
+        f.write('Arguments  = $(ConfigFile) --RUN_NUMBER $(RunNumber) --PRECLEANED --SOME_MISSING {}\n'.format(args_for_configfile))
         f.write('Queue {}\n'.format(args.chunks_of))
     
     print 'submitting jobs...'
