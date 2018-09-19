@@ -101,7 +101,7 @@ for minnum in looprange:
     if args.transfilesto:
         print 'moving files back...'
         lt = 0 if minnum == looprange[-1] else args.lessthan
-        succeeded = runMoveFilesContinuously(lessthan=lt, justdata=False, minallowed=None, maxallowed=None, copyfrom=None, signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, interval=args.interval, MaxWaitTime=args.maxwaittime, waittostart=args.waittostart, waitcheckdelay=args.waitcheckdelay, waittilnotrunning=args.waittilnotrunning, )  # returns True when done
+        succeeded = runMoveFilesContinuously(lessthan=lt, justdata=False, minallowed=None, maxallowed=None, copyfrom=None, signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, interval=args.interval, maxwaittime=args.maxwaittime, waittostart=args.waittostart, waitcheckdelay=args.waitcheckdelay, waittilnotrunning=args.waittilnotrunning, )  # returns True when done
         if not succeeded:
             raise Exception('problem with runMoveFilesContinuously. [{}, {})'.format(minnum, maxnum))
 print '----------------done-----------------'
