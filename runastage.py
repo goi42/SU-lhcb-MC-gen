@@ -8,12 +8,12 @@ from moveFiles import moveFiles, runMoveFilesContinuously, parser  # some args o
 
 parser.description = '''\
 Run specified stages of run_stages.py by transferring files from store_sys to run_sys, running, then moving them back.
-This script uses a number of arguments from moveFiles.py, but it overrides some of them.
+Arguments specific to this script are in the 'runastage options' group.
+This script uses a number of arguments from moveFiles.py (with some changes to default values; use --help), but it overrides some of them.
 (minallowed, maxallowed, justdata, lessthan, copyfrom, waittilnotrunning are overriden.
 lessthan is overridden for initial movement and for the final submission chunk (set to 0).
 copyfrom is only overriden for the move back (set to None) (therefore, specifying copyfrom copies from store_sys to run_sys but then moves them from store_sys to run_sys under signal_name).
 waittilnotrunning is only overridden for the initial movement (though it doesn't actually matter since justdata gets used anyway).)
-Arguments specific to this script are in the 'runastage options' group.
 '''
 parser.set_defaults(interval=240, maxwaittime=0, waitcheckdelay=60, lessthan=50, waittostart=True)
 runastagegroup = parser.add_argument_group('runastage options')
