@@ -29,8 +29,6 @@ runastagegroup.add_argument('--setlowest', type=int, default=None,
                             help='manually set lowest (inclusive) job number instead of letting the script find it')
 runastagegroup.add_argument('--sethighest', type=int, default=None,
                             help='manually set highest (exclusive) job number instead of letting the script find it')
-runastagegroup.add_argument('--GENLOGAPP', default='',
-                            help='GENLOGAPP parameter to pass to run_stages.py')
 runastagegroup.add_argument('--extraopts', default=None,
                             help='extra parameters to pass to run_stages.py as though from commandline, e.g., "--noCOMPRESS --noREDECAY" (--PRECLEANED and --SOME_MISSING are always used)')
 args = parser.parse_args()
@@ -71,8 +69,6 @@ for minnum in looprange:
     submissionfilename = 'MCGen_{}_{}.submit'.format(stages.replace(' ', '-'), args.signal_name)
     with open(submissionfilename, 'w') as f:
         argstring = '--SIGNAL_NAME $(SignalName) --EVENT_TYPE $(EventType) --RUN_NUMBER $(RunNumber) --FIRST_EVENT $(FirstEvent) --NUM_EVENT $(NumEvent) --GEN_LEVEL {stages} --PRECLEANED --SOME_MISSING'.format(stages=stages)
-        if args.GENLOGAPP:
-            argstring += ' --GENLOGAPP {GENLOGAPP}'.format(GENLOGAPP=args.GENLOGAPP)
         if args.extraopts:
             argstring += ' ' + args.extraopts
         f.write('''\
