@@ -6,6 +6,7 @@ from time import sleep
 import progressbar
 from moveFiles import moveFiles, runMoveFilesContinuously, parser  # some args overridden--see below; note that store_sys is interpreted as where files begin and end in this script; run_sys is where they are moved to run with run_stages.py
 
+# -- make adjustments to parser -- #
 parser.description = '''\
 Run specified stages of run_stages.py by transferring files from store_sys to run_sys, running, then moving them back.
 Arguments specific to this script are in the 'submit_to_condor options' group.
@@ -33,9 +34,9 @@ submit_to_condorgroup.add_argument('--extraopts', default=None,
                                    help='extra parameters to pass to run_stages.py as though from commandline, e.g., "--noCOMPRESS --noREDECAY" (--PRECLEANED and --SOME_MISSING are always used)')
 args = parser.parse_args()
 
+# -- evaluate args -- #
 stages = args.stages
 startpath = '{start_sys}/mwilkins/data/{signal_name}/'.format(start_sys=args.store_sys if args.transfilesfrom else args.run_sys, signal_name=args.signal_name if args.copyfrom is None else args.copyfrom)
-
 if all([args.setlowest, args.sethighest]):
     intlistdirs = range(args.setlowest, args.sethighest)
 else:
@@ -51,9 +52,9 @@ if args.sethighest:
 else:
     highest = int(max(intlistdirs))
 number = len(intlistdirs)
-
 looprange = xrange(lowest, highest, args.chunks_of)
 
+# -- submit jobs in a loop -- #
 for minnum in looprange:
     maxnum = minnum + args.chunks_of
     print 'lowest = {}, highest = {}, number = {}'.format(lowest, highest, number)
