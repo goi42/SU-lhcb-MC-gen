@@ -8,6 +8,17 @@ import argparse
 
 IsMain = __name__ == '__main__'
 
+
+class AtLeastZero(argparse.Action):
+    'based on https://stackoverflow.com/a/8624107/4655426'
+    def __call__(self, parser, args, val, option_string=None):
+        if not isinstance(val, int):
+            raise parser.error('expected integer')
+        if val < 0:
+            raise parser.error('val must be >= 0! You have given "{0}".'.format(val))
+        setattr(args, self.dest, val)
+
+
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='move completed MC jobs to final destination. Assumes CLEAN_UP. Will ignore a given output if log/ but no data/')
 parser.add_argument('--jobname', default='X2LcLc',
@@ -36,7 +47,7 @@ f.add_argument('--movefrom', default=None,
 g = parser.add_mutually_exclusive_group()
 g.add_argument('--justdata', action='store_true',
                help='option to just move data without checking work directories or moving log directories or checking running jobs')
-g.add_argument('--lessthan', default=0, type=int,
+g.add_argument('--lessthan', default=0, type=int, action=AtLeastZero,
                help='if there are fewer jobs than this running, move on; a value of 0 ignores this')
 contgroup = parser.add_argument_group('arguments for running continuously')
 contgroup.add_argument('--continuous', action='store_true',
@@ -50,8 +61,6 @@ contgroup.add_argument('--waittostart', action='store_true',
 contgroup.add_argument('--waitcheckdelay', default=1, type=float,
                        help='how long to wait between checks in seconds if waittostart set')
 args = parser.parse_args() if IsMain else parser.parse_args(args=[])
-if args.lessthan < 0:
-    raise ValueError('`lessthan` must be >= 0!')
 
 
 def nojobsrunning(user):
