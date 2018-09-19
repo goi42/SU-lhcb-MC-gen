@@ -118,20 +118,20 @@ slimgroup = parser.add_argument_group('Slim parameters')
 slimgroup.add_argument('--SLIMOPTS', default=['/home/mwilkins/LcLc/analysis/prep_files.py', '/home/mwilkins/LcLc/analysis/fileprep'], nargs=2,
                        help='python script to-be-copied for tuple slimming and a directory with modules to-be-imported')
 
+# -- evaluate and check arguments -- #
 args = parser.parse_args()
 
-# -- evaluate arguments -- #
 for arg in vars(args):
     exec('{ARG} = args.{ARG}'.format(ARG=arg))
+
 CLEANSTAGES  = True if any(CLEAN_UP == x for x in ['CLEANSTAGES', 'both']) else False
 CLEANWORK    = True if any(CLEAN_UP == x for x in ['CLEANWORK', 'both']) else False
 
-
-# -- check arguments -- #
 if NOPIDTRIG and not all([MOOREHLT2_TCK == '0x6139160F', os.path.basename(NEWCONFIG) == 'config.cdb']):
     raise parser.error('NOPIDTRIG uses a config.cdb generated with certain assumptions. See script.')
 if NOPIDTRIG:
     MOOREHLT2_TCK = str(hex((eval(MOOREHLT2_TCK) | 0x0c000000)))
+
 if MAGNETPOLARITY is not None:
     if not len(allowedpols) == 2:
         raise Exception('something has gone wrong in the script. There should only be 2 allowed polarities.')
