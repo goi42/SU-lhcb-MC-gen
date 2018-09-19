@@ -10,7 +10,6 @@ parser.add_argument('configfile', type=str,
                     help='')
 parser.add_argument('--SIGNAL_NAME', default='TestProduction')
 parser.add_argument('--RUN_NUMBER', type=int, default=300000)
-parser.add_argument('--GEN_LEVEL', default='all',)
 parser.add_argument('--RUN_SYS', default='/data2',
                     help='system to run on')
 cleangroup = parser.add_argument_group('cleaning options')
@@ -29,6 +28,8 @@ debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
 
 # -- parameters for make_stage_list -- #
 # general
+parser.add_argument('--GEN_LEVEL', default='all',
+                    help='')
 stagegroup = parser.add_argument_group('general parameters used by stages')
 stagegroup.add_argument('--DDDB_TAG', default='dddb-20170721-3',)
 stagegroup.add_argument('--CONDDB_TAG', default='sim-20170721-2-vc-md100',)
