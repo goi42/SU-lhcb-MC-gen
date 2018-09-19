@@ -90,12 +90,15 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
     '''
     print '----------------moveFiles-----------------'
     
-    # -- useful declarations
     if justdata and lessthan > 0:
         raise ValueError('lessthan > 0 does not do anything if justdata=True')
+    if justdata and waittilnotrunning:
+        raise ValueError('waittilnotrunning=True does not do anything if justdata=True')
     if all(x is not None for x in (copyfrom, movefrom)):
         # this is critical to the logic of moveFiles
         raise IOError('One or both copyfrom and movefrom must be None!')
+    
+    # -- useful declarations
     cmfrom = copyfrom if movefrom is None else movefrom
     allcmNone = all(x is None for x in (copyfrom, movefrom))
     thingstr = 'move' if copyfrom is None else 'copy'
