@@ -39,19 +39,18 @@ parser.add_argument('--waittilnotrunning', action='store_true',
                     Note that this also means moveFiles will not think it's finished if the user has other jobs running.
                     Does nothing if justdata used.
                     ''')
+parser.add_argument('--justdata', action='store_true',
+                    help='option to just move data without checking work directories or moving log directories or checking running jobs')
 f = parser.add_mutually_exclusive_group()  # ensure copyfrom and movefrom are not both set
 f.add_argument('--copyfrom', default=None,
                help='option to copy files from an old name instead of moving them. parameter should be the signal_name for the original run.')
 f.add_argument('--movefrom', default=None,
                help='option to move files from an old name to a new name. parameter should be the signal_name for the original run.')
-g = parser.add_mutually_exclusive_group()
-g.add_argument('--justdata', action='store_true',
-               help='option to just move data without checking work directories or moving log directories or checking running jobs')
-g.add_argument('--lessthan', default=0, type=int, action=AtLeastZero,
-               help='if there are fewer jobs than this running, move on; a value of 0 ignores this')
 contgroup = parser.add_argument_group('arguments for running continuously')
 contgroup.add_argument('--continuous', action='store_true',
                        help='runs over and over at specified interval until WORK_DIR is empty or MaxWaitTime exceeded')
+contgroup.add_argument('--lessthan', default=0, type=int, action=AtLeastZero,
+                       help='if there are fewer jobs than this running for the user, moveFiles returns True (and runMoveFilesContinuously starts the next iteration); a value of 0 ignores this')
 contgroup.add_argument('--interval', type=float, default=1800,
                        help='time to wait (in seconds) if --continuous used')
 contgroup.add_argument('--maxwaittime', default=0, type=float,
@@ -92,6 +91,8 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
     print '----------------moveFiles-----------------'
     
     # -- useful declarations
+    if justdata and lessthan > 0:
+        raise ValueError('lessthan > 0 does not do anything if justdata=True')
     if all(x is not None for x in (copyfrom, movefrom)):
         # this is critical to the logic of moveFiles
         raise IOError('One or both copyfrom and movefrom must be None!')
