@@ -62,7 +62,7 @@ debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
 
 # -- parameters for make_stage_list -- #
 # general
-parser.add_argument('--GEN_LEVEL', nargs='*', default=['all'], action=ChoicesInList, type=str.lower, choices=valid_choices,  # valid_choices is set in the ChoicesInList declaration above
+parser.add_argument('--GEN_LEVEL', nargs='*', default=other_choices, action=ChoicesInList, type=str.lower, choices=valid_choices,  # valid_choices is set in the ChoicesInList declaration above
                     help='select what stages to run')
 stagegroup = parser.add_argument_group('general parameters used by stages')
 stagegroup.add_argument('--DDDB_TAG', default='dddb-20170721-3',)
@@ -152,7 +152,7 @@ def make_stage_list(USER, BASE_NAME):
     
     additional_pre_script = 'setenv PYTHONPATH $HOME/algorithms/python:$PYTHONPATH && '  # declares stuff used by scripts called here
     # -- Gauss stage -- #
-    GAUSS_STAGE_NAME = 'Gauss'
+    GAUSS_STAGE_NAME = 'gauss'
     GAUSS_DIR = 'GaussOpts'
     GAUSS_LOG = BASE_NAME + '_gauss.log'
     GAUSS_ROOT = BASE_NAME + '_gauss.root'
@@ -240,9 +240,9 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
             'scriptonly': SCRIPT_ONLY,
         }
     )
-
+    
     # -- Boole stage -- #
-    BOOLE_STAGE_NAME = 'Boole'
+    BOOLE_STAGE_NAME = 'boole'
     BOOLE_DIR = 'BooleOpts'
     BOOLE_LOG = BASE_NAME + '_boole.log'
     BOOLE_ROOT = BASE_NAME + '_boole.root'
@@ -289,7 +289,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
     )
 
     # -- MooreL0 stage -- #
-    MOOREL0_STAGE_NAME = 'Moorel0'
+    MOOREL0_STAGE_NAME = 'moorel0'
     MOOREL0_DIR = 'MooreOptsl0'
     MOOREL0_LOG = BASE_NAME + '_moorel0.log'
     MOOREL0_ROOT = BASE_NAME + '_moorel0.root'
@@ -341,7 +341,7 @@ L0App().outputFile = '{MOOREL0_DATA}'
     )
 
     # -- MooreHlt1 stage -- #
-    MOOREHLT1_STAGE_NAME = 'Moorehlt1'
+    MOOREHLT1_STAGE_NAME = 'moorehlt1'
     MOOREHLT1_DIR = 'MooreOptshlt1'
     MOOREHLT1_LOG = BASE_NAME + '_moorehlt1.log'
     MOOREHLT1_ROOT = BASE_NAME + '_moorehlt1.root'
@@ -392,7 +392,7 @@ Moore().outputFile = '{MOOREHLT1_DATA}'
     )
 
     # -- MooreHlt2 stage -- #
-    MOOREHLT2_STAGE_NAME = 'Moorehlt2'
+    MOOREHLT2_STAGE_NAME = 'moorehlt2'
     MOOREHLT2_DIR = 'MooreOptshlt2'
     MOOREHLT2_LOG = BASE_NAME + '_moorehlt2.log'
     MOOREHLT2_ROOT = BASE_NAME + '_moorehlt2.root'
@@ -446,7 +446,7 @@ Moore().outputFile = '{MOOREHLT2_DATA}'
     )
 
     # -- Brunel stage -- #
-    BRUNEL_STAGE_NAME = 'Brunel'
+    BRUNEL_STAGE_NAME = 'brunel'
     BRUNEL_DIR = 'BrunelOpts'
     BRUNEL_LOG = BASE_NAME + '_brunel.log'
     BRUNEL_ROOT = BASE_NAME + '_brunel.root'
@@ -498,7 +498,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
     )
 
     # -- DaVinci stage -- #
-    DAVINCI_STAGE_NAME = 'DaVinci'
+    DAVINCI_STAGE_NAME = 'davinci'
     DAVINCI_DIR = 'DaVinciOpts'
     DAVINCI_LOG = BASE_NAME + '_davinci.log'
     DAVINCI_ROOT = BASE_NAME + '_davinci.root'
