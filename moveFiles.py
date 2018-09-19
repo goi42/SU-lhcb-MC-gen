@@ -52,7 +52,7 @@ g.add_argument('--lessthan', default=0, type=int, action=AtLeastZero,
 contgroup = parser.add_argument_group('arguments for running continuously')
 contgroup.add_argument('--continuous', action='store_true',
                        help='runs over and over at specified interval until WORK_DIR is empty or MaxWaitTime exceeded')
-contgroup.add_argument('--interval', type=float, default=14400,
+contgroup.add_argument('--interval', type=float, default=1800,
                        help='time to wait (in seconds) if --continuous used')
 contgroup.add_argument('--maxwaittime', default=0, type=float,
                        help='time after which to give up if --continuous used and WORK_DIR not empty; will not give up by default')
