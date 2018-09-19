@@ -120,6 +120,7 @@ def make_stage_list(USER, BASE_NAME):
     
     additional_pre_script = 'setenv PYTHONPATH $HOME/algorithms/python:$PYTHONPATH && '  # declares stuff used by scripts called here
     # -- Gauss stage -- #
+    GAUSS_STAGE_NAME = 'Gauss'
     GAUSS_DIR = 'GaussOpts'
     GAUSS_LOG = BASE_NAME + '_gauss.log'
     GAUSS_ROOT = BASE_NAME + '_gauss.root'
@@ -196,7 +197,7 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
 '''.format(RUN_NUMBER=RUN_NUMBER, FIRST_EVENT=FIRST_EVENT, NUM_EVENT=NUM_EVENT, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, GAUSS_DATA=GAUSS_DATA, BEAM_VERSION=BEAM_VERSION, COMPRESS=COMPRESS, REDECAY=REDECAY, PYTHMOD=PYTHMOD, RICHOFF=RICHOFF, EVENT_TYPE=EVENT_TYPE, GAUSS_ROOT=GAUSS_ROOT)
     stage_list.append(
         {
-            'name': 'Gauss',
+            'name': GAUSS_STAGE_NAME,
             'dirname': GAUSS_DIR,
             'scripts': {GAUSS_SCRIPT_NAME: GAUSS_SCRIPT_CONTENT},
             'log': GAUSS_LOG,
@@ -209,6 +210,7 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
     )
 
     # -- Boole stage -- #
+    BOOLE_STAGE_NAME = 'Boole'
     BOOLE_DIR = 'BooleOpts'
     BOOLE_LOG = BASE_NAME + '_boole.log'
     BOOLE_ROOT = BASE_NAME + '_boole.root'
@@ -242,7 +244,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
 '''.format(DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, GAUSS_DATA=GAUSS_DATA, BOOLE_DATA=BOOLE_DATA, BOOLE_ROOT=BOOLE_ROOT, COMPRESS=COMPRESS, MOOREL0_TCK=MOOREL0_TCK)
     stage_list.append(
         {
-            'name': 'Boole',
+            'name': BOOLE_STAGE_NAME,
             'dirname': BOOLE_DIR,
             'scripts': {BOOLE_SCRIPT_NAME: BOOLE_SCRIPT_CONTENT},
             'log': BOOLE_LOG,
@@ -255,6 +257,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
     )
 
     # -- MooreL0 stage -- #
+    MOOREL0_STAGE_NAME = 'Moorel0'
     MOOREL0_DIR = 'MooreOptsl0'
     MOOREL0_LOG = BASE_NAME + '_moorel0.log'
     MOOREL0_ROOT = BASE_NAME + '_moorel0.root'
@@ -293,7 +296,7 @@ L0App().outputFile = '{MOOREL0_DATA}'
 '''.format(MOOREL0_TCK=MOOREL0_TCK, COMPRESS=COMPRESS, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, BOOLE_DATA=BOOLE_DATA, MOOREL0_ROOT=MOOREL0_ROOT, MOOREL0_DATA=MOOREL0_DATA)
     stage_list.append(
         {
-            'name': 'Moorel0',
+            'name': MOOREL0_STAGE_NAME,
             'dirname': MOOREL0_DIR,
             'scripts': {MOOREL0_SCRIPT_NAME: MOOREL0_SCRIPT_CONTENT},
             'log': MOOREL0_LOG,
@@ -306,6 +309,7 @@ L0App().outputFile = '{MOOREL0_DATA}'
     )
 
     # -- MooreHlt1 stage -- #
+    MOOREHLT1_STAGE_NAME = 'Moorehlt1'
     MOOREHLT1_DIR = 'MooreOptshlt1'
     MOOREHLT1_LOG = BASE_NAME + '_moorehlt1.log'
     MOOREHLT1_ROOT = BASE_NAME + '_moorehlt1.root'
@@ -343,7 +347,7 @@ Moore().outputFile = '{MOOREHLT1_DATA}'
 '''.format(MOOREHLT1_TCK=MOOREHLT1_TCK, COMPRESS=COMPRESS, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, MOOREL0_DATA=MOOREL0_DATA, MOOREHLT1_ROOT=MOOREHLT1_ROOT, MOOREHLT1_DATA=MOOREHLT1_DATA)
     stage_list.append(
         {
-            'name': 'Moorehlt1',
+            'name': MOOREHLT1_STAGE_NAME,
             'dirname': MOOREHLT1_DIR,
             'scripts': {MOOREHLT1_SCRIPT_NAME: MOOREHLT1_SCRIPT_CONTENT},
             'log': MOOREHLT1_LOG,
@@ -356,6 +360,7 @@ Moore().outputFile = '{MOOREHLT1_DATA}'
     )
 
     # -- MooreHlt2 stage -- #
+    MOOREHLT2_STAGE_NAME = 'Moorehlt2'
     MOOREHLT2_DIR = 'MooreOptshlt2'
     MOOREHLT2_LOG = BASE_NAME + '_moorehlt2.log'
     MOOREHLT2_ROOT = BASE_NAME + '_moorehlt2.root'
@@ -396,7 +401,7 @@ Moore().outputFile = '{MOOREHLT2_DATA}'
 '''.format(COMPRESS=COMPRESS, NOPIDTRIG=NOPIDTRIG, newTCKdir=os.path.dirname(NEWCONFIG), MOOREHLT2_TCK=MOOREHLT2_TCK, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, MOOREHLT1_DATA=MOOREHLT1_DATA, MOOREHLT2_DATA=MOOREHLT2_DATA)
     stage_list.append(
         {
-            'name': 'Moorehlt2',
+            'name': MOOREHLT2_STAGE_NAME,
             'dirname': MOOREHLT2_DIR,
             'scripts': {MOOREHLT2_SCRIPT_NAME: MOOREHLT2_SCRIPT_CONTENT},
             'log': MOOREHLT2_LOG,
@@ -409,6 +414,7 @@ Moore().outputFile = '{MOOREHLT2_DATA}'
     )
 
     # -- Brunel stage -- #
+    BRUNEL_STAGE_NAME = 'Brunel'
     BRUNEL_DIR = 'BrunelOpts'
     BRUNEL_LOG = BASE_NAME + '_brunel.log'
     BRUNEL_ROOT = BASE_NAME + '_brunel.root'
@@ -447,7 +453,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
 '''.format(NOPIDTRIG=NOPIDTRIG, NEWCONFIG=NEWCONFIG, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, COMPRESS=COMPRESS, BOOLE_DATA=BOOLE_DATA, MOOREHLT2_DATA=MOOREHLT2_DATA, BRUNEL_DATA=BRUNEL_DATA, BRUNEL_ROOT=BRUNEL_ROOT)
     stage_list.append(
         {
-            'name': 'Brunel',
+            'name': BRUNEL_STAGE_NAME,
             'dirname': BRUNEL_DIR,
             'scripts': {BRUNEL_SCRIPT_NAME: BRUNEL_SCRIPT_CONTENT},
             'log': BRUNEL_LOG,
@@ -460,6 +466,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
     )
 
     # -- DaVinci stage -- #
+    DAVINCI_STAGE_NAME = 'DaVinci'
     DAVINCI_DIR = 'DaVinciOpts'
     DAVINCI_LOG = BASE_NAME + '_davinci.log'
     DAVINCI_ROOT = BASE_NAME + '_davinci.root'
@@ -498,7 +505,7 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
 '''.format(STRIPPING_CAMPAIGN=STRIPPING_CAMPAIGN, NOPIDTRIG=NOPIDTRIG, NEWCONFIG=NEWCONFIG, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, DAVINCI_ROOT=DAVINCI_ROOT, BRUNEL_DATA=BRUNEL_DATA, DAVINCI_DATA=DAVINCI_DATA)
     stage_list.append(
         {
-            'name': 'DaVinci',
+            'name': DAVINCI_STAGE_NAME,
             'dirname': DAVINCI_DIR,
             'scripts': {DAVINCI_SCRIPT_NAME: DAVINCI_SCRIPT_CONTENT},
             'log': DAVINCI_LOG,
@@ -511,6 +518,7 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
     )
 
     # -- allstuple stage -- #
+    ALLSTUPLE_STAGE_NAME = 'allstuple'
     ALLSTUPLE_DIR = 'allstupleOpts'
     ALLSTUPLE_LOG = BASE_NAME + '_allstuple.log'
     ALLSTUPLE_ROOT = BASE_NAME + '_allstuple.root'
@@ -539,7 +547,7 @@ restripped = False
         ALLSTUPLE_SCRIPT_CONTENT = f.read()  # use pre-written options file rather than writing a new one
     stage_list.append(
         {
-            'name': 'allstuple',
+            'name': ALLSTUPLE_STAGE_NAME,
             'dirname': ALLSTUPLE_DIR,
             'scripts': {ALLSTUPLE_SCRIPT_NAME: ALLSTUPLE_SCRIPT_CONTENT, opj(ALLSTUPLE_DIR, 'steering.py'): ALLSTUPLE_STEERING_CONTENT},
             'log': ALLSTUPLE_LOG,
@@ -552,6 +560,7 @@ restripped = False
     )
 
     # -- restrip stage -- #
+    RESTRIP_STAGE_NAME = 'restrip'
     RESTRIP_DIR = 'restripOpts'
     RESTRIP_LOG = BASE_NAME + '_restrip.log'
     RESTRIP_ROOT = BASE_NAME + '_restrip.root'
@@ -653,7 +662,7 @@ IOHelper().inputFiles(["{DAVINCI_DATA}"],clear=True)
 '''.format(NOPIDTRIG=NOPIDTRIG, STRIPPING_CAMPAIGN=STRIPPING_CAMPAIGN, NEWCONFIG=NEWCONFIG, DDDB_TAG=DDDB_TAG, CONDDB_TAG=CONDDB_TAG, DAVINCI_DATA=DAVINCI_DATA, RESTRIP_ROOT=RESTRIP_ROOT, RESTRIP_DATA=RESTRIP_DATA)
     stage_list.append(
         {
-            'name': 'restrip',
+            'name': RESTRIP_STAGE_NAME,
             'dirname': RESTRIP_DIR,
             'scripts': {RESTRIP_SCRIPT_NAME: RESTRIP_SCRIPT_CONTENT},
             'log': RESTRIP_LOG,
@@ -666,6 +675,7 @@ IOHelper().inputFiles(["{DAVINCI_DATA}"],clear=True)
     )
 
     # -- tuple stage -- #
+    TUPLE_STAGE_NAME = 'tuple'
     TUPLE_DIR = 'tupleOpts'
     TUPLE_LOG = BASE_NAME + '_tuple.log'
     TUPLE_ROOT = BASE_NAME + '_tuple.root'
@@ -694,7 +704,7 @@ restripped = True
         TUPLE_SCRIPT_CONTENT = f.read()  # use pre-written options file rather than writing a new one
     stage_list.append(
         {
-            'name': 'tuple',
+            'name': TUPLE_STAGE_NAME,
             'dirname': TUPLE_DIR,
             'scripts': {TUPLE_SCRIPT_NAME: TUPLE_SCRIPT_CONTENT, opj(TUPLE_DIR, 'steering.py'): TUPLE_STEERING_CONTENT},
             'log': TUPLE_LOG,
@@ -707,6 +717,7 @@ restripped = True
     )
 
     # -- slim stage -- #
+    SLIM_STAGE_NAME = 'slim'
     SLIM_DIR = 'slimOpts'
     SLIM_LOG = BASE_NAME + '_slim.log'
     SLIM_ROOT = BASE_NAME + '_slim.root'
@@ -726,7 +737,7 @@ restripped = True
             dict_of_support_files[opj(SLIM_DIR, slimoptsdirname, fname)] = f.read()
     stage_list.append(
         {
-            'name': 'slim',
+            'name': SLIM_STAGE_NAME,
             'dirname': SLIM_DIR,
             'scripts': dict({SLIM_SCRIPT_NAME: SLIM_SCRIPT_CONTENT}, **dict_of_support_files),
             'log': SLIM_LOG,
