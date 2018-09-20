@@ -30,3 +30,13 @@ should be replaced with, e.g.,
 evtnum = int('15264011')
 ```
 Remember, keep it easy to understand.
+
+Optional parameters should be specified using `<<<<[optional thing <<<<text to replace>>>>][description of optional thing]>>>>`
+, e.g.,
+```python
+'call_string': 'lb-run -c best <<<<[--user-area <<<</path/to/your/Gauss/Build>>>>][this section only necessary if you are using a DecFile not included in the official release]>>>> Gauss/<<<<Gauss Version>>>> gaudirun.py $GAUSSOPTS/Gauss-Job.py $GAUSSOPTS/Gauss-2016.py $GAUSSOPTS/GenStandAlone.py $DECFILESROOT/options/{0}.py $LBPYTHIA8ROOT/options/Pythia8.py'.format(evtnum),
+```
+which would be replaced by, e.g.,
+```python
+'call_string': 'lb-run -c best --user-area ~/cmtuser Gauss/v49r10 gaudirun.py $GAUSSOPTS/Gauss-Job.py $GAUSSOPTS/Gauss-2016.py $GAUSSOPTS/GenStandAlone.py $DECFILESROOT/options/{0}.py $LBPYTHIA8ROOT/options/Pythia8.py'.format(evtnum),
+```
