@@ -29,7 +29,14 @@ your use of Condor by avoiding having too many jobs running at once. It will eve
 your jobs from their running device (usually `/data2`) to a storage device
 inaccessible to Condor (e.g., `/data6`)!
 
-## Testing
+### Using Templates
+Templates are easy-to-edit, almost ready-to-go example scripts. They contain edit
+points enclosed by `<<<<` `>>>>`. Simply copy the file to your directory, search for
+`<<<<` or `>>>>` inside the file, make the appropriate edits, and you're ready to go.
+(You'll know you've made all the necessary changes when `<<<<` and `>>>>` no longer
+appear in the file.)
+
+### Testing
 Once you've written or selected a configfile (see below), you should test it before submitting to
 condor. First, run `python run_stages.py <path/to/configfile>` and check the output.
 Then, submit a small batch to Condor using
