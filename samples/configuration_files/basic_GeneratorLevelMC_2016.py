@@ -46,7 +46,7 @@ def make_stage_list(USER, BASE_NAME):  # DO NOT CHANGE THIS LINE
             'name': 'gauss',
             'scripts': {},
             'log': BASE_NAME + '_gauss.log',
-            'call_string': 'lb-run -c best Gauss/v49r10 gaudirun.py $GAUSSOPTS/Gauss-Job.py $GAUSSOPTS/Gauss-2016.py $GAUSSOPTS/GenStandAlone.py $DECFILESROOT/options/{0}.py $LBPYTHIA8ROOT/options/Pythia8.py'.format(evtnum)
+            'call_string': 'lb-run -c best Gauss/v49r10 gaudirun.py $GAUSSOPTS/Gauss-Job.py $GAUSSOPTS/Gauss-2016.py $GAUSSOPTS/GenStandAlone.py $DECFILESROOT/options/{0}.py $LBPYTHIA8ROOT/options/Pythia8.py'.format(evtnum),
             'to_remove': [],
             'dataname': 'Gauss-{0}-5ev-{1}.xgen'.format(evtnum, str(datetime.today()).split(' ')[0].replace('-', '')),  # output filename includes reference to the date
             'run': True,
