@@ -12,6 +12,14 @@ import socket
 from imp import load_source
 
 
+def check_stage(ist, st, nm, typ):
+    if nm not in st:
+        raise IOError('"{0}" parameter missing from stage_list[{1}]'.format(nm, ist))
+    else:
+        if not isinstance(st[nm], typ):
+            raise TypeError('stage_list[{0}] is a {1} and not a {2}?'.format(ist, type(st), repr(typ)))
+
+
 def makedirsif(d):
     if not os.path.isdir(d) and d != '':
         os.makedirs(d)
@@ -148,6 +156,26 @@ make_stage_list:\t\t{make_stage_list}
 
 # -- run stages -- #
 stage_list = make_stage_list(USER, BASE_NAME)
+
+# verify stage_list
+if not isinstance(stage_list, list):
+    raise TypeError('stage_list is a {0} not a list?'.format(type(stage_list)))
+for istage, stage in enumerate(stage_list):
+    if not isinstance(stage, dict):
+        raise TypeError('stage_list[{0}] is a {1} and not a dict?'.format(istage, type(stage)))
+    to_check = [
+        ('name', str)
+        ('scripts', dict)
+        ('log', str)
+        ('call_string', str)
+        ('to_remove', list)
+        ('dataname', str)
+        ('run', bool)
+        ('scriptonly', bool)
+    ]
+    for nm, typ in to_check:
+        check_stage(istage, stage, nm, typ)
+    
 for istage, stage in enumerate(stage_list):
     # is this stage selected to run?
     if not stage['run']:
