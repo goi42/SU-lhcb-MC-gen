@@ -1,5 +1,5 @@
 # CONTRIBUTING
-Once you've made your changes, do
+Once you've made your changes, do:
 ```bash
 git checkout -b <username>/<descriptive-moniker>
 git add <path(s)/to/your/changes>
@@ -27,6 +27,6 @@ evtnum = int('<<<<EVENTTYPE from DecFile (e.g., 15264011)>>>>')
 ```
 should be replaced with, e.g.,
 ```python
-evtnum = int('15264011)
+evtnum = int('15264011')
 ```
 Remember, keep it easy to understand.
