@@ -124,7 +124,7 @@ if MAGNETPOLARITY is not None:
 
 
 # -- create stage_list (mandatory function) -- #
-def make_stage_list(USER, BASE_NAME):
+def make_stage_list(USER, BASE_NAME):  # DO NOT CHANGE THIS LINE
     from os.path import join as opj
     stage_list = []
     
