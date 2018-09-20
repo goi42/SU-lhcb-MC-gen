@@ -142,4 +142,4 @@ but reappropriates them so that files can be moved around `run_stages.py`, which
 using `nohup` or `screen` or `tmux`.
 
 This is the heart of SU-lhcb-MC-gen. Once you've tested your configfile, you
-should have to run this script only if nothing goes awry.
+should only have to run this script (if nothing goes awry).
