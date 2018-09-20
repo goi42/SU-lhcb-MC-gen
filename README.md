@@ -48,18 +48,18 @@ See CONTRIBUTING.md.
 What follows is an overview of the logic behind SU-lhcb-MC-gen:
 
 ### organization
-Fundamental to the operation of all the scripts in this suite is the organizational
-structure. Script output is stored in a certain directory while the script runs, then
-data and log files are moved to other directories upon successful completion of the
-script:
+The following organizational structure is ___fundamental___ to SU-lhcb-MC-gen:
 ```
 WORK_DIR = <sys>/<user>/work/<jobname>/<jobnum>
 DATA_DIR = <sys>/<user>/data/<jobname>/<jobnum>
 LOG_DIR = <sys>/<user>/log/<jobname>/<jobnum>
 ```
-All the scripts in this suite rely on this structure and ___will not work___ without
-it. Scripts run in the work directory, data files are stored in the data directory,
-and log files are stored in the log directory. Keep this in mind, particularly when
+`sys` is the path to the system the job should run on (usually `/data2`). `jobnum` is
+the sub-job number for the `jobname`.
+
+Scripts run in the work directory, data files are stored in the data directory, and
+log files are stored in the log directory. The scripts in this suite rely on this
+structure and ___will not work___ without it. Keep this in mind, particularly when
 developing.
 
 ### run_stages.py
