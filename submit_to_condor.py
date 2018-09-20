@@ -68,7 +68,7 @@ submissionlist = makelohilist(intlistdirs, args.chunks_of)
 
 # -- submit jobs in a loop -- #
 for minnum, maxnum in submissionlist:
-    print 'lowest = {}, highest = {}, number = {}'.format(lowest, highest, number)
+    print 'lowest (inclusive) = {}, highest (inclusive) = {}, number = {}'.format(lowest, highest, number)
     print '----------------on files in range [{}, {})-----------------'.format(minnum, maxnum)
     
     if args.runfromstorage:
