@@ -106,7 +106,7 @@ strippinggroup.add_argument('--STRIPPING_CAMPAIGN', default='28r1')
 # -- mandatory section -- #
 args = parser.parse_args() if basename(__main__.__file__) == 'run_stages.py' else parser.parse_known_args()[0]  # assume all arguments are for this script if 'run_stages.py' is the main file, else allow arguments to go to other scripts
 for arg in vars(args):
-    exec('{ARG} = args.{ARG}'.format(ARG=arg))
+    exec('{ARG} = args.{ARG}'.format(ARG=arg))  # eliminate need to reference things as arg.thing
 # -- end mandatory section -- #
 
 
