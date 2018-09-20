@@ -53,12 +53,12 @@ else:
     intlistdirs = [int(x) for x in os.listdir(startpath) if os.path.isdir(opj(startpath, x))]
 if args.setlowest:
     lowest = args.setlowest
-    inlistdirs = [x for x in intlistdirs if x >= lowest]
+    intlistdirs = [x for x in intlistdirs if x >= lowest]
 else:
     lowest = int(min(intlistdirs))
 if args.sethighest:
     highest = args.sethighest
-    inlistdirs = [x for x in intlistdirs if x < highest]
+    intlistdirs = [x for x in intlistdirs if x < highest]
 else:
     highest = int(max(intlistdirs))
 number = len(intlistdirs)
