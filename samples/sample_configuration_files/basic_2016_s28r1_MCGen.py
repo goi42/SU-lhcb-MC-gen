@@ -81,7 +81,7 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
             'dirname': GAUSS_DIR,
             'scripts': {GAUSS_SCRIPT_NAME: GAUSS_SCRIPT_CONTENT},
             'log': GAUSS_LOG,
-            'call_string': 'lb-run -c best Gauss/v49r10 gaudirun.py {GAUSS_SCRIPT_NAME}'.format(USER=USER, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
+            'call_string': 'lb-run -c best Gauss/v49r10 gaudirun.py {GAUSS_SCRIPT_NAME}'.format(GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
             'to_remove': [],
             'dataname': GAUSS_DATA,
             'run': True,
