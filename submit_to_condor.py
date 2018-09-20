@@ -5,6 +5,7 @@ from os.path import join as opj, abspath
 from time import sleep
 import progressbar
 from imp import load_source
+from utils import incfilename
 from moveFiles import moveFiles, runMoveFilesContinuously, parser  # some args overridden--see below
 
 # -- make adjustments to parser -- #
