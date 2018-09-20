@@ -31,8 +31,7 @@ debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
 
 # -- evaluate and check arguments -- #
 # -- mandatory section -- #
-# args = parser.parse_args() if basename(__main__.__file__) == 'run_stages.py' else parser.parse_known_args()[0]
-args = parser.parse_args(['test'])
+args = parser.parse_args() if basename(__main__.__file__) == 'run_stages.py' else parser.parse_known_args()[0]
 for arg in vars(args):
     exec('{ARG} = args.{ARG}'.format(ARG=arg))
 # -- end mandatory section -- #
