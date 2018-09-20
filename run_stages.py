@@ -164,14 +164,14 @@ for istage, stage in enumerate(stage_list):
     if not isinstance(stage, dict):
         raise TypeError('stage_list[{0}] is a {1} and not a dict?'.format(istage, type(stage)))
     to_check = [
-        ('name', str)
-        ('scripts', dict)
-        ('log', str)
-        ('call_string', str)
-        ('to_remove', list)
-        ('dataname', str)
-        ('run', bool)
-        ('scriptonly', bool)
+        ('name', str),
+        ('scripts', dict),
+        ('log', str),
+        ('call_string', str),
+        ('to_remove', list),
+        ('dataname', str),
+        ('run', bool),
+        ('scriptonly', bool),
     ]
     for nm, typ in to_check:
         check_stage(istage, stage, nm, typ)
