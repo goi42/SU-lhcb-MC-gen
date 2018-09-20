@@ -64,7 +64,7 @@ else:
 lowest = int(min(intlistdirs))
 highest = int(max(intlistdirs))
 number = len(intlistdirs)
-submissionlist = makelohilist(intlistdirs, chunks_of)
+submissionlist = makelohilist(intlistdirs, args.chunks_of)
 
 # -- submit jobs in a loop -- #
 for minnum, maxnum in submissionlist:
@@ -80,7 +80,7 @@ for minnum, maxnum in submissionlist:
     
     # create condor submission file
     print 'writing condor_submit file...'
-    submissionfilename = incfilename('MCGen_{}.submit'.format(signal_name))
+    submissionfilename = incfilename('MCGen_{}.submit'.format(args.signal_name))
     Nqueue = maxnum - minnum
     with open(submissionfilename, 'w') as f:
         f.write('Executable = run_stages.py\n')
@@ -96,7 +96,7 @@ for minnum, maxnum in submissionlist:
     print 'submitting jobs...'
     succeeded = 0 == call(['condor_submit {}'.format(submissionfilename)], shell=True)  # returns 0 if successful
     if succeeded:
-        if not test:
+        if not args.test:
             os.remove(submissionfilename)
     else:
         raise Exception('failed to submit. [{}, {})'.format(minnum, maxnum))
