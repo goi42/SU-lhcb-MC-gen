@@ -104,7 +104,7 @@ for minnum, maxnum in submissionlist:
     if not args.donotstore:
         # move files to store_sys
         print 'moving files back...'
-        lt = 0 if minnum == looprange[-1] else args.lessthan
+        lt = 0 if minnum is submissionlist[-1][0] else args.lessthan
         succeeded = runMoveFilesContinuously(lessthan=lt, justdata=False, minallowed=None, maxallowed=None, copyfrom=None, signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, interval=args.interval, maxwaittime=args.maxwaittime, waittostart=args.waittostart, waitcheckdelay=args.waitcheckdelay, waittilnotrunning=args.waittilnotrunning, )  # returns True when done
         if not succeeded:
             raise Exception('problem with runMoveFilesContinuously. [{}, {})'.format(minnum, maxnum))
