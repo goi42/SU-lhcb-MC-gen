@@ -5,7 +5,7 @@ from os.path import join as opj, abspath
 from time import sleep
 import progressbar
 from imp import load_source
-from moveFiles import moveFiles, runMoveFilesContinuously, parser  # some args overridden--see below; note that store_sys is interpreted as where files begin and end in this script; run_sys is where they are moved to run with run_stages.py
+from moveFiles import moveFiles, runMoveFilesContinuously, parser  # some args overridden--see below
 
 # -- make adjustments to parser -- #
 parser.description = '''\
