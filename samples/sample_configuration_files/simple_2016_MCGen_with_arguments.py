@@ -164,7 +164,6 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
     stage_list.append(
         {
             'name': GAUSS_STAGE_NAME,
-            'dirname': GAUSS_DIR,
             'scripts': {GAUSS_SCRIPT_NAME: GAUSS_SCRIPT_CONTENT},
             'log': GAUSS_LOG,
             'call_string': 'lb-run -c best Gauss/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(USER=USER, GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
@@ -211,7 +210,6 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
     stage_list.append(
         {
             'name': BOOLE_STAGE_NAME,
-            'dirname': BOOLE_DIR,
             'scripts': {BOOLE_SCRIPT_NAME: BOOLE_SCRIPT_CONTENT},
             'log': BOOLE_LOG,
             'call_string': 'lb-run -c best Boole/{BOOLE_VERSION} gaudirun.py {BOOLE_SCRIPT_NAME}'.format(BOOLE_VERSION=BOOLE_VERSION, BOOLE_SCRIPT_NAME=BOOLE_SCRIPT_NAME),
@@ -263,7 +261,6 @@ L0App().outputFile = '{MOOREL0_DATA}'
     stage_list.append(
         {
             'name': MOOREL0_STAGE_NAME,
-            'dirname': MOOREL0_DIR,
             'scripts': {MOOREL0_SCRIPT_NAME: MOOREL0_SCRIPT_CONTENT},
             'log': MOOREL0_LOG,
             'call_string': 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREL0_SCRIPT_NAME}'.format(MOORE_VERSION=MOORE_VERSION, MOOREL0_SCRIPT_NAME=MOOREL0_SCRIPT_NAME),
@@ -314,7 +311,6 @@ Moore().outputFile = '{MOOREHLT1_DATA}'
     stage_list.append(
         {
             'name': MOOREHLT1_STAGE_NAME,
-            'dirname': MOOREHLT1_DIR,
             'scripts': {MOOREHLT1_SCRIPT_NAME: MOOREHLT1_SCRIPT_CONTENT},
             'log': MOOREHLT1_LOG,
             'call_string': 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT1_SCRIPT_NAME}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT1_SCRIPT_NAME=MOOREHLT1_SCRIPT_NAME),
@@ -363,7 +359,6 @@ Moore().outputFile = '{MOOREHLT2_DATA}'
     stage_list.append(
         {
             'name': MOOREHLT2_STAGE_NAME,
-            'dirname': MOOREHLT2_DIR,
             'scripts': {MOOREHLT2_SCRIPT_NAME: MOOREHLT2_SCRIPT_CONTENT},
             'log': MOOREHLT2_LOG,
             'call_string': 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT2_SCRIPT_NAME}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT2_SCRIPT_NAME=MOOREHLT2_SCRIPT_NAME),
@@ -412,7 +407,6 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
     stage_list.append(
         {
             'name': BRUNEL_STAGE_NAME,
-            'dirname': BRUNEL_DIR,
             'scripts': {BRUNEL_SCRIPT_NAME: BRUNEL_SCRIPT_CONTENT},
             'log': BRUNEL_LOG,
             'call_string': 'lb-run -c best Brunel/{BRUNEL_VERSION} gaudirun.py {BRUNEL_SCRIPT_NAME}'.format(BRUNEL_VERSION=BRUNEL_VERSION, BRUNEL_SCRIPT_NAME=BRUNEL_SCRIPT_NAME),
@@ -461,7 +455,6 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
     stage_list.append(
         {
             'name': DAVINCI_STAGE_NAME,
-            'dirname': DAVINCI_DIR,
             'scripts': {DAVINCI_SCRIPT_NAME: DAVINCI_SCRIPT_CONTENT},
             'log': DAVINCI_LOG,
             'call_string': 'lb-run -c best DaVinci/{DAVINCI_VERSION} gaudirun.py {DAVINCI_SCRIPT_NAME}'.format(DAVINCI_VERSION=DAVINCI_VERSION, DAVINCI_SCRIPT_NAME=DAVINCI_SCRIPT_NAME),

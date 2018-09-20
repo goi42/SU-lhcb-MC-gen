@@ -156,15 +156,13 @@ for istage, stage in enumerate(stage_list):
         continue
         
     # declare stage parameters
-    stagedir = opj(WORK_DIR, stage['dirname'])
     stagedata = opj(WORK_DIR, stage['dataname'])
     
     # create stage scripts
     with open(GENERAL_LOG, 'a') as f:
         f.write("making {name} scripts\n".format(name=stage['name']))
-        stage_makedirs(stagedir)  # create the directory where scripts will be executed
         for scriptname, scriptcontent in stage['scripts'].iteritems():
-            makedirsif(os.path.dirname(scriptname))
+            stage_makedirs(os.path.dirname(scriptname))  # create any needed directories
             with open(scriptname, 'w') as stagef:
                 stagef.write(scriptcontent)
         if stage['scriptonly']:

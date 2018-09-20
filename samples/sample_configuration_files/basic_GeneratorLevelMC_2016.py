@@ -45,7 +45,6 @@ def make_stage_list(USER, BASE_NAME):  # DO NOT CHANGE THIS LINE
     stage_list = [
         {
             'name': 'gauss',
-            'dirname': '',
             'scripts': {},
             'log': BASE_NAME + '_gauss.log',
             'call_string': 'lb-run -c best Gauss/v49r10 gaudirun.py $GAUSSOPTS/Gauss-Job.py $GAUSSOPTS/Gauss-2016.py $GAUSSOPTS/GenStandAlone.py $DECFILESROOT/options/{0}.py $LBPYTHIA8ROOT/options/Pythia8.py'.format(evtnum)
