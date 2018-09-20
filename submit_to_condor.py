@@ -40,15 +40,18 @@ args = allargs[0]
 if not args.runfromstorage and args.setlohi is None:
     raise parser.error('must runfromstorage or setlohi (or both)')
 
-cmfrom = args.copyfrom if args.movefrom is None else args.movefrom
-
+# handle unknown arguments
+args_for_configfile = ' '.join(allargs[1])  # arguments unknown to this script as a string to pass run_stages.py
 conf = load_source('conf', args.configfile)
 try:
     configparser = getattr(conf, 'parser')
-    args_for_configfile = ' '.join(allargs[1])  # arguments unknown to this script as a string to pass run_stages.py
 except AttributeError:
     configparser = None
-    args_for_configfile = ''
+    if args_for_configfile != '':
+        raise parser.error('Unknown arguments passed and configfile has no parser! Unknown arguments: {}'.format(args_for_configfile))
+
+# useful definitions
+cmfrom = args.copyfrom if args.movefrom is None else args.movefrom  # will be None or a string; same logic as used in moveFiles
 
 if args.runfromstorage:
     startpath = '{start_sys}/{user}/data/{signal_name}/'.format(start_sys=args.store_sys, user=args.user, signal_name=args.signal_name if cmfrom is None else cmfrom)
