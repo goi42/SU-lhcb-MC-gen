@@ -5,6 +5,7 @@ from os.path import join as opj, isdir, exists
 from shutil import move, copy, copytree
 from subprocess import check_output
 import argparse
+from utils import nojobsrunning, Njobs, cpr
 
 IsMain = __name__ == '__main__'
 
@@ -60,29 +61,6 @@ contgroup.add_argument('--waittostart', action='store_true',
 contgroup.add_argument('--waitcheckdelay', default=1, type=float,
                        help='how long to wait between checks in seconds if waittostart set')
 args = parser.parse_args() if IsMain else parser.parse_args(args=['DUMMYSIGNALNAME'])
-
-
-def nojobsrunning(user):
-    '''does the user have any jobs active on Condor?
-    '''
-    check = check_output(['condor_q {}'.format(user)], shell=True).split('\n')[-2]
-    return True if '0 jobs; 0 completed, 0 removed, 0 idle, 0 running, 0 held, 0 suspended' in check else False
-
-
-def Njobs(user):
-    '''returns the number of jobs running on Condor for the given user
-    '''
-    check = check_output(['condor_q {}'.format(user)], shell=True).split('\n')[-2]
-    return int(check.split(' jobs;')[0])
-
-
-def cpr(src, dst):
-    '''does copy or copytree depending on whether src is a directory
-    '''
-    if isdir(src):
-        copytree(src, dst)
-    else:
-        copy(src, dst)
 
 
 def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed, justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, waittilnotrunning=args.waittilnotrunning):
