@@ -33,7 +33,7 @@ submit_to_condorgroup.add_argument('--setlowest', type=int, default=None,
 submit_to_condorgroup.add_argument('--sethighest', type=int, default=None,
                                    help='manually set highest (exclusive) job number instead of letting the script find it')
 submit_to_condorgroup.add_argument('--test', action='store_true',
-                                   help='use error script in condor submission')
+                                   help='use error script in condor submission and preserve submission script')
 
 # -- evaluate args -- #
 allargs = parser.parse_known_args()  # unknown args are assumed to be handled by the configfile
@@ -103,13 +103,14 @@ for minnum in looprange:
         f.write('RunNumber  = $$([$(StartRun)+$(process)])\n')
         f.write('Arguments  = $(ConfigFile) --SIGNAL_NAME {} --RUN_NUMBER $(RunNumber) --PRECLEANED --SOME_MISSING {}\n'.format(args.signal_name, args_for_configfile))
         if args.test:
-            f.write('Error      = error_{}_$(RunNumber)_$(cluster)_$(process).log\n'.format(args.signal_name))
+            f.write('Error      = error_{}_{}_$(RunNumber)_$(cluster)_$(process).log\n'.format(submissionfilename, args.signal_name))
         f.write('Queue {}\n'.format(args.chunks_of))
     
     print 'submitting jobs...'
     succeeded = 0 == call(['condor_submit {}'.format(submissionfilename)], shell=True)  # returns 0 if successful
     if succeeded:
-        os.remove(submissionfilename)
+        if not test:
+            os.remove(submissionfilename)
     else:
         raise Exception('failed to submit. [{}, {})'.format(minnum, maxnum))
     
