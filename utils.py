@@ -23,3 +23,19 @@ def makelohilist(listofnums, maxsize):
             secn = 0
     
     return lohilist
+
+
+def incfilename(filename, i_start=0, i=None):
+    '''chooses a name for a file by appending numbers incrementally (from i_start) to filename
+    '''
+    from os.path import exists, splitext
+    if exists(filename):
+        basename = splitext(filename)[0]
+        suffname = splitext(filename)[1]
+        newname = basename + str(i_start) + suffname
+        if exists(newname):
+            return incfilename(filename, i_start + 1)
+        else:
+            return newname
+    else:
+        return filename
