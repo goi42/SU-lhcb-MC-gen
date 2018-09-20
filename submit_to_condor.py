@@ -11,6 +11,7 @@ from moveFiles import moveFiles, runMoveFilesContinuously, parser  # some args o
 parser.description = '''\
 Run run_stages.py using the specified configfile by transferring files from store_sys to run_sys, running, then moving them back.
 Arguments specific to this script are in the 'submit_to_condor options' group.
+Unknown arguments are assumed to be intended for configfile.
 This script uses a number of arguments from moveFiles.py (with some changes to default values; use --help), but it overrides some of them.
 (minallowed, maxallowed, justdata, lessthan, copyfrom, waittilnotrunning are overriden.
 lessthan is overridden for initial movement and for the final submission chunk (set to 0).
