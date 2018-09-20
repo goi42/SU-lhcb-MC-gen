@@ -4,9 +4,32 @@ from os.path import join as opj, abspath, basename
 import argparse
 import __main__
 
+# -- essential parameters -- #
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in run_stages.py')
 
+parser.add_argument('configfile', type=abspath,
+                    help='this argument must be here to ensure integration with run_stages.py')
+parser.add_argument('--SIGNAL_NAME', default='TestProduction')
+parser.add_argument('--RUN_NUMBER', type=int, default=300000)
+parser.add_argument('--RUN_SYS', default='/data2',
+                    help='system to run on')
+cleangroup = parser.add_argument_group('cleaning options')
+cleangroup.add_argument('--noCLEANSTAGES', dest='CLEANSTAGES', action='store_false',
+                        help='deletes data from earlier stages as it goes.')
+cleangroup.add_argument('--noCLEANWORK', dest='CLEANWORK', action='store_false',
+                        help='moves files out of work directory.')
+cleangroup.add_argument('--PRECLEANED', action='store_true',
+                        help='if this script has already been run with CLEANWORK active, you can specify this argument so that it moves appropriate files to the work directory first')
+cleangroup.add_argument('--SOME_MISSING', action='store_true',
+                        help='if running a later stage, you may specify this argument to let the script terminate without errors if the input files are missing')
+debuggroup = parser.add_argument_group('debugging options')
+debuggroup.add_argument('--SCRIPT_ONLY', action='store_true',
+                        help='creates scripts without running them')
+debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
+                        help='BE VERY CAREFUL WHEN USING THIS FLAG: gives permission to run if WORK_DIR already exists! Also allows overwrite of extant Opts directories.')
+
+# -- parameters used for make_stage_list -- #
 # GEN_LEVEL choices, used in ChoicesInList and argument declaration below
 exclusive_choices = ['all', 'none']  # cannot have more than one of these and cannot use these with other_choices; set GEL_LEVEL to other_choices or [], respectively
 other_choices = ['gauss', 'boole', 'moorel0', 'moorehlt1', 'moorehlt2', 'brunel', 'davinci', 'allstuple', 'restrip', 'tuple', 'slim']
@@ -38,29 +61,6 @@ class ChoicesInList(argparse.Action):
         setattr(args, self.dest, values)
 
 
-# -- essential parameters -- #
-parser.add_argument('configfile', type=abspath,
-                    help='')
-parser.add_argument('--SIGNAL_NAME', default='TestProduction')
-parser.add_argument('--RUN_NUMBER', type=int, default=300000)
-parser.add_argument('--RUN_SYS', default='/data2',
-                    help='system to run on')
-cleangroup = parser.add_argument_group('cleaning options')
-cleangroup.add_argument('--noCLEANSTAGES', dest='CLEANSTAGES', action='store_false',
-                        help='deletes data from earlier stages as it goes.')
-cleangroup.add_argument('--noCLEANWORK', dest='CLEANWORK', action='store_false',
-                        help='moves files out of work directory.')
-cleangroup.add_argument('--PRECLEANED', action='store_true',
-                        help='if this script has already been run with CLEANWORK active, you can specify this argument so that it moves appropriate files to the work directory first')
-cleangroup.add_argument('--SOME_MISSING', action='store_true',
-                        help='if running a later stage, you may specify this argument to let the script terminate without errors if the input files are missing')
-debuggroup = parser.add_argument_group('debugging options')
-debuggroup.add_argument('--SCRIPT_ONLY', action='store_true',
-                        help='creates scripts without running them')
-debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
-                        help='BE VERY CAREFUL WHEN USING THIS FLAG: gives permission to run if WORK_DIR already exists! Also allows overwrite of extant Opts directories.')
-
-# -- parameters for make_stage_list -- #
 # general
 parser.add_argument('--GEN_LEVEL', nargs='*', default=other_choices, action=ChoicesInList, type=str.lower, choices=valid_choices,  # valid_choices is set in the ChoicesInList declaration above
                     help='select what stages to run')
@@ -122,11 +122,11 @@ slimgroup.add_argument('--SLIMOPTS', default=['/home/mwilkins/LcLc/analysis/prep
                        help='python script to-be-copied for tuple slimming and a directory with modules to-be-imported')
 
 # -- evaluate and check arguments -- #
+# -- mandatory section -- #
 args = parser.parse_args() if basename(__main__.__file__) == 'run_stages.py' else parser.parse_known_args()[0]
-
-
 for arg in vars(args):
     exec('{ARG} = args.{ARG}'.format(ARG=arg))
+# -- end mandatory section -- #
 
 if NOPIDTRIG and not all([MOOREHLT2_TCK == '0x6139160F', os.path.basename(NEWCONFIG) == 'config.cdb']):
     raise parser.error('NOPIDTRIG uses a config.cdb generated with certain assumptions. See script.')
@@ -146,8 +146,9 @@ if MAGNETPOLARITY is not None:
             raise parser.error('{TH} ({THSTR}) does not contain exactly one appearance of {POL}!'.format(TH=eval(thingtocheck_string), THSTR=thingtocheck_string, POL=rightpol))
 
 
-# -- create stage_list -- #
+# -- create stage_list (mandatory function) -- #
 def make_stage_list(USER, BASE_NAME):
+    from os.path import join as opj
     stage_list = []
     
     additional_pre_script = 'setenv PYTHONPATH $HOME/algorithms/python:$PYTHONPATH && '  # declares stuff used by scripts called here
