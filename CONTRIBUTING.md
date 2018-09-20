@@ -14,3 +14,19 @@ templates. Don't be shy!
 
 Open an [issue](https://github.com/goi42/SU-lhcb-MC-gen/issues) if you have problems
 or a question.
+
+## Templates
+Templates are designed to be easy-to-fill-in samples. A user should only have to edit a
+few lines to get them to work. Wherever you want a user to make an edit, enclose it
+between four less-than and greater-than symbols, `<<<<` `>>>>`, with a simple
+description of what belongs there.
+
+For example:
+```python
+evtnum = int('<<<<EVENTTYPE from DecFile (e.g., 15264011)>>>>')
+```
+should be replaced with, e.g.,
+```python
+evtnum = int('15264011)
+```
+Remember, keep it easy to understand.

@@ -29,7 +29,14 @@ your use of Condor by avoiding having too many jobs running at once. It will eve
 your jobs from their running device (usually `/data2`) to a storage device
 inaccessible to Condor (e.g., `/data6`)!
 
-## Testing
+### Using Templates
+Templates are easy-to-edit, almost ready-to-go example scripts. They contain edit
+points enclosed by `<<<<` `>>>>`. Simply copy the file to your directory, search for
+`<<<<` or `>>>>` inside the file, make the appropriate edits, and you're ready to go.
+(You'll know you've made all the necessary changes when `<<<<` and `>>>>` no longer
+appear in the file.)
+
+### Testing
 Once you've written or selected a configfile (see below), you should test it before submitting to
 condor. First, run `python run_stages.py <path/to/configfile>` and check the output.
 Then, submit a small batch to Condor using
@@ -48,18 +55,18 @@ See CONTRIBUTING.md.
 What follows is an overview of the logic behind SU-lhcb-MC-gen:
 
 ### organization
-Fundamental to the operation of all the scripts in this suite is the organizational
-structure. Script output is stored in a certain directory while the script runs, then
-data and log files are moved to other directories upon successful completion of the
-script:
+The following organizational structure is ___fundamental___ to SU-lhcb-MC-gen:
 ```
 WORK_DIR = <sys>/<user>/work/<jobname>/<jobnum>
 DATA_DIR = <sys>/<user>/data/<jobname>/<jobnum>
 LOG_DIR = <sys>/<user>/log/<jobname>/<jobnum>
 ```
-All the scripts in this suite rely on this structure and ___will not work___ without
-it. Scripts run in the work directory, data files are stored in the data directory,
-and log files are stored in the log directory. Keep this in mind, particularly when
+`sys` is the path to the system the job should run on (usually `/data2`). `jobnum` is
+the sub-job number for the `jobname`.
+
+Scripts run in the work directory, data files are stored in the data directory, and
+log files are stored in the log directory. The scripts in this suite rely on this
+structure and ___will not work___ without it. Keep this in mind, particularly when
 developing.
 
 ### run_stages.py
