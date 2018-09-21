@@ -40,7 +40,7 @@ for arg in vars(args):
 # -- create stage_list (mandatory function) -- #
 def make_stage_list(USER, BASE_NAME):  # DO NOT CHANGE THIS LINE
     from datetime import datetime
-    evtnum = int('<<<<your event-number here>>>>')
+    evtnum = int('<<<<EVENTTYPE from DecFile (e.g., 15264011)>>>>')
     stage_list = [
         {
             'name': 'gauss',

@@ -1,11 +1,10 @@
 import getpass
-import progressbar
 import os
 from os.path import join as opj, isdir, exists
 from shutil import move, copy, copytree
 from subprocess import check_output
 import argparse
-from utils import nojobsrunning, Njobs, cpr
+from utils import nojobsrunning, Njobs, cpr, updateprogress
 
 IsMain = __name__ == '__main__'
 
@@ -147,9 +146,7 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
         return endstep()
     
     print len(subdirlist), 'directories to {}...'.format(thingstr)
-    dirbar = progressbar.ProgressBar(maxval=len(subdirlist),
-                                     widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage() ]
-                                     )
+    dirbar = updateprogress(len(subdirlist))
     dirbar.start()
     
     for i, subdir in enumerate(subdirlist):
