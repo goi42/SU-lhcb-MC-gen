@@ -98,7 +98,7 @@ importOptions("$LBPYTHIA8ROOT/options/Pythia8.py")
         {
             'name': 'gauss',
             'scripts': {GAUSS_SCRIPT_NAME: GAUSS_SCRIPT_CONTENT},
-            'log': 'mylog_gauss.log',
+            'log': BASE_NAME + '_gauss.log',
             'call_string': 'lb-run -c best  <<<<[--user-area <<<</path/to/your/Gauss/Build>>>>][this section only necessary if you are using a DecFile not included in the official release]>>>> Gauss/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
             'to_remove': [],
             'dataname': 'Gauss-{ET}-{NE}ev-{DT}.xgen'.format(ET=EVENT_TYPE, NE=NUM_EVENT, DT=str(datetime.today()).split(' ')[0].replace('-', '')),  # output filename includes reference to the date
