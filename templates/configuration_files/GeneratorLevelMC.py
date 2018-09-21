@@ -36,6 +36,7 @@ gaussgroup.add_argument('--GAUSS_VERSION', default='<<<<default version of Gauss
 gaussgroup.add_argument('--FIRST_EVENT', type=int, default=1)
 gaussgroup.add_argument('--NUM_EVENT', type=int, default=int('<<<<default number of events you want>>>>'))
 gaussgroup.add_argument('--EVENT_TYPE', type=int, default=int('<<<<default EVENT_TYPE you want to use>>>>'))
+gaussgroup.add_argument('--YEAR', type=int, default=int('<<<<default year you want to use>>>>'))
 
 
 # -- evaluate and check arguments -- #
@@ -87,13 +88,13 @@ LHCbApp().EvtMax = nEvts
 # -- end modified $GAUSSOPTS/Gauss-Job.py -- #
 
 # import other standard options
-importOptions("$GAUSSOPTS/Gauss-2016.py")
+importOptions("$GAUSSOPTS/Gauss-{YEAR}.py")
 importOptions("$GAUSSOPTS/GenStandAlone.py")
 importOptions("$DECFILESROOT/options/{EVENT_TYPE}.py")  # needs to be called BEFORE setting up Pythia8, else will use Pythia6 production tool
 importOptions("$LBPYTHIA8ROOT/options/Pythia8.py")
 
 
-'''.format(RUN_NUMBER=RUN_NUMBER, FIRST_EVENT=FIRST_EVENT, NUM_EVENT=NUM_EVENT, EVENT_TYPE=EVENT_TYPE)
+'''.format(RUN_NUMBER=RUN_NUMBER, FIRST_EVENT=FIRST_EVENT, NUM_EVENT=NUM_EVENT, YEAR=YEAR, EVENT_TYPE=EVENT_TYPE)
     stage_list.append(
         {
             'name': 'gauss',
