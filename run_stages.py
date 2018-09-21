@@ -72,7 +72,8 @@ def stage_makedirs(d):
     '''
     if WORK_DIR_EXISTS and os.path.exists(d):
         shutil.rmtree(d)
-    os.makedirs(d)
+    if d != '':
+        os.makedirs(d)
 
 
 def capture_stdouterr(log):
