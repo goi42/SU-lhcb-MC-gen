@@ -64,3 +64,8 @@ def incfilename(filename, i_start=0, i=None):
             return newname
     else:
         return filename
+
+
+def makepercent(num, tot):
+    'returns an integer representing num/tot as a percentage'
+    return int(float(num) * 100 / float(tot))
