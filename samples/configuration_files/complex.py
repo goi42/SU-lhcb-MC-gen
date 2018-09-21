@@ -77,7 +77,7 @@ gaussgroup = parser.add_argument_group('Gauss parameters')
 gaussgroup.add_argument('--GAUSS_VERSION', default='v49r10')
 gaussgroup.add_argument('--EVENT_TYPE', type=int, default=28196040)
 gaussgroup.add_argument('--FIRST_EVENT', type=int, default=1)
-gaussgroup.add_argument('--NUM_EVENT', type=int, default=100)
+gaussgroup.add_argument('--NUM_EVENT', help='number of events to generate per job', type=int, default=100)
 gaussgroup.add_argument('--noREDECAY', dest='REDECAY', action='store_false',
                         help='turns off ReDecay (ReDecay 100 times by default) in GAUSS_SCRIPT')
 gaussgroup.add_argument('--noRICHOFF', dest='RICHOFF', action='store_false',
