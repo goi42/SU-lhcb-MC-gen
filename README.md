@@ -18,7 +18,7 @@ To get a feel for the suite, try running a basic job. Just do
 ```bash
 python submit_to_condor.py mytestjob samples/configuration_files/basic_GeneratorLevelMC_2016.py --setlohi 100000 100001
 ```
-(You may want to <kbd>^C</kbd> afterward.)
+(You can use <kbd>^C</kbd> to cancel if you want.)
 
 `submit_to_condor.py` is your primary interaction point with this suite. It takes a
 name for your job, a configuration file, and the runnumbers you want to use and submits
@@ -28,6 +28,21 @@ progress, submitting more jobs as they complete. This helps you be a good citize
 your use of Condor by avoiding having too many jobs running at once. It will even move
 your jobs from their running device (usually `/data2`) to a storage device
 inaccessible to Condor (e.g., `/data6`)!
+
+While the job is running, if you look in `/data2/<your username>/work/mytestjob/100000/`
+(the job's `WORK_DIR`), you should see the files created by the job; this is the
+directory where they are stored while the job runs. One, called
+`mytestjob_*_general.log`, summarizes the job progress; each stage of the job generates
+an additional log file, usually called `<jobname>_<jobnumber>_<stagename>.log`.
+
+Once the job completes, `run_stages.py` (the script that `submit_to_condor.py` submits to
+Condor) moves the output from the `WORK_DIR` to the `DATA_DIR` and `LOG_DIR`. From there,
+`submit_to_condor.py` picks the output up and moves it to directories on the storage
+device (`/data6` by default). If you look in
+`/data6/<your username>/data/mytestjob/100000/` and
+`/data6/<your username>/log/mytestjob/100000/` after the script completes, you should see
+the output files from the job (a `.xgen` file in the `data` directory and two `.log`, a
+`.root`, and a `.xml` file in the `log` directory).
 
 ### Using Templates
 Templates are easy-to-edit, almost ready-to-go example scripts. They contain edit
