@@ -70,21 +70,6 @@ GaussGen.RunNumber        = {RUN_NUMBER}
 nEvts = {NUM_EVENT}
 LHCbApp().EvtMax = nEvts
 
-#Gauss().OutputType = 'NONE'
-#Gauss().Histograms = 'NONE'
-#--Set name of output files for given job (uncomment the lines)
-#  Note that if you do not set it Gauss will make a name based on event type,
-#  number of events and the date
-#idFile = 'GaussTest'
-#HistogramPersistencySvc().OutputFile = idFile+'-histos.root'
-#
-#OutputStream("GaussTape").Output = "DATAFILE='PFN:%s.sim' TYP='POOL_ROOTTREE' OPT='RECREATE'"%idFile
-
-#GenMonitor = GaudiSequencer( "GenMonitor" )
-#SimMonitor = GaudiSequencer( "SimMonitor" )
-#GenMonitor.Members += [ "GaussMonitor::CheckLifeTimeHepMC/HepMCLifeTime" ]
-#SimMonitor.Members += [ "GaussMonitor::CheckLifeTimeMC/MCLifeTime" ]
-
 # -- end modified $GAUSSOPTS/Gauss-Job.py -- #
 
 # import other standard options
