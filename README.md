@@ -14,9 +14,9 @@ Don't be shy about contributing! If you have a configuration file you're proud o
 it to the samples! See CONTRIBUTING.md.
 
 ## Getting Started
-To get a feel for the suite, try running a basic job. Just do
+To get a feel for the suite, try running a sample configuration file. Just do
 ```bash
-python submit_to_condor.py mytestjob samples/configuration_files/GeneratorLevelMC_2016.py --setlohi 100000 100001
+python submit_to_condor.py mytestjob samples/configuration_files/GeneratorLevelMC_2016.py --setlohi 100000 100010
 ```
 (You can use <kbd>^C</kbd> to cancel if you want.)
 
@@ -29,20 +29,43 @@ your use of Condor by avoiding having too many jobs running at once. It will eve
 your jobs from their running device (usually `/data2`) to a storage device
 inaccessible to Condor (e.g., `/data6`)!
 
-While the job is running, if you look in `/data2/<your username>/work/mytestjob/100000/`
-(the job's `WORK_DIR`), you should see the files created by the job; this is the
-directory where they are stored while the job runs. One, called
-`mytestjob_*_general.log`, summarizes the job progress; each stage of the job generates
-an additional log file, usually called `<jobname>_<jobnumber>_<stagename>.log`.
+### Exploring the Jobs
+Leave `submit_to_condor.py` running for now. In another shell, do
+```bash
+condor_q <your username>
+```
+You should see 10 jobs listed, either running or idle. These are the 10 jobs you
+submitted to Condor! They will handle whatever script you submitted while you wait,
+whether you are logged in or not.
+
+Once all your jobs have started running, if you look in
+`/data2/<your username>/work/mytestjob/`, you should see directories named
+`[100000, 100009]`. These are the so-called `WORK_DIR` for each of the 10 jobs you
+submitted and all your job's output should be stored here while it runs.
+
+In each job's `WORK_DIR`, you should see a file called `mytestjob_*_general.log`, which
+summarizes the job progress. Each stage of the job generates an additional log file,
+usually called `<jobname>_<jobnumber>_<stagename>.log`. As each job progresses, you
+should see more and more files stored in this directory.
+
+> If a job fails to complete for whatever reason, all files will remain in the
+> `WORK_DIR`. This allows you to easily see which of your jobs had problems and prevents
+> them from being moved to storage before they are ready. __NB:__ If the `WORK_DIR`
+> already exists, your job __will not run__ by default; this is to prevent accidental
+> overwrites. Best practice is to remove the directories manually, but if you're very
+> sure you want to overwrite any existing data, you can use `--WORK_DIR_EXISTS` when you
+> run.
 
 Once the job completes, `run_stages.py` (the script that `submit_to_condor.py` submits to
 Condor) moves the output from the `WORK_DIR` to the `DATA_DIR` and `LOG_DIR`. From there,
 `submit_to_condor.py` picks the output up and moves it to directories on the storage
 device (`/data6` by default). If you look in
 `/data6/<your username>/data/mytestjob/100000/` and
-`/data6/<your username>/log/mytestjob/100000/` after the script completes, you should see
+`/data6/<your username>/log/mytestjob/100000/` after the job completes, you should see
 the output files from the job (a `.xgen` file in the `data` directory and two `.log`, a
 `.root`, and a `.xml` file in the `log` directory).
+
+Congratulations! You've successfully submitted your first jobs!
 
 ### Using Templates
 Templates are easy-to-edit, almost ready-to-go example scripts. They contain edit
