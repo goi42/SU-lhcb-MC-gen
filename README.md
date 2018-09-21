@@ -16,7 +16,7 @@ it to the samples! See CONTRIBUTING.md.
 ## Getting Started
 To get a feel for the suite, try running a basic job. Just do
 ```bash
-python submit_to_condor.py mytestjob samples/configuration_files/basic_GeneratorLevelMC_2016.py --setlohi 100000 100001
+python submit_to_condor.py mytestjob samples/configuration_files/GeneratorLevelMC_2016.py --setlohi 100000 100001
 ```
 (You can use <kbd>^C</kbd> to cancel if you want.)
 
