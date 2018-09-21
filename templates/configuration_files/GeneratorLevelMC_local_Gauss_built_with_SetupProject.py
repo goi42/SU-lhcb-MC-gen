@@ -32,11 +32,11 @@ debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
 # -- parameters used for make_stage_list -- #
 # Gauss
 gaussgroup = parser.add_argument_group('Gauss parameters')
-gaussgroup.add_argument('--GAUSS_VERSION', default='v49r10')
+gaussgroup.add_argument('--GAUSS_VERSION', default='<<<<default version of Gauss you want to use>>>>')
 gaussgroup.add_argument('--FIRST_EVENT', type=int, default=1)
-gaussgroup.add_argument('--NUM_EVENT', help='number of events to generate per job', type=int, default=int('100'))
-gaussgroup.add_argument('--EVENT_TYPE', type=int, default=int('15264011'))
-gaussgroup.add_argument('--YEAR', type=int, default=int('2016'))
+gaussgroup.add_argument('--NUM_EVENT', help='number of events to generate per job', type=int, default=int('<<<<default number of events you want>>>>'))
+gaussgroup.add_argument('--EVENT_TYPE', type=int, default=int('<<<<default EVENT_TYPE you want to use>>>>'))
+gaussgroup.add_argument('--YEAR', type=int, default=int('<<<<default year you want to use>>>>'))
 
 
 # -- evaluate and check arguments -- #
@@ -100,7 +100,7 @@ importOptions("$LBPYTHIA8ROOT/options/Pythia8.py")
             'name': 'gauss',
             'scripts': {GAUSS_SCRIPT_NAME: GAUSS_SCRIPT_CONTENT},
             'log': BASE_NAME + '_gauss.log',
-            'call_string': 'lb-run -c best Gauss/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
+            'call_string': 'lb-run -c best --user-area <<<< /path/to/your/Gauss/Build, e.g., /home/<username>/cmtuser >>>> Gauss/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
             'to_remove': [],
             'dataname': 'Gauss-{ET}-{NE}ev-{DT}.xgen'.format(ET=EVENT_TYPE, NE=NUM_EVENT, DT=str(datetime.today()).split(' ')[0].replace('-', '')),  # output filename includes reference to the date
             'run': True,
