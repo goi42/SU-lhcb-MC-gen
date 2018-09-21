@@ -69,3 +69,45 @@ def incfilename(filename, i_start=0, i=None):
 def makepercent(num, tot):
     'returns an integer representing num/tot as a percentage'
     return int(float(num) * 100 / float(tot))
+
+    
+class updateprogress(object):
+    """docstring for updateprogress"""
+    
+    def __init__(self, maxval):
+        super(updateprogress, self).__init__()
+        self.maxval = maxval
+        import imp
+        try:
+            imp.find_module('progressbar')
+            self.useprogressbar = True
+        except ImportError:
+            self.useprogressbar = False
+    
+    def _printupdate(self, addstring=''):
+        print 'on {0} out of {1} ({2}%) {3}'.format(self.counter, self.maxval, makepercent(self.counter, self.maxval), addstring)
+
+    def start(self):
+        self.counter = 0
+        if self.useprogressbar:
+            import progressbar
+            self.progbar = progressbar.ProgressBar(maxval=self.maxval,
+                                                   widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage() ]
+                                                   )
+            self.progbar.start()
+        else:
+            print 'tracking progress'
+            self._printupdate()
+    
+    def update(self, i):
+        self.counter = i
+        if self.useprogressbar:
+            self.progbar.update(i)
+        else:
+            self._printupdate()
+    
+    def finish(self):
+        if self.useprogressbar:
+            self.progbar.finish()
+        else:
+            self._printupdate('(finished)')
