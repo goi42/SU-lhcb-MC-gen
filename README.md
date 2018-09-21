@@ -71,13 +71,14 @@ Congratulations! You've successfully submitted your first jobs!
 Templates are easy-to-edit, almost ready-to-go example scripts. They contain edit
 points enclosed by `<<<<` `>>>>`. Simply copy the file to your directory, search for
 `<<<<` or `>>>>` inside the file, make the appropriate edits, and you're ready to go.
-(You'll know you've made all the necessary changes when `<<<<` and `>>>>` no longer
+(Note you will need to overwrite the `<<<<` and `>>>>`&mdash;do not leave them in the
+file! You'll know you've made all the necessary changes when `<<<<` and `>>>>` no longer
 appear in the file.)
 
 ### Testing
-Once you've written or selected a configfile (see below), you should test it before submitting to
-condor. First, run `python run_stages.py <path/to/configfile>` and check the output.
-Then, submit a small batch to Condor using
+Once you've written or selected a configfile (see below), you should test it before
+submitting to condor. First, run `python run_stages.py <path/to/configfile>` and check the
+output. Then, submit a small batch to Condor using
 `python submit_to_condor.py <jobname> <path/to/configfile> --setlohi 100000 100010 --test`
 , wait for it to finish, then check the output. If everything is as-expected, you can
 go ahead and submit for real using `submit_to_condor.py`.
@@ -175,16 +176,21 @@ for arg in vars(args):
     exec('{ARG} = args.{ARG}'.format(ARG=arg))  # eliminate need to reference things as arg.thing
 # -- end mandatory section -- #
 ```
+You can also add your own custom arguments inside your configfile! `run_stages.py` won't care
+about them, but your configfile will still see them. `submit_to_condor.py` is even written with
+this in mind&mdash;`submit_to_condor.py <jobname> <path/to/configfile> <your arguments>` should
+work just fine, as long as your arguments don't conflict with the ones used by this suite.
 
 ### moveFiles.py
 This script contains helpful functions for moving completed jobs from the `run_sys`
 to the `store_sys`. It has many useful options; see the in-file documentation.
 
 ### submit_to_condor.py
-This script is built around `moveFiles.py`. It uses the same commandline arguments
-but reappropriates them so that files can be moved around `run_stages.py`, which
-`submit_to_condor.py` runs on Condor in batches. It is recommended to run this file
-using `nohup` or `screen` or `tmux`.
+This script is built around `moveFiles.py`. It uses the same commandline arguments (plus some
+others) but reappropriates them so that files can be moved around `run_stages.py`, which
+`submit_to_condor.py` runs on Condor in batches. You can also pass it any arguments declared in
+your configfile. It is recommended to run this file using `nohup` or `screen` or `tmux`. (See
+the man files for each of these if you're not familiar.)
 
 This is the heart of SU-lhcb-MC-gen. Once you've tested your configfile, you
 should only have to run this script (if nothing goes awry).
