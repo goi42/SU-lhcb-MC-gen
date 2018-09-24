@@ -22,7 +22,7 @@ python submit_to_condor.py mytestjob samples/configuration_files/GeneratorLevelM
 
 `submit_to_condor.py` is your primary interaction point with this suite. It takes a
 name for your job, a configuration file, and the runnumbers you want to use and submits
-them in batches to Condor. (It's best to run it using `nohup` or in a `tmux` or
+them in batches to Condor. (It's best to run it in a `tmux` or
 `screen` session.) It will wait while your jobs run and periodically check on their
 progress, submitting more jobs as they complete. This helps you be a good citizen in
 your use of Condor by avoiding having too many jobs running at once. It will even move
@@ -189,7 +189,7 @@ to the `store_sys`. It has many useful options; see the in-file documentation.
 This script is built around `moveFiles.py`. It uses the same commandline arguments (plus some
 others) but reappropriates them so that files can be moved around `run_stages.py`, which
 `submit_to_condor.py` runs on Condor in batches. You can also pass it any arguments declared in
-your configfile. It is recommended to run this file using `nohup` or `screen` or `tmux`. (See
+your configfile. It is recommended to run this file using `screen` or `tmux`. (See
 the man files for each of these if you're not familiar.)
 
 This is the heart of SU-lhcb-MC-gen. Once you've tested your configfile, you
