@@ -37,7 +37,7 @@ debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
 # -- parameters used for make_stage_list -- #
 # GEN_LEVEL choices, used in ChoicesInList and argument declaration below
 exclusive_choices = ['all', 'none']  # cannot have more than one of these and cannot use these with other_choices; set GEL_LEVEL to other_choices or [], respectively
-other_choices = ['gauss', 'boole', 'moorel0', 'moorehlt1', 'moorehlt2', 'brunel', 'davinci', 'allstuple', 'restrip', 'tuple', 'slim']
+other_choices = ['gauss', 'boole', 'moorel0', 'moorehlt1', 'moorehlt2', 'brunel', 'davinci', 'tuple', 'slim']
 valid_choices = exclusive_choices + other_choices
 
 
