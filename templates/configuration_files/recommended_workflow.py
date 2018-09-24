@@ -1,4 +1,9 @@
 #!/usr/bin/env python2
+'''This is a template for the recommended workflow to-be-used in analysis. It will generate MC, put it through the detector, run the trigger on it, strip it, make it into a tuple, and then make selections on the tuple.
+Note for these last two stages (tuple production and event selection) extra effort is required on the part of the user to write good scripts that can handle the input and output properly.
+This extra effort is rewarded by having this whole workflow handled seamlessly on Condor, meaning less wait time between MC production and actual analysis.
+'''
+
 import os
 from os.path import join as opj, abspath, basename
 import argparse
