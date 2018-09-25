@@ -14,11 +14,13 @@ Don't be shy about contributing! If you have a configuration file you're proud o
 it to the samples! See CONTRIBUTING.md.
 
 ## Getting Started
-To get a feel for the suite, try running a sample configuration file. Just do
+To get a feel for the suite, try running a sample configuration file. Just do (preferably in a
+`screen` or `tmux` session):
 ```bash
 python submit_to_condor.py mytestjob samples/configuration_files/GeneratorLevelMC_2016.py --setlohi 100000 100010
 ```
-(You can use <kbd>^C</kbd> to cancel if you want.)
+(<kbd>^C</kbd> will cancel and <kbd>^Z</kbd> will pause. \[This won't affect any jobs submitted
+to Condor.\])
 
 `submit_to_condor.py` is your primary interaction point with this suite. It takes a
 name for your job, a configuration file, and the runnumbers you want to use and submits
