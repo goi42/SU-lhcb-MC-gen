@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
-'''This is a template for the recommended workflow to-be-used in analysis. It will generate MC, put it through the detector, run the trigger on it, strip it, make it into a tuple, and then make selections on the tuple.
-Note for these last two stages (tuple production and event selection) extra effort is required on the part of the user to write good scripts that can handle the input and output properly.
+'''This is a template for the recommended workflow to-be-used in analysis. It will generate MC, put it through the detector, run the trigger on it, strip it, and make it into a tuple.
+Note for this last stage (tuple production) extra effort is required on the part of the user to write good scripts that can handle the input and output properly. (See below.)
 This extra effort is rewarded by having this whole workflow handled seamlessly on Condor, meaning less wait time between MC production and actual analysis.
 '''
 
@@ -37,7 +37,7 @@ debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
 # -- parameters used for make_stage_list -- #
 # GEN_LEVEL choices, used in ChoicesInList and argument declaration below
 exclusive_choices = ['all', 'none']  # cannot have more than one of these and cannot use these with other_choices; set GEL_LEVEL to other_choices or [], respectively
-other_choices = ['gauss', 'boole', 'moorel0', 'moorehlt1', 'moorehlt2', 'brunel', 'davinci', 'tuple', 'slim']
+other_choices = ['gauss', 'boole', 'moorel0', 'moorehlt1', 'moorehlt2', 'brunel', 'davinci', 'tuple']
 valid_choices = exclusive_choices + other_choices
 
 
@@ -110,8 +110,8 @@ brunelgroup.add_argument('--BRUNEL_VERSION', default='<<<<select default (recomm
 strippinggroup = parser.add_argument_group('Stripping parameters')
 strippinggroup.add_argument('--DAVINCI_STRIPPING_VERSION', default='<<<<select default (recommend v41r4p4 for stripping 28r1)')
 strippinggroup.add_argument('--STRIPPING_CAMPAIGN', default='<<<<select default (e.g., 28r1)>>>>')
-# allstuple and tuple
-tupgroup = parser.add_argument_group('Allstuple and Tuple parameters')
+# tuple
+tupgroup = parser.add_argument_group('Tuple parameters')
 tupgroup.add_argument('--DAVINCI_TUPLE_VERSION', default='<<<<select default (this is the version of DaVinci used to make tuples, e.g., v42r6p1)>>>>')
 
 # -- evaluate and check arguments -- #
@@ -479,9 +479,14 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
     TUPLE_LOG = BASE_NAME + '_tuple.log'
     TUPLE_SCRIPT_NAME = opj(TUPLE_DIR, 'myTuple.py')
     TUPLE_DATA = '<<<<name of output file produced by your options file>>>>'
-    TUPLE_SCRIPT_CONTENT = None
-    with open('<<<</absolute/path/to/options/file/you/want/to/use/to/generate/tuples (make sure this script is able to get and handle the output from the DaVinci stage)>>>>', 'r') as f:
-        TUPLE_SCRIPT_CONTENT = f.read()  # use pre-written options file rather than writing a new one
+    TUPLE_SCRIPT_CONTENT = '''\
+<<<<
+your options file contents here. Make sure it imports the DST (NOT mDST) output from the previous stage. Probably, you can just include the following lines:
+
+from GaudiConf import IOHelper
+IOHelper().inputFiles(["{DAVINCI_DATA}"], clear=True)
+>>>>
+'''.format(DAVINCI_DATA=DAVINCI_DATA)
     stage_list.append(
         {
             'name': TUPLE_STAGE_NAME,
@@ -491,28 +496,6 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
             'to_remove': [],  # bad idea to delete DST...
             'dataname': TUPLE_DATA,
             'run': TUPLE_STAGE_NAME in GEN_LEVEL,
-            'scriptonly': SCRIPT_ONLY,
-        }
-    )
-
-    # -- slim stage -- #
-    SLIM_STAGE_NAME = 'slim'
-    SLIM_DIR = 'slimOpts'
-    SLIM_LOG = BASE_NAME + '_slim.log'
-    SLIM_SCRIPT_NAME = opj(SLIM_DIR, 'mySlim.py')
-    SLIM_DATA = '<<<<name of output file produced by your slim script>>>>'
-    SLIM_SCRIPT_CONTENT = None
-    with open('<<<</absolute/path/to/script/that/will/apply/selections (make sure this script is able to get and handle the output from the tuple stage)>>>>', 'r') as f:
-        SLIM_SCRIPT_CONTENT = f.read()
-    stage_list.append(
-        {
-            'name': SLIM_STAGE_NAME,
-            'scripts': {SLIM_SCRIPT_NAME: SLIM_SCRIPT_CONTENT},
-            'log': SLIM_LOG,
-            'call_string': 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} <<<<commands to run your script>>>>'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION),
-            'to_remove': [],  # bad idea to delete tuple file...
-            'dataname': SLIM_DATA,
-            'run': SLIM_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
     )

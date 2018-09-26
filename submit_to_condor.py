@@ -26,7 +26,7 @@ submit_to_condorgroup.add_argument('--setlohi', nargs=2, type=int, default=None,
                                    help='set the lowest (inclusive) and highest (exclusive) job numbers; overrides values found in runfromstorage')
 submit_to_condorgroup.add_argument('--runfromstorage', action='store_true',
                                    help='move data files from store_sys to run_sys, then submit the moved run numbers (in chunks). (Make sure you use appropriate options for your configfile.)')
-submit_to_condorgroup.add_argument('--chunks_of', type=int, default=1000,
+submit_to_condorgroup.add_argument('--chunks_of', type=int, default=100,
                                    help='how many jobs to move and submit at a time')
 submit_to_condorgroup.add_argument('--donotstore', action='store_true',
                                    help='flag to prevent files from being moved from run_sys to store_sys')

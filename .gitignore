@@ -108,3 +108,6 @@ venv.bak/
 
 # FUSE
 .fuse_hidden*
+
+# Markdown
+._*md
