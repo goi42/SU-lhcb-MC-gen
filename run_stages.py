@@ -215,7 +215,7 @@ Start {name} @   {DATE}
                 pass_req_check = False
                 raise Exception('Something went wrong. Found {r} in {d}, but {r} is already in {w}!'.format(r=required, d=DATA_DIR, w=WORK_DIR))
             makedirsif(os.path.dirname(required))
-            shutil.move(opj(aDIR, required), required)
+            shutil.move(opj(DATA_DIR, required), required)
         # if the file still doesn't exist:
         if not os.path.exists(required):
             pass_req_check = False
