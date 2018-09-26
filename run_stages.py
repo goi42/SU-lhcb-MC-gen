@@ -209,19 +209,17 @@ Start {name} @   {DATE}
     # check required files exist
     pass_req_check = True
     for required in stage['required']:
-        if os.path.isfile(required):
+        required = required.rstrip('/')  # if a directory, leaving the slash at the end could cause confusion
+        if os.path.exists(required):
             continue
-        elif os.path.isfile(opj(DATA_DIR, required)):  # if the file is in DATA_DIR, move it to WORK_DIR
-            if os.path.isfile(required):
+        elif os.path.exists(opj(DATA_DIR, required)):  # if the file is in DATA_DIR, move it to WORK_DIR
+            if os.path.exists(required):
                 pass_req_check = False
                 raise Exception('Something went wrong. Found {r} in {d}, but {r} is already in {w}!'.format(r=required, d=DATA_DIR, w=WORK_DIR))
             makedirsif(os.path.dirname(required))
             shutil.move(opj(aDIR, required), required)
-        elif any(os.path.isdir(x) for x in (required, opj(DATA_DIR, required))):  # if the file is a directory, raise an exception
-            pass_req_check = False
-            raise TypeError('{r} is a directory'.format(r=required))
         # if the file still doesn't exist:
-        if not os.path.isfile(required):
+        if not os.path.exists(required):
             pass_req_check = False
             if SOME_MISSING:
                 with open(GENERAL_LOG, 'a') as f:
