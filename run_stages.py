@@ -111,7 +111,6 @@ RUN_NUMBER      = conf.RUN_NUMBER
 RUN_SYS         = conf.RUN_SYS
 CLEANSTAGES     = conf.CLEANSTAGES
 CLEANWORK       = conf.CLEANWORK
-PRECLEANED      = conf.PRECLEANED
 SOME_MISSING    = conf.SOME_MISSING
 WORK_DIR_EXISTS = conf.WORK_DIR_EXISTS
 make_stage_list = conf.make_stage_list
@@ -148,12 +147,11 @@ RUN_NUMBER:\t\t{RUN_NUMBER}
 RUN_SYS:\t\t{RUN_SYS}
 CLEANSTAGES:\t\t{CLEANSTAGES}
 CLEANWORK:\t\t{CLEANWORK}
-PRECLEANED:\t\t{PRECLEANED}
 SOME_MISSING:\t\t{SOME_MISSING}
 WORK_DIR_EXISTS:\t\t{WORK_DIR_EXISTS}
 make_stage_list:\t\t{make_stage_list}
 ====================================================
-'''.format(NODE=NODE, DATE=DATE, SIGNAL_NAME=SIGNAL_NAME, RUN_NUMBER=RUN_NUMBER, RUN_SYS=RUN_SYS, CLEANSTAGES=CLEANSTAGES, CLEANWORK=CLEANWORK, PRECLEANED=PRECLEANED, SOME_MISSING=SOME_MISSING, WORK_DIR_EXISTS=WORK_DIR_EXISTS, make_stage_list=make_stage_list,))
+'''.format(NODE=NODE, DATE=DATE, SIGNAL_NAME=SIGNAL_NAME, RUN_NUMBER=RUN_NUMBER, RUN_SYS=RUN_SYS, CLEANSTAGES=CLEANSTAGES, CLEANWORK=CLEANWORK, SOME_MISSING=SOME_MISSING, WORK_DIR_EXISTS=WORK_DIR_EXISTS, make_stage_list=make_stage_list,))
 
 # -- make stages -- #
 stage_list = make_stage_list(USER, BASE_NAME)
@@ -170,6 +168,7 @@ for istage, stage in enumerate(stage_list):
         ('log', str),
         ('call_string', str),
         ('to_remove', list),
+        ('required', list),
         ('dataname', str),
         ('run', bool),
         ('scriptonly', bool),
@@ -207,40 +206,40 @@ Start {name} @   {DATE}
             continue
         f.write('starting {name} stage\n'.format(name=stage['name']))
     
-    if PRECLEANED and istage > 0:
-        wkfile = stage_list[istage - 1]['dataname']
-        wkdir  = os.path.dirname(wkfile)
-        flnm   = os.path.basename(wkfile)
-        fnfile = opj(DATA_DIR, flnm)
-        if os.path.isfile(fnfile):
-            # make the work directory
-            if not os.path.isdir(wkdir):
-                os.makedirs(wkdir)
-            # move it from its final directory to its work directory
-            shutil.move(fnfile, wkfile)
-        if os.path.isfile(wkfile):
-            pass
-        elif SOME_MISSING:
-            with open(GENERAL_LOG, 'a') as f:
-                f.write('\n{FILE} not found, but SOME_MISSING option used. Moving on...\n'.format(FILE=wkfile))
+    # check required files exist
+    pass_req_check = True
+    for required in stage['required']:
+        if os.path.isfile(required):
             continue
-        else:
-            raise Exception('PRECLEANED file {FILE} not found for stage {STAGE}'.format(FILE=wkfile, STAGE=stage['name']))
+        elif os.path.isfile(opj(DATA_DIR, required)):  # if the file is in DATA_DIR, move it to WORK_DIR
+            if os.path.isfile(required):
+                pass_req_check = False
+                raise Exception('Something went wrong. Found {r} in {d}, but {r} is already in {w}!'.format(r=required, d=DATA_DIR, w=WORK_DIR))
+            makedirsif(os.path.dirname(required))
+            shutil.move(opj(aDIR, required), required)
+        elif any(os.path.isdir(x) for x in (required, opj(DATA_DIR, required))):  # if the file is a directory, raise an exception
+            pass_req_check = False
+            raise TypeError('{r} is a directory'.format(r=required))
+        # if the file still doesn't exist:
+        if not os.path.isfile(required):
+            pass_req_check = False
+            if SOME_MISSING:
+                with open(GENERAL_LOG, 'a') as f:
+                    f.write('\n{r} not found for stage {s}, but SOME_MISSING option used. Will not run this stage.\n'.format(r=required, s=stage['name']))
+            else:
+                raise Exception('{r} not found for stage {s}'.format(r=required, s=stage['name']))
+    # skip this stage if not pass_req_check
+    if not pass_req_check:
+        if not SOME_MISSING:
+            raise Exception('Not all requirements were found for stage {s}!'.format(s=stage['name']))
+        continue
     
-    if istage == 0 or os.path.isfile(stage_list[istage - 1]['dataname']):
-        # redirect stdout and stderr
-        capture_stdouterr(opj(WORK_DIR, stage['log']))
-        # run stage
-        safecall(PRE_SCRIPT + ' && ' + stage['call_string'])
-        # redirect stdout and stderr
-        capture_stdouterr(GENERAL_LOG)
-    else:
-        with open(GENERAL_LOG, 'a') as f:
-            f.write("\nCannot find {data}\n".format(data=stage_list[istage - 1]['dataname']))
-        if SOME_MISSING:
-            with open(GENERAL_LOG, 'a') as f:
-                f.write("But SOME_MISSING option used. Moving on...\n")
-            continue
+    # redirect stdout and stderr
+    capture_stdouterr(opj(WORK_DIR, stage['log']))
+    # run stage
+    safecall(PRE_SCRIPT + ' && ' + stage['call_string'])
+    # redirect stdout and stderr
+    capture_stdouterr(GENERAL_LOG)
     
     if CLEANSTAGES:
         for torm in stage['to_remove']:
