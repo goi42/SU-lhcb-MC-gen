@@ -3,7 +3,7 @@
 '''
 
 import os
-from os.path import join as opj, abspath, basename
+from os.path import join as opj, basename
 import argparse
 import __main__
 
@@ -11,11 +11,11 @@ import __main__
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in run_stages.py')
 
-parser.add_argument('configfile', type=abspath,
+parser.add_argument('configfile', type=os.path.abspath,
                     help='this argument must be here to ensure integration with run_stages.py')
 parser.add_argument('--SIGNAL_NAME', default='TestProduction')
 parser.add_argument('--RUN_NUMBER', type=int, default=300000)
-parser.add_argument('--RUN_SYS', default='/data2',
+parser.add_argument('--RUN_SYS', default='/data2', type=os.path.abspath,
                     help='system to run on')
 cleangroup = parser.add_argument_group('cleaning options')
 cleangroup.add_argument('--noCLEANSTAGES', dest='CLEANSTAGES', action='store_false',

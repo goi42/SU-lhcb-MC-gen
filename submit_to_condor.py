@@ -1,7 +1,7 @@
 from shutil import move, rmtree
 from subprocess import call
 import os
-from os.path import join as opj, abspath
+from os.path import join as opj
 from time import sleep
 from imp import load_source
 from utils import makelohilist, incfilename
@@ -20,7 +20,7 @@ waittilnotrunning is only overridden for the initial movement (though it doesn't
 '''
 parser.set_defaults(interval=240, maxwaittime=0, waitcheckdelay=60, lessthan=50, waittostart=True)
 submit_to_condorgroup = parser.add_argument_group('submit_to_condor options')
-submit_to_condorgroup.add_argument('configfile', type=abspath,
+submit_to_condorgroup.add_argument('configfile', type=os.path.abspath,
                                    help='the configfile you want run_stages to use')
 submit_to_condorgroup.add_argument('--setlohi', nargs=2, type=int, default=None,
                                    help='set the lowest (inclusive) and highest (exclusive) job numbers; overrides values found in runfromstorage')

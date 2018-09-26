@@ -202,13 +202,13 @@ string for each argument to understand what it does.
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in run_stages.py')
 
-parser.add_argument('configfile', type=abspath,
+parser.add_argument('configfile', type=os.path.abspath,
                     help='this argument must be here to ensure integration with run_stages.py')
 parser.add_argument('--SIGNAL_NAME', default='TestProduction',
                     help='what you want the organizing directory for your job to be named. submit_to_condor.py sets this parameter when it submits jobs.')
 parser.add_argument('--RUN_NUMBER', type=int, default=300000,
                     help='set equal to the job number by submit_to_condor.py, which allows the user to change script behavior for each job, e.g., set a different random seed.')
-parser.add_argument('--RUN_SYS', default='/data2',
+parser.add_argument('--RUN_SYS', default='/data2', type=os.path.abspath,
                     help='system to run on')
 cleangroup = parser.add_argument_group('cleaning options')
 cleangroup.add_argument('--noCLEANSTAGES', dest='CLEANSTAGES', action='store_false',

@@ -23,9 +23,9 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='move completed MC jobs to final destination. Assumes CLEANWORK was used in run_stages.py. Will ignore a given output if log/ but no data/')
 parser.add_argument('signal_name',
                     help='name used to sort output')
-parser.add_argument('--run_sys', default='/data2',
+parser.add_argument('--run_sys', default='/data2', type=os.path.abspath,
                     help='system where files are created')
-parser.add_argument('--store_sys', default='/data6',
+parser.add_argument('--store_sys', default='/data6', type=os.path.abspath,
                     help='system where files should be stored')
 parser.add_argument('--user', default=getpass.getuser(),
                     help='username (used to locate "work", "data", and "log" directories)')
