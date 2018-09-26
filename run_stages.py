@@ -262,11 +262,11 @@ if CLEANWORK:
     with open(GENERAL_LOG, 'a') as f:
         f.write('contents of {WORK_DIR}:\n'.format(WORK_DIR=WORK_DIR))
         f.write(str(os.listdir(WORK_DIR)))
-    for datafile in [x['dataname'] for x in stage_list]:
+    for datafile in [x['dataname'] for x in stage_list] + [x['required'] for x in stage_list]:
         if os.path.exists(datafile):
             incmove(datafile, DATA_DIR, diroverride=True)
     for f in os.listdir(WORK_DIR):  # move everything else to logdir
         incmove(f, LOG_DIR, diroverride=True)
-            
+    
     os.chdir('../')
     shutil.rmtree(WORK_DIR)
