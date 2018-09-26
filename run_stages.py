@@ -155,7 +155,7 @@ make_stage_list:\t\t{make_stage_list}
 ====================================================
 '''.format(NODE=NODE, DATE=DATE, SIGNAL_NAME=SIGNAL_NAME, RUN_NUMBER=RUN_NUMBER, RUN_SYS=RUN_SYS, CLEANSTAGES=CLEANSTAGES, CLEANWORK=CLEANWORK, PRECLEANED=PRECLEANED, SOME_MISSING=SOME_MISSING, WORK_DIR_EXISTS=WORK_DIR_EXISTS, make_stage_list=make_stage_list,))
 
-# -- run stages -- #
+# -- make stages -- #
 stage_list = make_stage_list(USER, BASE_NAME)
 
 # verify stage_list
@@ -176,7 +176,8 @@ for istage, stage in enumerate(stage_list):
     ]
     for nm, typ in to_check:
         check_stage(istage, stage, nm, typ)
-    
+
+# -- loop stages -- #
 for istage, stage in enumerate(stage_list):
     # is this stage selected to run?
     if not stage['run']:
@@ -253,6 +254,7 @@ Finish {name} @   {DATE}
 # -- mv files to final location and cleanup -- #
 if CLEANWORK:
     with open(GENERAL_LOG, 'a') as f:
+        f.write('contents of {WORK_DIR}:\n'.format(WORK_DIR=WORK_DIR))
         f.write(str(os.listdir(WORK_DIR)))
     for datafile in [x['dataname'] for x in stage_list]:
         if os.path.exists(datafile):
