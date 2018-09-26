@@ -14,7 +14,7 @@ Arguments specific to this script are in the 'submit_to_condor options' group.
 Unknown arguments are assumed to be intended for configfile.
 This script uses a number of arguments from moveFiles.py (with some changes to default values; use --help), but it overrides some of them.
 (minallowed, maxallowed, justdata, lessthan, copyfrom, waittilnotrunning are overriden.
-lessthan is overridden for initial movement and for the final submission chunk (set to 0).
+lessthan is overridden for all movement from store_sys and for the final chunk of movement to store_sys (set to 0).
 copyfrom is only overriden for the move back (set to None) (therefore, specifying copyfrom copies from store_sys to run_sys but then moves them from store_sys to run_sys under signal_name).
 waittilnotrunning is only overridden for the initial movement (though it doesn't actually matter since justdata gets used anyway).)
 '''
@@ -73,7 +73,7 @@ for minnum, maxnum in submissionlist:
     if args.runfromstorage:
         # move files to run_sys
         print 'moving files from {} to {}...'.format(args.store_sys, args.run_sys)
-        succeeded = moveFiles(store_sys=args.run_sys, run_sys=args.store_sys, minallowed=minnum, maxallowed=maxnum, justdata=True, waittilnotrunning=False, signal_name=args.signal_name, user=args.user, lessthan=args.lessthan, copyfrom=args.copyfrom)  # returns True when done
+        succeeded = moveFiles(store_sys=args.run_sys, run_sys=args.store_sys, minallowed=minnum, maxallowed=maxnum, justdata=True, lessthan=0, waittilnotrunning=False, signal_name=args.signal_name, user=args.user, copyfrom=args.copyfrom)  # returns True when done
         if not succeeded:
             raise Exception('problem with moveFiles. [{}, {})'.format(minnum, maxnum))
     
