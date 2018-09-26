@@ -215,8 +215,6 @@ cleangroup.add_argument('--noCLEANSTAGES', dest='CLEANSTAGES', action='store_fal
                         help='deletes data from earlier stages as it goes.')
 cleangroup.add_argument('--noCLEANWORK', dest='CLEANWORK', action='store_false',
                         help='moves files out of work directory.')
-cleangroup.add_argument('--PRECLEANED', action='store_true',
-                        help='if this script has already been run with CLEANWORK active, you can specify this argument so that it moves appropriate files to the work directory first. Used automatically by submit_to_condor.py')
 cleangroup.add_argument('--SOME_MISSING', action='store_true',
                         help='if running a later stage, you may specify this argument to let the script terminate without errors if the input files are missing. Used automatically by submit_to_condor.py')
 debuggroup = parser.add_argument_group('debugging options')
@@ -285,9 +283,12 @@ sets the low (inclusive) and high (exclusive) `RUN_NUMBER` you want to use. So
 ##### `--runfromstorage`
 Use this option if you want to run over pre-existing runs. It will find all the
 run numbers in the `DATA_DIR` on `store_sys` for this `SIGNAL_NAME`, and move
-this data to the `run_sys`. Since `submit_to_condor.py` always uses the
-`--PRECLEANED` option (see argument documentation for `run_stages.py` above),
-this data will be available for whatever stages you submit now.
+this data to the `run_sys`, where `run_stages.py` will be able to get to it.
+
+> `run_stages.py` looks at the `'required'` key in each stage's dictionary and
+> moves the files listed there from the `DATA_DIR` to the `WORK_DIR` so that
+> they are available for the stage to use. Don't worry &mdash; they get put back
+> into the `DATA_DIR` just as though you had listed them as data files.
 
 This is a powerful utility that means you do not have to run all of your stages
 at once. For example, suppose you want to generate MC using

@@ -86,7 +86,7 @@ for minnum, maxnum in submissionlist:
         f.write('ConfigFile = {}\n'.format(args.configfile))
         f.write('StartRun   = {}\n'.format(minnum))
         f.write('RunNumber  = $$([$(StartRun)+$(process)])\n')
-        f.write('Arguments  = $(ConfigFile) --SIGNAL_NAME {} --RUN_NUMBER $(RunNumber) --PRECLEANED --SOME_MISSING {}\n'.format(args.signal_name, args_for_configfile))
+        f.write('Arguments  = $(ConfigFile) --SIGNAL_NAME {} --RUN_NUMBER $(RunNumber) --SOME_MISSING {}\n'.format(args.signal_name, args_for_configfile))
         if args.test:
             f.write('Error      = error_{}_{}_$(RunNumber)_$(cluster)_$(process).log\n'.format(submissionfilename, args.signal_name))
         f.write('Queue {}\n'.format(Nqueue))
