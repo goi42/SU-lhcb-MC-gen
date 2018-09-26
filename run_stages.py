@@ -132,7 +132,7 @@ if os.path.isdir(WORK_DIR) and not WORK_DIR_EXISTS:
 for d in (DATA_DIR, LOG_DIR, WORK_DIR):
     if not os.path.isdir(d):
         os.makedirs(d)
-os.chdir(WORK_DIR)  # passed references in this script are absolute, but the output is generally sent to the current working directory
+os.chdir(WORK_DIR)  # all references should be relative to the WORK_DIR or absolute
 
 # -- redirect stdout and stderr -- #
 capture_stdouterr(GENERAL_LOG)
