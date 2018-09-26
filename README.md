@@ -14,6 +14,12 @@ need there.
 Don't be shy about contributing! If you have a configuration file you're proud
 of, add it to the samples! See CONTRIBUTING.md.
 
+## Requirements
+This suite is designed to work with python 2.7 on lhcb-dev.
+
+It is recommended, but not required, that users install the
+[`progressbar`](https://progressbar-2.readthedocs.io/en/latest/) package.
+
 ## Getting Started
 To get a feel for the suite, try running a sample configuration file. Just do
 (preferably in a `screen` or `tmux` session):
