@@ -65,7 +65,7 @@ args = parser.parse_args() if IsMain else parser.parse_args(args=['DUMMYSIGNALNA
 def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed, justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, waittilnotrunning=args.waittilnotrunning):
     '''justdata changes behavior in complicated ways--pay attention
     '''
-    print '----------------moveFiles-----------------'
+    # print '----------------moveFiles-----------------'
     
     if justdata and lessthan > 0:
         raise ValueError('lessthan > 0 does not do anything if justdata=True')
@@ -129,7 +129,7 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
         return subdirlist
     
     def endstep():
-        print '----------------moveFiles done------------'
+        # print '----------------moveFiles done------------'
         if justdata:
             # -- ensure all the directories have been moved or copied
             return not makesubdirlist() if copyfrom is None else (len(makesubdirlist(dtdir_old)) == len(makesubdirlist(dtdir_new)))
