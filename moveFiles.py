@@ -4,7 +4,7 @@ from os.path import join as opj, isdir, exists
 from shutil import move, copy, copytree
 from subprocess import check_output
 import argparse
-from utils import nojobsrunning, Njobs, cpr, updateprogress
+from utils import nojobsrunning, Njobs, cpr, updateprogress, incname
 
 IsMain = __name__ == '__main__'
 
@@ -173,10 +173,11 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
             for oldthname in os.listdir(oldd):
                 oldth = opj(oldd, oldthname)
                 newthname = oldthname if allcmNone else oldthname.replace(cmfrom, signal_name)
-                newth = opj(newd, newthname)
+                newth = incname(opj(newd, newthname))
                 
                 # -- check to make sure new things do not exist
                 if exists(newth):
+                    # sanity check only: incname above ought to prevent this
                     raise IOError('{} already exists!'.format(newth))
                 
                 # -- do the move or copy
