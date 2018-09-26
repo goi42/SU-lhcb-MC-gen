@@ -179,6 +179,13 @@ for istage, stage in enumerate(stage_list):
 
 # -- loop stages -- #
 for istage, stage in enumerate(stage_list):
+    DATE = str(datetime.datetime.now())
+    with open(GENERAL_LOG, 'a') as f:
+        f.write('''\
+====================================================
+Start {name} @   {DATE}
+====================================================
+'''.format(name=stage['name'], DATE=DATE))
     # is this stage selected to run?
     if not stage['run']:
         with open(GENERAL_LOG, 'a') as f:
