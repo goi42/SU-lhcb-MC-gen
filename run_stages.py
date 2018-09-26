@@ -140,16 +140,16 @@ capture_stdouterr(GENERAL_LOG)
 with open(GENERAL_LOG, 'w') as f:
     f.write('''\
 ====================================================
-NODE:\t\t{NODE}
-START@:\t\t{DATE}
+NODE:\t\t\t{NODE}
+START@:\t\t\t{DATE}
 SIGNAL_NAME:\t\t{SIGNAL_NAME}
 RUN_NUMBER:\t\t{RUN_NUMBER}
 RUN_SYS:\t\t{RUN_SYS}
 CLEANSTAGES:\t\t{CLEANSTAGES}
 CLEANWORK:\t\t{CLEANWORK}
 SOME_MISSING:\t\t{SOME_MISSING}
-WORK_DIR_EXISTS:\t\t{WORK_DIR_EXISTS}
-make_stage_list:\t\t{make_stage_list}
+WORK_DIR_EXISTS:\t{WORK_DIR_EXISTS}
+make_stage_list:\t{make_stage_list}
 ====================================================
 '''.format(NODE=NODE, DATE=DATE, SIGNAL_NAME=SIGNAL_NAME, RUN_NUMBER=RUN_NUMBER, RUN_SYS=RUN_SYS, CLEANSTAGES=CLEANSTAGES, CLEANWORK=CLEANWORK, SOME_MISSING=SOME_MISSING, WORK_DIR_EXISTS=WORK_DIR_EXISTS, make_stage_list=make_stage_list,))
 
@@ -178,6 +178,12 @@ for istage, stage in enumerate(stage_list):
 
 # -- loop stages -- #
 for istage, stage in enumerate(stage_list):
+    # is this stage selected to run?
+    if not stage['run']:
+        with open(GENERAL_LOG, 'a') as f:
+            f.write('{name} stage not selected to run. Next stage...\n'.format(name=stage['name']))
+        continue
+
     DATE = str(datetime.datetime.now())
     with open(GENERAL_LOG, 'a') as f:
         f.write('''\
@@ -185,15 +191,7 @@ for istage, stage in enumerate(stage_list):
 Start {name} @   {DATE}
 ====================================================
 '''.format(name=stage['name'], DATE=DATE))
-    # is this stage selected to run?
-    if not stage['run']:
-        with open(GENERAL_LOG, 'a') as f:
-            f.write('{name} stage not selected to run. Next stage...\n'.format(name=stage['name']))
-        continue
         
-    # declare stage parameters
-    stagedata = opj(WORK_DIR, stage['dataname'])
-    
     # create stage scripts
     with open(GENERAL_LOG, 'a') as f:
         f.write("making {name} scripts\n".format(name=stage['name']))
