@@ -25,38 +25,39 @@ def makedirsif(d):
         os.makedirs(d)
 
 
-def incmove(afile, adir, suffix='ConflictedFiles', diroverride=False, i_start=0):
-    '''moves afile to adir
-    if adir/afile exists, moves to adir_suffix<i>, where <i> is the first integer directory without afile in it
-    diroverride alows afile to be a directory instead of a file
+def incname(afile, suffix='_ConflictedCopy', i_start=1):
+    '''if afile exists, returns afilesuffix<i>, where <i> is the first integer name unused
+    else, returns afile
+    This is a duplicate of the function declared in utils--run_stages.py should not import from local files
     '''
-    from os.path import isfile, isdir
-    import shutil
+    from os.path import exists, splitext
     
-    if not (isfile(afile) and isdir(adir)):
-        if isdir(afile) and isdir(adir) and diroverride:
-            pass
+    def incname_suffix(afile, suffix, i):
+        befext, ext = splitext(afile)
+        nfile = befext + suffix + str(i) + ext
+        if exists(nfile):
+            return incname_suffix(afile, suffix, i + 1)
         else:
-            raise TypeError('\n{F} is a file? {Ft}\n{D} is a dir? {Dt}\ndiroverride? {DOR}'.format(F=afile, Ft=str(os.path.isfile(afile)), D=adir, Dt=str(os.path.isdir(adir)), DOR=diroverride))
+            return nfile
     
-    def incmove_suffix(afile, adir, suffix, i):
-        suffdir = '{adir}_{suff}{i}'.format(adir=adir.strip('/'), suff=suffix, i=i)
-        makedirsif(suffdir)
-        try:
-            shutil.move(afile, suffdir)
-        except shutil.Error as e:
-            if all(x in str(e) for x in ('Destination path', 'already exists')):
-                incmove_suffix(afile, adir, suffix, i + 1)
-            else:
-                raise
-    
-    try:
-        shutil.move(afile, adir)
-    except shutil.Error as e:
-        if all(x in str(e) for x in ('Destination path', 'already exists')):
-            incmove_suffix(afile, adir, suffix, i_start)
-        else:
-            raise
+    if exists(afile):
+        return incname_suffix(afile, suffix, i_start)
+    else:
+        return afile
+
+
+def incmove(afile, adir):
+    '''moves afile to adir
+    increments conflicting names using incname
+    afile can be a directory
+    '''
+    if not os.path.isdir(adir):
+        raise TypeError('{adir} is not a directory!'.format(adir=adir))
+    if not os.path.exists(afile):
+        raise IOError('{afile} does not exist!'.format(afile=afile))
+    dest = incname(opj(adir, afile))
+    makedirsif(os.path.dirname(dest))
+    shutil.move(afile, dest)
 
 
 def safecall(acommand):
@@ -258,11 +259,10 @@ if CLEANWORK:
     with open(GENERAL_LOG, 'a') as f:
         f.write('contents of {WORK_DIR}:\n'.format(WORK_DIR=WORK_DIR))
         f.write(str(os.listdir(WORK_DIR)))
-    for d in set([y for x in stage_list for y in x['required'] + x['data']]):
-        if os.path.exists(d):
-            incmove(d, DATA_DIR, diroverride=True)
+    for d in set([y for x in stage_list for y in x['required'] + x['data'] if os.path.exists(y)]):
+        incmove(d, DATA_DIR)
     for f in os.listdir(WORK_DIR):  # move everything else to logdir
-        incmove(f, LOG_DIR, diroverride=True)
+        incmove(f, LOG_DIR)
     
     os.chdir('../')
     shutil.rmtree(WORK_DIR)
