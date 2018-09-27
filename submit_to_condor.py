@@ -79,7 +79,7 @@ for minnum, maxnum in submissionlist:
     
     # create condor submission file
     print 'writing condor_submit file...'
-    submissionfilename = incfilename('MCGen_{}.submit'.format(args.signal_name))
+    submissionfilename = incfilename('CondorSubmission_{}.submit'.format(args.signal_name))
     Nqueue = maxnum - minnum
     with open(submissionfilename, 'w') as f:
         f.write('Executable = run_stages.py\n')
