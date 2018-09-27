@@ -296,12 +296,12 @@ at once. For example, suppose you want to generate MC using
 `samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py`. You
 could generate just through the `Brunel` stage by doing:
 ```bash
-python submit_to_condor.py myMCgen samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py --GEN_LEVEL "gauss boole moorel0 moorehlt1 moorehlt2 brunel" --setlohi 100000 100100
+python submit_to_condor.py myMCgen samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py --GEN_LEVEL gauss boole moorel0 moorehlt1 moorehlt2 brunel --setlohi 100000 100100
 ```
 Once these jobs finish, if you decide you _do_ want to run the DaVinci stage to
 get stripped data, you could do:
 ```bash
-python submit_to_condor.py myMCgen samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py --GEN_LEVEL "davinci" --runfromstorage
+python submit_to_condor.py myMCgen samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py --GEN_LEVEL davinci --runfromstorage
 ```
 This will take all the MC that you successfully generated before and move the
 data files to where DaVinci can get them on the `run_sys` instead of leaving
@@ -311,7 +311,7 @@ You can still specify a specific job range with `--setlohi` if you use
 `--runfromstorage`. Suppose you only wanted to run the DaVinci stage over the
 first 50 jobs (for whatever reason). Just add `--setlohi 100000 100050`:
 ```bash
-python submit_to_condor.py myMCgen samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py --GEN_LEVEL "davinci" --runfromstorage --setlohi 100000 100050
+python submit_to_condor.py myMCgen samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py --GEN_LEVEL davinci --runfromstorage --setlohi 100000 100050
 ```
 Note that using `--setlohi 0 100050` would have had the same effect: When
 `--runfromstorage` is specified, `--setlohi` just ensures the run numbers fall
