@@ -169,7 +169,7 @@ for istage, stage in enumerate(stage_list):
         ('call_string', str),
         ('to_remove', list),
         ('required', list),
-        ('dataname', str),
+        ('data', list),
         ('run', bool),
         ('scriptonly', bool),
     ]
@@ -258,9 +258,9 @@ if CLEANWORK:
     with open(GENERAL_LOG, 'a') as f:
         f.write('contents of {WORK_DIR}:\n'.format(WORK_DIR=WORK_DIR))
         f.write(str(os.listdir(WORK_DIR)))
-    for datafile in set([y for x in stage_list for y in x['required'] + [x['dataname']]]):
-        if os.path.exists(datafile):
-            incmove(datafile, DATA_DIR, diroverride=True)
+    for d in set([y for x in stage_list for y in x['required'] + x['data']]):
+        if os.path.exists(d):
+            incmove(d, DATA_DIR, diroverride=True)
     for f in os.listdir(WORK_DIR):  # move everything else to logdir
         incmove(f, LOG_DIR, diroverride=True)
     
