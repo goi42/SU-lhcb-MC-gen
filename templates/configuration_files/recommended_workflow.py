@@ -183,7 +183,7 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
             'call_string': 'lb-run -c best --user-area <<<</absolute/path/to/the/directory/containing/Gauss[Dev]_version>>>> <<<<Gauss[Dev]>>>>/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
             'to_remove': [],
             'required': [],
-            'dataname': GAUSS_DATA,
+            'data': [GAUSS_DATA],
             'run': GAUSS_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -225,7 +225,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'call_string': 'lb-run -c best Boole/{BOOLE_VERSION} gaudirun.py {BOOLE_SCRIPT_NAME}'.format(BOOLE_VERSION=BOOLE_VERSION, BOOLE_SCRIPT_NAME=BOOLE_SCRIPT_NAME),
             'to_remove': [GAUSS_DATA],
             'required': [GAUSS_DATA],
-            'dataname': BOOLE_DATA,
+            'data': [BOOLE_DATA],
             'run': BOOLE_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -277,7 +277,7 @@ L0App().outputFile = '{MOOREL0_DATA}'
             'call_string': 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREL0_SCRIPT_NAME}'.format(MOORE_VERSION=MOORE_VERSION, MOOREL0_SCRIPT_NAME=MOOREL0_SCRIPT_NAME),
             'to_remove': [BOOLE_DATA],
             'required': [BOOLE_DATA],
-            'dataname': MOOREL0_DATA,
+            'data': [MOOREL0_DATA],
             'run': MOOREL0_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -328,7 +328,7 @@ Moore().outputFile = '{MOOREHLT1_DATA}'
             'call_string': 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT1_SCRIPT_NAME}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT1_SCRIPT_NAME=MOOREHLT1_SCRIPT_NAME),
             'to_remove': [MOOREL0_DATA],
             'required': [MOOREL0_DATA],
-            'dataname': MOOREHLT1_DATA,
+            'data': [MOOREHLT1_DATA],
             'run': MOOREHLT1_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -380,7 +380,7 @@ Moore().outputFile = '{MOOREHLT2_DATA}'
             'call_string': 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT2_SCRIPT_NAME}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT2_SCRIPT_NAME=MOOREHLT2_SCRIPT_NAME),
             'to_remove': [MOOREHLT1_DATA],
             'required': [MOOREHLT1_DATA],
-            'dataname': MOOREHLT2_DATA,
+            'data': [MOOREHLT2_DATA],
             'run': MOOREHLT2_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -424,7 +424,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'call_string': 'lb-run -c best Brunel/{BRUNEL_VERSION} gaudirun.py {BRUNEL_SCRIPT_NAME}'.format(BRUNEL_VERSION=BRUNEL_VERSION, BRUNEL_SCRIPT_NAME=BRUNEL_SCRIPT_NAME),
             'to_remove': [MOOREHLT2_DATA],
             'required': [MOOREHLT2_DATA],
-            'dataname': BRUNEL_DATA,
+            'data': [BRUNEL_DATA],
             'run': BRUNEL_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -472,7 +472,7 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
             'call_string': 'lb-run -c best DaVinci/{DAVINCI_STRIPPING_VERSION} gaudirun.py {DAVINCI_SCRIPT_NAME}'.format(DAVINCI_STRIPPING_VERSION=DAVINCI_STRIPPING_VERSION, DAVINCI_SCRIPT_NAME=DAVINCI_SCRIPT_NAME),
             'to_remove': [BRUNEL_DATA],
             'required': [BRUNEL_DATA],
-            'dataname': DAVINCI_DATA,
+            'data': [DAVINCI_DATA],
             'run': DAVINCI_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -500,7 +500,7 @@ IOHelper().inputFiles(["{DAVINCI_DATA}"], clear=True)
             'call_string': 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} gaudirun.py {TUPLE_SCRIPT_NAME}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, TUPLE_SCRIPT_NAME=TUPLE_SCRIPT_NAME),
             'to_remove': [],  # bad idea to delete DST...
             'required': [DAVINCI_DATA],
-            'dataname': TUPLE_DATA,
+            'data': [TUPLE_DATA],
             'run': TUPLE_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }

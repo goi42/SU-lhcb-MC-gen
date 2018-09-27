@@ -86,7 +86,7 @@ importOptions("$LBPYTHIA8ROOT/options/Pythia8.py")
             'call_string': 'lb-run -c best Gauss/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
             'to_remove': [],
             'required': [],
-            'dataname': 'Gauss-{ET}-{NE}ev-{DT}.xgen'.format(ET=EVENT_TYPE, NE=NUM_EVENT, DT=str(datetime.today()).split(' ')[0].replace('-', '')),  # output filename includes reference to the date
+            'data': ['Gauss-{ET}-{NE}ev-{DT}.xgen'.format(ET=EVENT_TYPE, NE=NUM_EVENT, DT=str(datetime.today()).split(' ')[0].replace('-', ''))],  # output filename includes reference to the date
             'run': True,
             'scriptonly': False,
         }

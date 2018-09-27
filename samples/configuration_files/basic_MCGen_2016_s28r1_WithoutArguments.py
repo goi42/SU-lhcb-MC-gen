@@ -80,7 +80,7 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
             'call_string': 'lb-run -c best Gauss/v49r10 gaudirun.py {GAUSS_SCRIPT_NAME}'.format(GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
             'to_remove': [],
             'required': [],
-            'dataname': GAUSS_DATA,
+            'data': [GAUSS_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -126,7 +126,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'call_string': 'lb-run -c best Boole/v30r2p1 gaudirun.py {BOOLE_SCRIPT_NAME}'.format(BOOLE_SCRIPT_NAME=BOOLE_SCRIPT_NAME),
             'to_remove': [GAUSS_DATA],
             'required': [GAUSS_DATA],
-            'dataname': BOOLE_DATA,
+            'data': [BOOLE_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -177,7 +177,7 @@ L0App().outputFile = '{MOOREL0_DATA}'
             'call_string': 'lb-run -c best Moore/v25r4 gaudirun.py {MOOREL0_SCRIPT_NAME}'.format(MOOREL0_SCRIPT_NAME=MOOREL0_SCRIPT_NAME),
             'to_remove': [BOOLE_DATA],
             'required': [BOOLE_DATA],
-            'dataname': MOOREL0_DATA,
+            'data': [MOOREL0_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -227,7 +227,7 @@ Moore().outputFile = '{MOOREHLT1_DATA}'
             'call_string': 'lb-run -c best Moore/v25r4 gaudirun.py {MOOREHLT1_SCRIPT_NAME}'.format(MOOREHLT1_SCRIPT_NAME=MOOREHLT1_SCRIPT_NAME),
             'to_remove': [MOOREL0_DATA],
             'required': [MOOREL0_DATA],
-            'dataname': MOOREHLT1_DATA,
+            'data': [MOOREHLT1_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -275,7 +275,7 @@ Moore().outputFile = '{MOOREHLT2_DATA}'
             'call_string': 'lb-run -c best Moore/v25r4 gaudirun.py {MOOREHLT2_SCRIPT_NAME}'.format(MOOREHLT2_SCRIPT_NAME=MOOREHLT2_SCRIPT_NAME),
             'to_remove': [MOOREHLT1_DATA],
             'required': [MOOREHLT1_DATA],
-            'dataname': MOOREHLT2_DATA,
+            'data': [MOOREHLT2_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -323,7 +323,7 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'call_string': 'lb-run -c best Brunel/v50r3 gaudirun.py {BRUNEL_SCRIPT_NAME}'.format(BRUNEL_SCRIPT_NAME=BRUNEL_SCRIPT_NAME),
             'to_remove': [MOOREHLT2_DATA],
             'required': [MOOREHLT2_DATA],
-            'dataname': BRUNEL_DATA,
+            'data': [BRUNEL_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -372,7 +372,7 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
             'call_string': 'lb-run -c best DaVinci/v41r4p4 gaudirun.py {DAVINCI_SCRIPT_NAME}'.format(DAVINCI_SCRIPT_NAME=DAVINCI_SCRIPT_NAME),
             'to_remove': [BRUNEL_DATA],
             'required': [BRUNEL_DATA],
-            'dataname': DAVINCI_DATA,
+            'data': [DAVINCI_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
