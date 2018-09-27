@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 import sys
 import os
-from os.path import join as opj, abspath
+from os.path import join as opj
 from copy import copy
 import shutil
 import datetime
@@ -25,38 +25,39 @@ def makedirsif(d):
         os.makedirs(d)
 
 
-def incmove(afile, adir, suffix='ConflictedFiles', diroverride=False, i_start=0):
-    '''moves afile to adir
-    if adir/afile exists, moves to adir_suffix<i>, where <i> is the first integer directory without afile in it
-    diroverride alows afile to be a directory instead of a file
+def incname(afile, suffix='_ConflictedCopy', i_start=1):
+    '''if afile exists, returns afilesuffix<i>, where <i> is the first integer name unused
+    else, returns afile
+    This is a duplicate of the function declared in utils--run_stages.py should not import from local files
     '''
-    from os.path import isfile, isdir
-    import shutil
+    from os.path import exists, splitext
     
-    if not (isfile(afile) and isdir(adir)):
-        if isdir(afile) and isdir(adir) and diroverride:
-            pass
+    def incname_suffix(afile, suffix, i):
+        befext, ext = splitext(afile)
+        nfile = befext + suffix + str(i) + ext
+        if exists(nfile):
+            return incname_suffix(afile, suffix, i + 1)
         else:
-            raise TypeError('\n{F} is a file? {Ft}\n{D} is a dir? {Dt}\ndiroverride? {DOR}'.format(F=afile, Ft=str(os.path.isfile(afile)), D=adir, Dt=str(os.path.isdir(adir)), DOR=diroverride))
+            return nfile
     
-    def incmove_suffix(afile, adir, suffix, i):
-        suffdir = '{adir}_{suff}{i}'.format(adir=adir.strip('/'), suff=suffix, i=i)
-        makedirsif(suffdir)
-        try:
-            shutil.move(afile, suffdir)
-        except shutil.Error as e:
-            if all(x in str(e) for x in ('Destination path', 'already exists')):
-                incmove_suffix(afile, adir, suffix, i + 1)
-            else:
-                raise
-    
-    try:
-        shutil.move(afile, adir)
-    except shutil.Error as e:
-        if all(x in str(e) for x in ('Destination path', 'already exists')):
-            incmove_suffix(afile, adir, suffix, i_start)
-        else:
-            raise
+    if exists(afile):
+        return incname_suffix(afile, suffix, i_start)
+    else:
+        return afile
+
+
+def incmove(afile, adir):
+    '''moves afile to adir
+    increments conflicting names using incname
+    afile can be a directory
+    '''
+    if not os.path.isdir(adir):
+        raise TypeError('{adir} is not a directory!'.format(adir=adir))
+    if not os.path.exists(afile):
+        raise IOError('{afile} does not exist!'.format(afile=afile))
+    dest = incname(opj(adir, afile))
+    makedirsif(os.path.dirname(dest))
+    shutil.move(afile, dest)
 
 
 def safecall(acommand):
@@ -100,7 +101,7 @@ NODE = socket.gethostname()
 # -- set or pass job parameters -- #
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('configfile', type=abspath,
+parser.add_argument('configfile', type=os.path.abspath,
                     help='')
 args = parser.parse_known_args()[0]  # abandon unknown args, assumed to be handled by configfile
 configfile = args.configfile
@@ -111,7 +112,6 @@ RUN_NUMBER      = conf.RUN_NUMBER
 RUN_SYS         = conf.RUN_SYS
 CLEANSTAGES     = conf.CLEANSTAGES
 CLEANWORK       = conf.CLEANWORK
-PRECLEANED      = conf.PRECLEANED
 SOME_MISSING    = conf.SOME_MISSING
 WORK_DIR_EXISTS = conf.WORK_DIR_EXISTS
 make_stage_list = conf.make_stage_list
@@ -132,7 +132,7 @@ if os.path.isdir(WORK_DIR) and not WORK_DIR_EXISTS:
 for d in (DATA_DIR, LOG_DIR, WORK_DIR):
     if not os.path.isdir(d):
         os.makedirs(d)
-os.chdir(WORK_DIR)  # passed references in this script are absolute, but the output is generally sent to the current working directory
+os.chdir(WORK_DIR)  # all references should be relative to the WORK_DIR or absolute
 
 # -- redirect stdout and stderr -- #
 capture_stdouterr(GENERAL_LOG)
@@ -141,21 +141,20 @@ capture_stdouterr(GENERAL_LOG)
 with open(GENERAL_LOG, 'w') as f:
     f.write('''\
 ====================================================
-NODE:\t\t{NODE}
-START@:\t\t{DATE}
+NODE:\t\t\t{NODE}
+START@:\t\t\t{DATE}
 SIGNAL_NAME:\t\t{SIGNAL_NAME}
 RUN_NUMBER:\t\t{RUN_NUMBER}
 RUN_SYS:\t\t{RUN_SYS}
 CLEANSTAGES:\t\t{CLEANSTAGES}
 CLEANWORK:\t\t{CLEANWORK}
-PRECLEANED:\t\t{PRECLEANED}
 SOME_MISSING:\t\t{SOME_MISSING}
-WORK_DIR_EXISTS:\t\t{WORK_DIR_EXISTS}
-make_stage_list:\t\t{make_stage_list}
+WORK_DIR_EXISTS:\t{WORK_DIR_EXISTS}
+make_stage_list:\t{make_stage_list}
 ====================================================
-'''.format(NODE=NODE, DATE=DATE, SIGNAL_NAME=SIGNAL_NAME, RUN_NUMBER=RUN_NUMBER, RUN_SYS=RUN_SYS, CLEANSTAGES=CLEANSTAGES, CLEANWORK=CLEANWORK, PRECLEANED=PRECLEANED, SOME_MISSING=SOME_MISSING, WORK_DIR_EXISTS=WORK_DIR_EXISTS, make_stage_list=make_stage_list,))
+'''.format(NODE=NODE, DATE=DATE, SIGNAL_NAME=SIGNAL_NAME, RUN_NUMBER=RUN_NUMBER, RUN_SYS=RUN_SYS, CLEANSTAGES=CLEANSTAGES, CLEANWORK=CLEANWORK, SOME_MISSING=SOME_MISSING, WORK_DIR_EXISTS=WORK_DIR_EXISTS, make_stage_list=make_stage_list,))
 
-# -- run stages -- #
+# -- make stages -- #
 stage_list = make_stage_list(USER, BASE_NAME)
 
 # verify stage_list
@@ -170,23 +169,30 @@ for istage, stage in enumerate(stage_list):
         ('log', str),
         ('call_string', str),
         ('to_remove', list),
-        ('dataname', str),
+        ('required', list),
+        ('data', list),
         ('run', bool),
         ('scriptonly', bool),
     ]
     for nm, typ in to_check:
         check_stage(istage, stage, nm, typ)
-    
+
+# -- loop stages -- #
 for istage, stage in enumerate(stage_list):
     # is this stage selected to run?
     if not stage['run']:
         with open(GENERAL_LOG, 'a') as f:
             f.write('{name} stage not selected to run. Next stage...\n'.format(name=stage['name']))
         continue
+
+    DATE = str(datetime.datetime.now())
+    with open(GENERAL_LOG, 'a') as f:
+        f.write('''\
+====================================================
+Start {name} @   {DATE}
+====================================================
+'''.format(name=stage['name'], DATE=DATE))
         
-    # declare stage parameters
-    stagedata = opj(WORK_DIR, stage['dataname'])
-    
     # create stage scripts
     with open(GENERAL_LOG, 'a') as f:
         f.write("making {name} scripts\n".format(name=stage['name']))
@@ -199,40 +205,38 @@ for istage, stage in enumerate(stage_list):
             continue
         f.write('starting {name} stage\n'.format(name=stage['name']))
     
-    if PRECLEANED and istage > 0:
-        wkfile = stage_list[istage - 1]['dataname']
-        wkdir  = os.path.dirname(wkfile)
-        flnm   = os.path.basename(wkfile)
-        fnfile = opj(DATA_DIR, flnm)
-        if os.path.isfile(fnfile):
-            # make the work directory
-            if not os.path.isdir(wkdir):
-                os.makedirs(wkdir)
-            # move it from its final directory to its work directory
-            shutil.move(fnfile, wkfile)
-        if os.path.isfile(wkfile):
-            pass
-        elif SOME_MISSING:
-            with open(GENERAL_LOG, 'a') as f:
-                f.write('\n{FILE} not found, but SOME_MISSING option used. Moving on...\n'.format(FILE=wkfile))
+    # check required files exist
+    pass_req_check = True
+    for required in stage['required']:
+        required = required.rstrip('/')  # if a directory, leaving the slash at the end could cause confusion
+        if os.path.exists(required):
             continue
-        else:
-            raise Exception('PRECLEANED file {FILE} not found for stage {STAGE}'.format(FILE=wkfile, STAGE=stage['name']))
+        elif os.path.exists(opj(DATA_DIR, required)):  # if the file is in DATA_DIR, move it to WORK_DIR
+            if os.path.exists(required):
+                pass_req_check = False
+                raise Exception('Something went wrong. Found {r} in {d}, but {r} is already in {w}!'.format(r=required, d=DATA_DIR, w=WORK_DIR))
+            makedirsif(os.path.dirname(required))
+            shutil.move(opj(DATA_DIR, required), required)
+        # if the file still doesn't exist:
+        if not os.path.exists(required):
+            pass_req_check = False
+            if SOME_MISSING:
+                with open(GENERAL_LOG, 'a') as f:
+                    f.write('\n{r} not found for stage {s}, but SOME_MISSING option used. Will not run this stage.\n'.format(r=required, s=stage['name']))
+            else:
+                raise Exception('{r} not found for stage {s}'.format(r=required, s=stage['name']))
+    # skip this stage if not pass_req_check
+    if not pass_req_check:
+        if not SOME_MISSING:
+            raise Exception('Not all requirements were found for stage {s}!'.format(s=stage['name']))
+        continue
     
-    if istage == 0 or os.path.isfile(stage_list[istage - 1]['dataname']):
-        # redirect stdout and stderr
-        capture_stdouterr(opj(WORK_DIR, stage['log']))
-        # run stage
-        safecall(PRE_SCRIPT + ' && ' + stage['call_string'])
-        # redirect stdout and stderr
-        capture_stdouterr(GENERAL_LOG)
-    else:
-        with open(GENERAL_LOG, 'a') as f:
-            f.write("\nCannot find {data}\n".format(data=stage_list[istage - 1]['dataname']))
-        if SOME_MISSING:
-            with open(GENERAL_LOG, 'a') as f:
-                f.write("But SOME_MISSING option used. Moving on...\n")
-            continue
+    # redirect stdout and stderr
+    capture_stdouterr(opj(WORK_DIR, stage['log']))
+    # run stage
+    safecall(PRE_SCRIPT + ' && ' + stage['call_string'])
+    # redirect stdout and stderr
+    capture_stdouterr(GENERAL_LOG)
     
     if CLEANSTAGES:
         for torm in stage['to_remove']:
@@ -253,12 +257,12 @@ Finish {name} @   {DATE}
 # -- mv files to final location and cleanup -- #
 if CLEANWORK:
     with open(GENERAL_LOG, 'a') as f:
+        f.write('contents of {WORK_DIR}:\n'.format(WORK_DIR=WORK_DIR))
         f.write(str(os.listdir(WORK_DIR)))
-    for datafile in [x['dataname'] for x in stage_list]:
-        if os.path.exists(datafile):
-            incmove(datafile, DATA_DIR, diroverride=True)
+    for d in set([y for x in stage_list for y in x['required'] + x['data'] if os.path.exists(y)]):
+        incmove(d, DATA_DIR)
     for f in os.listdir(WORK_DIR):  # move everything else to logdir
-        incmove(f, LOG_DIR, diroverride=True)
-            
+        incmove(f, LOG_DIR)
+    
     os.chdir('../')
     shutil.rmtree(WORK_DIR)

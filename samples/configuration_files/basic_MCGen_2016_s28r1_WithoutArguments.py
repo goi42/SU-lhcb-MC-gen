@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 import os
-from os.path import join as opj, abspath, basename
+from os.path import join as opj, basename
 import argparse
 import __main__
 
@@ -8,19 +8,17 @@ import __main__
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in run_stages.py')
 
-parser.add_argument('configfile', type=abspath,
+parser.add_argument('configfile', type=os.path.abspath,
                     help='this argument must be here to ensure integration with run_stages.py')
 parser.add_argument('--SIGNAL_NAME', default='TestProduction')
 parser.add_argument('--RUN_NUMBER', type=int, default=300000)
-parser.add_argument('--RUN_SYS', default='/data2',
+parser.add_argument('--RUN_SYS', default='/data2', type=os.path.abspath,
                     help='system to run on')
 cleangroup = parser.add_argument_group('cleaning options')
 cleangroup.add_argument('--noCLEANSTAGES', dest='CLEANSTAGES', action='store_false',
                         help='deletes data from earlier stages as it goes.')
 cleangroup.add_argument('--noCLEANWORK', dest='CLEANWORK', action='store_false',
                         help='moves files out of work directory.')
-cleangroup.add_argument('--PRECLEANED', action='store_true',
-                        help='if this script has already been run with CLEANWORK active, you can specify this argument so that it moves appropriate files to the work directory first')
 cleangroup.add_argument('--SOME_MISSING', action='store_true',
                         help='if running a later stage, you may specify this argument to let the script terminate without errors if the input files are missing')
 debuggroup = parser.add_argument_group('debugging options')
@@ -81,7 +79,8 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
             'log': GAUSS_LOG,
             'call_string': 'lb-run -c best Gauss/v49r10 gaudirun.py {GAUSS_SCRIPT_NAME}'.format(GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
             'to_remove': [],
-            'dataname': GAUSS_DATA,
+            'required': [],
+            'data': [GAUSS_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -126,7 +125,8 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'log': BOOLE_LOG,
             'call_string': 'lb-run -c best Boole/v30r2p1 gaudirun.py {BOOLE_SCRIPT_NAME}'.format(BOOLE_SCRIPT_NAME=BOOLE_SCRIPT_NAME),
             'to_remove': [GAUSS_DATA],
-            'dataname': BOOLE_DATA,
+            'required': [GAUSS_DATA],
+            'data': [BOOLE_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -176,7 +176,8 @@ L0App().outputFile = '{MOOREL0_DATA}'
             'log': MOOREL0_LOG,
             'call_string': 'lb-run -c best Moore/v25r4 gaudirun.py {MOOREL0_SCRIPT_NAME}'.format(MOOREL0_SCRIPT_NAME=MOOREL0_SCRIPT_NAME),
             'to_remove': [BOOLE_DATA],
-            'dataname': MOOREL0_DATA,
+            'required': [BOOLE_DATA],
+            'data': [MOOREL0_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -225,7 +226,8 @@ Moore().outputFile = '{MOOREHLT1_DATA}'
             'log': MOOREHLT1_LOG,
             'call_string': 'lb-run -c best Moore/v25r4 gaudirun.py {MOOREHLT1_SCRIPT_NAME}'.format(MOOREHLT1_SCRIPT_NAME=MOOREHLT1_SCRIPT_NAME),
             'to_remove': [MOOREL0_DATA],
-            'dataname': MOOREHLT1_DATA,
+            'required': [MOOREL0_DATA],
+            'data': [MOOREHLT1_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -272,7 +274,8 @@ Moore().outputFile = '{MOOREHLT2_DATA}'
             'log': MOOREHLT2_LOG,
             'call_string': 'lb-run -c best Moore/v25r4 gaudirun.py {MOOREHLT2_SCRIPT_NAME}'.format(MOOREHLT2_SCRIPT_NAME=MOOREHLT2_SCRIPT_NAME),
             'to_remove': [MOOREHLT1_DATA],
-            'dataname': MOOREHLT2_DATA,
+            'required': [MOOREHLT1_DATA],
+            'data': [MOOREHLT2_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -319,7 +322,8 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'log': BRUNEL_LOG,
             'call_string': 'lb-run -c best Brunel/v50r3 gaudirun.py {BRUNEL_SCRIPT_NAME}'.format(BRUNEL_SCRIPT_NAME=BRUNEL_SCRIPT_NAME),
             'to_remove': [MOOREHLT2_DATA],
-            'dataname': BRUNEL_DATA,
+            'required': [MOOREHLT2_DATA],
+            'data': [BRUNEL_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -367,7 +371,8 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
             'log': DAVINCI_LOG,
             'call_string': 'lb-run -c best DaVinci/v41r4p4 gaudirun.py {DAVINCI_SCRIPT_NAME}'.format(DAVINCI_SCRIPT_NAME=DAVINCI_SCRIPT_NAME),
             'to_remove': [BRUNEL_DATA],
-            'dataname': DAVINCI_DATA,
+            'required': [BRUNEL_DATA],
+            'data': [DAVINCI_DATA],
             'run': True,
             'scriptonly': SCRIPT_ONLY,
         }

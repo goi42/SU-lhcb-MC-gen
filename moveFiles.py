@@ -4,7 +4,7 @@ from os.path import join as opj, isdir, exists
 from shutil import move, copy, copytree
 from subprocess import check_output
 import argparse
-from utils import nojobsrunning, Njobs, cpr, updateprogress
+from utils import nojobsrunning, Njobs, cpr, updateprogress, incname
 
 IsMain = __name__ == '__main__'
 
@@ -23,9 +23,9 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='move completed MC jobs to final destination. Assumes CLEANWORK was used in run_stages.py. Will ignore a given output if log/ but no data/')
 parser.add_argument('signal_name',
                     help='name used to sort output')
-parser.add_argument('--run_sys', default='/data2',
+parser.add_argument('--run_sys', default='/data2', type=os.path.abspath,
                     help='system where files are created')
-parser.add_argument('--store_sys', default='/data6',
+parser.add_argument('--store_sys', default='/data6', type=os.path.abspath,
                     help='system where files should be stored')
 parser.add_argument('--user', default=getpass.getuser(),
                     help='username (used to locate "work", "data", and "log" directories)')
@@ -65,7 +65,7 @@ args = parser.parse_args() if IsMain else parser.parse_args(args=['DUMMYSIGNALNA
 def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed, justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, waittilnotrunning=args.waittilnotrunning):
     '''justdata changes behavior in complicated ways--pay attention
     '''
-    print '----------------moveFiles-----------------'
+    # print '----------------moveFiles-----------------'
     
     if justdata and lessthan > 0:
         raise ValueError('lessthan > 0 does not do anything if justdata=True')
@@ -129,7 +129,7 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
         return subdirlist
     
     def endstep():
-        print '----------------moveFiles done------------'
+        # print '----------------moveFiles done------------'
         if justdata:
             # -- ensure all the directories have been moved or copied
             return not makesubdirlist() if copyfrom is None else (len(makesubdirlist(dtdir_old)) == len(makesubdirlist(dtdir_new)))
@@ -173,10 +173,11 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
             for oldthname in os.listdir(oldd):
                 oldth = opj(oldd, oldthname)
                 newthname = oldthname if allcmNone else oldthname.replace(cmfrom, signal_name)
-                newth = opj(newd, newthname)
+                newth = incname(opj(newd, newthname))
                 
                 # -- check to make sure new things do not exist
                 if exists(newth):
+                    # sanity check only: incname above ought to prevent this
                     raise IOError('{} already exists!'.format(newth))
                 
                 # -- do the move or copy

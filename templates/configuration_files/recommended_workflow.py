@@ -5,7 +5,7 @@ This extra effort is rewarded by having this whole workflow handled seamlessly o
 '''
 
 import os
-from os.path import join as opj, abspath, basename
+from os.path import join as opj, basename
 import argparse
 import __main__
 
@@ -13,19 +13,17 @@ import __main__
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in run_stages.py')
 
-parser.add_argument('configfile', type=abspath,
+parser.add_argument('configfile', type=os.path.abspath,
                     help='this argument must be here to ensure integration with run_stages.py')
 parser.add_argument('--SIGNAL_NAME', default='TestProduction')
 parser.add_argument('--RUN_NUMBER', type=int, default=300000)
-parser.add_argument('--RUN_SYS', default='/data2',
+parser.add_argument('--RUN_SYS', default='/data2', type=os.path.abspath,
                     help='system to run on')
 cleangroup = parser.add_argument_group('cleaning options')
 cleangroup.add_argument('--noCLEANSTAGES', dest='CLEANSTAGES', action='store_false',
                         help='deletes data from earlier stages as it goes.')
 cleangroup.add_argument('--noCLEANWORK', dest='CLEANWORK', action='store_false',
                         help='moves files out of work directory.')
-cleangroup.add_argument('--PRECLEANED', action='store_true',
-                        help='if this script has already been run with CLEANWORK active, you can specify this argument so that it moves appropriate files to the work directory first')
 cleangroup.add_argument('--SOME_MISSING', action='store_true',
                         help='if running a later stage, you may specify this argument to let the script terminate without errors if the input files are missing')
 debuggroup = parser.add_argument_group('debugging options')
@@ -85,7 +83,7 @@ gaussgroup.add_argument('--GAUSS_VERSION', default='<<<<select default>>>>')
 gaussgroup.add_argument('--EVENT_TYPE', type=int, default=int('<<<<select default (this is the EventNumber from your DecFile)>>>>'))
 gaussgroup.add_argument('--FIRST_EVENT', type=int, default=1)
 gaussgroup.add_argument('--NUM_EVENT', help='number of events to save per job', type=int, default=100)
-gaussgroup.add_argument('--REDECAY', type=int, default=20,
+gaussgroup.add_argument('--REDECAY', type=int, default=int('<<<<select default (recommend 20)>>>>'),
                         help='Number of times to ReDecay. Set to 0 for no ReDecay.')
 gaussgroup.add_argument('--BEAM_VERSION', default='<<<<select default (recommend Beam6500GeV-md100-2016-nu1.6 for 2016)>>>>')
 # Boole
@@ -184,7 +182,8 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
             'log': GAUSS_LOG,
             'call_string': 'lb-run -c best --user-area <<<</absolute/path/to/the/directory/containing/Gauss[Dev]_version>>>> <<<<Gauss[Dev]>>>>/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
             'to_remove': [],
-            'dataname': GAUSS_DATA,
+            'required': [],
+            'data': [GAUSS_DATA],
             'run': GAUSS_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -225,7 +224,8 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'log': BOOLE_LOG,
             'call_string': 'lb-run -c best Boole/{BOOLE_VERSION} gaudirun.py {BOOLE_SCRIPT_NAME}'.format(BOOLE_VERSION=BOOLE_VERSION, BOOLE_SCRIPT_NAME=BOOLE_SCRIPT_NAME),
             'to_remove': [GAUSS_DATA],
-            'dataname': BOOLE_DATA,
+            'required': [GAUSS_DATA],
+            'data': [BOOLE_DATA],
             'run': BOOLE_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -276,7 +276,8 @@ L0App().outputFile = '{MOOREL0_DATA}'
             'log': MOOREL0_LOG,
             'call_string': 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREL0_SCRIPT_NAME}'.format(MOORE_VERSION=MOORE_VERSION, MOOREL0_SCRIPT_NAME=MOOREL0_SCRIPT_NAME),
             'to_remove': [BOOLE_DATA],
-            'dataname': MOOREL0_DATA,
+            'required': [BOOLE_DATA],
+            'data': [MOOREL0_DATA],
             'run': MOOREL0_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -326,7 +327,8 @@ Moore().outputFile = '{MOOREHLT1_DATA}'
             'log': MOOREHLT1_LOG,
             'call_string': 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT1_SCRIPT_NAME}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT1_SCRIPT_NAME=MOOREHLT1_SCRIPT_NAME),
             'to_remove': [MOOREL0_DATA],
-            'dataname': MOOREHLT1_DATA,
+            'required': [MOOREL0_DATA],
+            'data': [MOOREHLT1_DATA],
             'run': MOOREHLT1_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -377,7 +379,8 @@ Moore().outputFile = '{MOOREHLT2_DATA}'
             'log': MOOREHLT2_LOG,
             'call_string': 'lb-run -c best Moore/{MOORE_VERSION} gaudirun.py {MOOREHLT2_SCRIPT_NAME}'.format(MOORE_VERSION=MOORE_VERSION, MOOREHLT2_SCRIPT_NAME=MOOREHLT2_SCRIPT_NAME),
             'to_remove': [MOOREHLT1_DATA],
-            'dataname': MOOREHLT2_DATA,
+            'required': [MOOREHLT1_DATA],
+            'data': [MOOREHLT2_DATA],
             'run': MOOREHLT2_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -420,7 +423,8 @@ FileCatalog().Catalogs = [ "xmlcatalog_file:NewCatalog.xml" ]
             'log': BRUNEL_LOG,
             'call_string': 'lb-run -c best Brunel/{BRUNEL_VERSION} gaudirun.py {BRUNEL_SCRIPT_NAME}'.format(BRUNEL_VERSION=BRUNEL_VERSION, BRUNEL_SCRIPT_NAME=BRUNEL_SCRIPT_NAME),
             'to_remove': [MOOREHLT2_DATA],
-            'dataname': BRUNEL_DATA,
+            'required': [MOOREHLT2_DATA],
+            'data': [BRUNEL_DATA],
             'run': BRUNEL_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -467,7 +471,8 @@ IOHelper().inputFiles(["{BRUNEL_DATA}"],clear=True)
             'log': DAVINCI_LOG,
             'call_string': 'lb-run -c best DaVinci/{DAVINCI_STRIPPING_VERSION} gaudirun.py {DAVINCI_SCRIPT_NAME}'.format(DAVINCI_STRIPPING_VERSION=DAVINCI_STRIPPING_VERSION, DAVINCI_SCRIPT_NAME=DAVINCI_SCRIPT_NAME),
             'to_remove': [BRUNEL_DATA],
-            'dataname': DAVINCI_DATA,
+            'required': [BRUNEL_DATA],
+            'data': [DAVINCI_DATA],
             'run': DAVINCI_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }
@@ -494,7 +499,8 @@ IOHelper().inputFiles(["{DAVINCI_DATA}"], clear=True)
             'log': TUPLE_LOG,
             'call_string': 'lb-run -c best DaVinci/{DAVINCI_TUPLE_VERSION} gaudirun.py {TUPLE_SCRIPT_NAME}'.format(DAVINCI_TUPLE_VERSION=DAVINCI_TUPLE_VERSION, TUPLE_SCRIPT_NAME=TUPLE_SCRIPT_NAME),
             'to_remove': [],  # bad idea to delete DST...
-            'dataname': TUPLE_DATA,
+            'required': [DAVINCI_DATA],
+            'data': [TUPLE_DATA],
             'run': TUPLE_STAGE_NAME in GEN_LEVEL,
             'scriptonly': SCRIPT_ONLY,
         }

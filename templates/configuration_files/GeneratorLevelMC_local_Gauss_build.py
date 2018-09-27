@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 import os
-from os.path import join as abspath, basename
+from os.path import join as opj, basename
 import argparse
 import __main__
 
@@ -8,19 +8,17 @@ import __main__
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in run_stages.py')
 
-parser.add_argument('configfile', type=abspath,
+parser.add_argument('configfile', type=os.path.abspath,
                     help='this argument must be here to ensure integration with run_stages.py')
 parser.add_argument('--SIGNAL_NAME', default='TestProduction')
 parser.add_argument('--RUN_NUMBER', type=int, default=300000)
-parser.add_argument('--RUN_SYS', default='/data2',
+parser.add_argument('--RUN_SYS', default='/data2', type=os.path.abspath,
                     help='system to run on')
 cleangroup = parser.add_argument_group('cleaning options')
 cleangroup.add_argument('--noCLEANSTAGES', dest='CLEANSTAGES', action='store_false',
                         help='deletes data from earlier stages as it goes.')
 cleangroup.add_argument('--noCLEANWORK', dest='CLEANWORK', action='store_false',
                         help='moves files out of work directory.')
-cleangroup.add_argument('--PRECLEANED', action='store_true',
-                        help='if this script has already been run with CLEANWORK active, you can specify this argument so that it moves appropriate files to the work directory first')
 cleangroup.add_argument('--SOME_MISSING', action='store_true',
                         help='if running a later stage, you may specify this argument to let the script terminate without errors if the input files are missing')
 debuggroup = parser.add_argument_group('debugging options')
@@ -87,7 +85,8 @@ importOptions("$LBPYTHIA8ROOT/options/Pythia8.py")
             'log': BASE_NAME + '_gauss.log',
             'call_string': 'lb-run -c best --user-area <<<</absolute/path/to/the/directory/containing/Gauss[Dev]_version>>>> <<<<Gauss[Dev]>>>>/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
             'to_remove': [],
-            'dataname': 'Gauss-{ET}-{NE}ev-{DT}.xgen'.format(ET=EVENT_TYPE, NE=NUM_EVENT, DT=str(datetime.today()).split(' ')[0].replace('-', '')),  # output filename includes reference to the date
+            'required': [],
+            'data': ['Gauss-{ET}-{NE}ev-{DT}.xgen'.format(ET=EVENT_TYPE, NE=NUM_EVENT, DT=str(datetime.today()).split(' ')[0].replace('-', ''))],  # output filename includes reference to the date
             'run': True,
             'scriptonly': False,
         }

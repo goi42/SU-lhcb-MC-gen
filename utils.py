@@ -116,3 +116,23 @@ class updateprogress(object):
             self.progbar.finish()
         else:
             self._printupdate(' (finished)')
+
+
+def incname(afile, suffix='_ConflictedCopy', i_start=1):
+    '''if afile exists, returns afilesuffix<i>, where <i> is the first integer name unused
+    else, returns afile
+    '''
+    from os.path import exists, splitext
+    
+    def incname_suffix(afile, suffix, i):
+        befext, ext = splitext(afile)
+        nfile = befext + suffix + str(i) + ext
+        if exists(nfile):
+            return incname_suffix(afile, suffix, i + 1)
+        else:
+            return nfile
+    
+    if exists(afile):
+        return incname_suffix(afile, suffix, i_start)
+    else:
+        return afile

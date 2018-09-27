@@ -90,6 +90,10 @@ works the way you want it to (see __Testing__ below), you pass it as an
 argument to either `run_stages.py` or `submit_to_condor.py` (which passes it to
 `run_scripts.py`).
 
+> ___DO NOT CHANGE YOUR CONFIGURATION FILE WHILE YOUR JOBS ARE RUNNING OR
+> SUBMITTING.___ This will result in your jobs' behavior changing
+> mid-submission!
+
 You are encouraged to write add your own command-line arguments to your
 configuration file using the `argparse` module in python.
 
@@ -101,7 +105,7 @@ You can pass your configuration-file arguments to both `run_stages.py` and
 `submit_to_condor.py`. They know how to handle them.
 
 You can read more about `run_stages.py` and `submit_to_condor.py` in the
-__Conceptual Framework__ section below.
+__Detailed Description__ section below.
 
 ### Using Templates
 Templates are easy-to-edit, almost ready-to-go configuration files. They
@@ -169,8 +173,9 @@ def make_stage_list(USER, BASE_NAME):  # DO NOT CHANGE THIS LINE; run_stages.py 
             'scripts': {'desired/relative/path/to/script.ext': 'scriptcontent'},  # run_stages.py will create WORK_DIR/desired/relative/path/to/script.ext and write scriptcontent into it for every item in this dictionary
             'log': 'logfilename',  # stdout and stderr will be directed to this file while this stage runs
             'call_string': 'a tcsh command',  # run_stages.py will call this string with subprocess.call in a tsch shell; make sure to point it at your 'scripts' above if desired
-            'to_remove': ['filenames_to_remove_after_stage_runs'],  # these files, if they exist, will be removed after the stage completes successfully
-            'dataname': 'filename_to_be_put_in_data_directory',  # the file with this name will be moved to DATA_DIR; all other generated, non-removed files and directories will be moved to LOG_DIR
+            'to_remove': ['filenames_to_remove_after_stage_runs'],  # stuff with the names in this list, if they exist, will be removed after the stage completes successfully
+            'required': ['filenames_needed_to_run_this_stage'],  # list stuff required for the stage to run here, generally data files produced by earlier stages. run_stages.py will fetch them from the DATA_DIR if they are not in the WORK_DIR already and throw an error if they are not found (unless the SOME_MISSING option is used, as when running with submit_to_condor.py \[which uses this option automatically\], in which case no error is thrown--the stage is skipped and the job continues as it otherwise would)
+            'data': ['filenames_to_be_put_in_data_directory'],  # these files will be moved to DATA_DIR; all other non-removed files and directories will be moved to LOG_DIR
             'run': True,  # if this is False, run_stages.py will skip this stage
             'scriptonly': False,  # if this is True (and 'run' is True), run_stages.py will write scripts but will not run the stage; cleanup still happens
         }
@@ -202,21 +207,19 @@ string for each argument to understand what it does.
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='set parameters to be used in run_stages.py')
 
-parser.add_argument('configfile', type=abspath,
+parser.add_argument('configfile', type=os.path.abspath,
                     help='this argument must be here to ensure integration with run_stages.py')
 parser.add_argument('--SIGNAL_NAME', default='TestProduction',
                     help='what you want the organizing directory for your job to be named. submit_to_condor.py sets this parameter when it submits jobs.')
 parser.add_argument('--RUN_NUMBER', type=int, default=300000,
                     help='set equal to the job number by submit_to_condor.py, which allows the user to change script behavior for each job, e.g., set a different random seed.')
-parser.add_argument('--RUN_SYS', default='/data2',
+parser.add_argument('--RUN_SYS', default='/data2', type=os.path.abspath,
                     help='system to run on')
 cleangroup = parser.add_argument_group('cleaning options')
 cleangroup.add_argument('--noCLEANSTAGES', dest='CLEANSTAGES', action='store_false',
-                        help='deletes data from earlier stages as it goes.')
+                        help='CLEANSTAGES deletes data from earlier stages as it goes.')
 cleangroup.add_argument('--noCLEANWORK', dest='CLEANWORK', action='store_false',
-                        help='moves files out of work directory.')
-cleangroup.add_argument('--PRECLEANED', action='store_true',
-                        help='if this script has already been run with CLEANWORK active, you can specify this argument so that it moves appropriate files to the work directory first. Used automatically by submit_to_condor.py')
+                        help='CLEANWORK moves files out of work directory.')
 cleangroup.add_argument('--SOME_MISSING', action='store_true',
                         help='if running a later stage, you may specify this argument to let the script terminate without errors if the input files are missing. Used automatically by submit_to_condor.py')
 debuggroup = parser.add_argument_group('debugging options')
@@ -285,21 +288,24 @@ sets the low (inclusive) and high (exclusive) `RUN_NUMBER` you want to use. So
 ##### `--runfromstorage`
 Use this option if you want to run over pre-existing runs. It will find all the
 run numbers in the `DATA_DIR` on `store_sys` for this `SIGNAL_NAME`, and move
-this data to the `run_sys`. Since `submit_to_condor.py` always uses the
-`--PRECLEANED` option (see argument documentation for `run_stages.py` above),
-this data will be available for whatever stages you submit now.
+this data to the `run_sys`, where `run_stages.py` will be able to get to it.
+
+> `run_stages.py` looks at the `'required'` key in each stage's dictionary and
+> moves the files listed there from the `DATA_DIR` to the `WORK_DIR` so that
+> they are available for the stage to use. Don't worry &mdash; they get put back
+> into the `DATA_DIR` just as though you had listed them as data files.
 
 This is a powerful utility that means you do not have to run all of your stages
 at once. For example, suppose you want to generate MC using
 `samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py`. You
 could generate just through the `Brunel` stage by doing:
 ```bash
-python submit_to_condor.py myMCgen samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py --GEN_LEVEL "gauss boole moorel0 moorehlt1 moorehlt2 brunel" --setlohi 100000 100100
+python submit_to_condor.py myMCgen samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py --GEN_LEVEL gauss boole moorel0 moorehlt1 moorehlt2 brunel --setlohi 100000 100100
 ```
 Once these jobs finish, if you decide you _do_ want to run the DaVinci stage to
 get stripped data, you could do:
 ```bash
-python submit_to_condor.py myMCgen samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py --GEN_LEVEL "davinci" --runfromstorage
+python submit_to_condor.py myMCgen samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py --GEN_LEVEL davinci --runfromstorage
 ```
 This will take all the MC that you successfully generated before and move the
 data files to where DaVinci can get them on the `run_sys` instead of leaving
@@ -309,7 +315,7 @@ You can still specify a specific job range with `--setlohi` if you use
 `--runfromstorage`. Suppose you only wanted to run the DaVinci stage over the
 first 50 jobs (for whatever reason). Just add `--setlohi 100000 100050`:
 ```bash
-python submit_to_condor.py myMCgen samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py --GEN_LEVEL "davinci" --runfromstorage --setlohi 100000 100050
+python submit_to_condor.py myMCgen samples/configuration_files/basic_MCGen_2016_s28r1_WithArguments.py --GEN_LEVEL davinci --runfromstorage --setlohi 100000 100050
 ```
 Note that using `--setlohi 0 100050` would have had the same effect: When
 `--runfromstorage` is specified, `--setlohi` just ensures the run numbers fall
@@ -324,5 +330,5 @@ highest run number desired. For instance, if it quit while the range [100100,
 100200) out of [100000, 105000) was running, you would use
 `--setlohi 100200 105000`.
 
-> Remember that Condor is a separate system, and it's where your jobs actually run.
-> `submit_to_condor.py` just handles the submission process.
+> Remember that Condor is a separate system, and it's where your jobs actually
+> run. `submit_to_condor.py` just handles the submission process.
