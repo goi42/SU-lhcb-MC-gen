@@ -90,6 +90,10 @@ works the way you want it to (see __Testing__ below), you pass it as an
 argument to either `run_stages.py` or `submit_to_condor.py` (which passes it to
 `run_scripts.py`).
 
+> ___DO NOT CHANGE YOUR CONFIGURATION FILE WHILE YOUR JOBS ARE RUNNING OR
+> SUBMITTING.___ This will result in your jobs' behavior changing
+> mid-submission!
+
 You are encouraged to write add your own command-line arguments to your
 configuration file using the `argparse` module in python.
 
@@ -101,7 +105,7 @@ You can pass your configuration-file arguments to both `run_stages.py` and
 `submit_to_condor.py`. They know how to handle them.
 
 You can read more about `run_stages.py` and `submit_to_condor.py` in the
-__Conceptual Framework__ section below.
+__Detailed Description__ section below.
 
 ### Using Templates
 Templates are easy-to-edit, almost ready-to-go configuration files. They
@@ -326,5 +330,5 @@ highest run number desired. For instance, if it quit while the range [100100,
 100200) out of [100000, 105000) was running, you would use
 `--setlohi 100200 105000`.
 
-> Remember that Condor is a separate system, and it's where your jobs actually run.
-> `submit_to_condor.py` just handles the submission process.
+> Remember that Condor is a separate system, and it's where your jobs actually
+> run. `submit_to_condor.py` just handles the submission process.
