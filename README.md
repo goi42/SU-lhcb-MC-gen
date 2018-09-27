@@ -169,9 +169,9 @@ def make_stage_list(USER, BASE_NAME):  # DO NOT CHANGE THIS LINE; run_stages.py 
             'scripts': {'desired/relative/path/to/script.ext': 'scriptcontent'},  # run_stages.py will create WORK_DIR/desired/relative/path/to/script.ext and write scriptcontent into it for every item in this dictionary
             'log': 'logfilename',  # stdout and stderr will be directed to this file while this stage runs
             'call_string': 'a tcsh command',  # run_stages.py will call this string with subprocess.call in a tsch shell; make sure to point it at your 'scripts' above if desired
-            'to_remove': ['filenames_to_remove_after_stage_runs'],  # these files, if they exist, will be removed after the stage completes successfully
-            'required': ['filenames_needed_to_run_this_stage'],  # list files required for the stage to run here, generally data files produced by earlier stages. run_stages.py will fetch them from the DATA_DIR if they are not in the WORK_DIR already and throw an error if they are not found (unless the SOME_MISSING option is used, as when running with submit_to_condor.py)
-            'dataname': 'filename_to_be_put_in_data_directory',  # the file with this name will be moved to DATA_DIR; all other generated, non-removed files and directories will be moved to LOG_DIR
+            'to_remove': ['filenames_to_remove_after_stage_runs'],  # stuff with the names in this list, if they exist, will be removed after the stage completes successfully
+            'required': ['filenames_needed_to_run_this_stage'],  # list stuff required for the stage to run here, generally data files produced by earlier stages. run_stages.py will fetch them from the DATA_DIR if they are not in the WORK_DIR already and throw an error if they are not found (unless the SOME_MISSING option is used, as when running with submit_to_condor.py \[which uses this option automatically\], in which case no error is thrown--the stage is skipped and the job continues as it otherwise would)
+            'data': ['filenames_to_be_put_in_data_directory'],  # these files will be moved to DATA_DIR; all other non-removed files and directories will be moved to LOG_DIR
             'run': True,  # if this is False, run_stages.py will skip this stage
             'scriptonly': False,  # if this is True (and 'run' is True), run_stages.py will write scripts but will not run the stage; cleanup still happens
         }
