@@ -66,15 +66,6 @@ def safecall(acommand):
         with open(GENERAL_LOG, 'a') as f:
             f.write("subprocess.call({acomm}) failed. Returned {anum} Goodbye!\n".format(acomm=acommand, anum=sc))
         sys.exit()
-        
-
-def stage_makedirs(d):
-    '''if WORK_DIR_EXISTS (flag from configfile), removes directory before making it. Primarily useful for creating a stage's option files.
-    '''
-    if WORK_DIR_EXISTS and os.path.exists(d):
-        shutil.rmtree(d)
-    if d != '':
-        os.makedirs(d)
 
 
 def capture_stdouterr(log):
@@ -197,7 +188,7 @@ Start {name} @   {DATE}
     with open(GENERAL_LOG, 'a') as f:
         f.write("making {name} scripts\n".format(name=stage['name']))
         for scriptname, scriptcontent in stage['scripts'].iteritems():
-            stage_makedirs(os.path.dirname(scriptname))  # create any needed directories
+            makedirsif(os.path.dirname(scriptname))  # create any needed directories
             with open(scriptname, 'w') as stagef:
                 stagef.write(scriptcontent)
         if stage['scriptonly']:

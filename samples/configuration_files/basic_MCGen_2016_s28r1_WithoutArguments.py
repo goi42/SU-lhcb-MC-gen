@@ -25,7 +25,7 @@ debuggroup = parser.add_argument_group('debugging options')
 debuggroup.add_argument('--SCRIPT_ONLY', action='store_true',
                         help='creates scripts without running them')
 debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
-                        help='BE VERY CAREFUL WHEN USING THIS FLAG: gives permission to run if WORK_DIR already exists! Also allows overwrite of extant Opts directories.')
+                        help='BE VERY CAREFUL WHEN USING THIS FLAG: gives permission to run if WORK_DIR already exists!')
 
 # -- evaluate and check arguments -- #
 # -- mandatory section -- #
