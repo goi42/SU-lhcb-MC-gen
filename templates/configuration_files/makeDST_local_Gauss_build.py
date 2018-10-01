@@ -28,7 +28,7 @@ debuggroup = parser.add_argument_group('debugging options')
 debuggroup.add_argument('--SCRIPT_ONLY', action='store_true',
                         help='creates scripts without running them')
 debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
-                        help='BE VERY CAREFUL WHEN USING THIS FLAG: gives permission to run if WORK_DIR already exists! Also allows overwrite of extant Opts directories.')
+                        help='BE VERY CAREFUL WHEN USING THIS FLAG: gives permission to run if WORK_DIR already exists!')
 
 # -- parameters used for make_stage_list -- #
 # GEN_LEVEL choices, used in ChoicesInList and argument declaration below
@@ -80,10 +80,10 @@ gaussgroup = parser.add_argument_group('Gauss parameters')
 gaussgroup.add_argument('--GAUSS_VERSION', default='<<<<select default>>>>')
 gaussgroup.add_argument('--EVENT_TYPE', type=int, default=int('<<<<select default (this is the EventNumber from your DecFile)>>>>'))
 gaussgroup.add_argument('--FIRST_EVENT', type=int, default=1)
-gaussgroup.add_argument('--NUM_EVENT', help='number of events to save per job', type=int, default=100)
+gaussgroup.add_argument('--NUM_EVENT', help='number of events to save per job', type=int, default=int('<<<<set default (recommend 20)>>>>'))
 gaussgroup.add_argument('--REDECAY', type=int, default=int('<<<<select default (recommend 20)>>>>'),
                         help='Number of times to ReDecay. Set to 0 for no ReDecay.')
-gaussgroup.add_argument('--BEAM_VERSION', default='<<<<select default>>>>')
+gaussgroup.add_argument('--BEAM_VERSION', default='<<<<select default  (recommend Beam6500GeV-md100-2016-nu1.6 for 2016)>>>>')
 # Boole
 boolegroup = parser.add_argument_group('Boole parameters')
 boolegroup.add_argument('--BOOLE_VERSION', default='<<<<select default (recommend v30r2p1 for 2016)>>>>')
@@ -153,7 +153,7 @@ LHCbApp().CondDBtag       = "{CONDDB_TAG}"
 
 OutputStream("GaussTape").Output = "DATAFILE='PFN:{GAUSS_DATA}' TYP='POOL_ROOTTREE' OPT='RECREATE'"
 
-importOptions("$APPCONFIGOPTS/Gauss/{BEAM_VERSION}")
+importOptions("$APPCONFIGOPTS/Gauss/{BEAM_VERSION}.py")
 importOptions("$APPCONFIGOPTS/Gauss/EnableSpillover-25ns.py")
 importOptions("$APPCONFIGOPTS/Gauss/DataType-{YEAR}.py")
 importOptions("$APPCONFIGOPTS/Gauss/RICHRandomHits.py")  # as in $GAUSSOPTS/Gauss-2016.py

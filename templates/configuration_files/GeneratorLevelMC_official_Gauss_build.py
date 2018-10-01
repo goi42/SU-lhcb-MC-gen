@@ -25,14 +25,14 @@ debuggroup = parser.add_argument_group('debugging options')
 debuggroup.add_argument('--SCRIPT_ONLY', action='store_true',
                         help='creates scripts without running them')
 debuggroup.add_argument('--WORK_DIR_EXISTS', action='store_true',
-                        help='BE VERY CAREFUL WHEN USING THIS FLAG: gives permission to run if WORK_DIR already exists! Also allows overwrite of extant Opts directories.')
+                        help='BE VERY CAREFUL WHEN USING THIS FLAG: gives permission to run if WORK_DIR already exists!')
 
 # -- parameters used for make_stage_list -- #
 # Gauss
 gaussgroup = parser.add_argument_group('Gauss parameters')
 gaussgroup.add_argument('--GAUSS_VERSION', default='<<<<default version of Gauss you want to use>>>>')
 gaussgroup.add_argument('--FIRST_EVENT', type=int, default=1)
-gaussgroup.add_argument('--NUM_EVENT', help='number of events to generate per job', type=int, default=int('<<<<default number of events you want>>>>'))
+gaussgroup.add_argument('--NUM_EVENT', help='number of events to save per job', type=int, default=int('<<<<set default (recommend 20)>>>>'))
 gaussgroup.add_argument('--EVENT_TYPE', type=int, default=int('<<<<default EVENT_TYPE you want to use>>>>'))
 gaussgroup.add_argument('--YEAR', type=int, default=int('<<<<default year you want to use>>>>'))
 

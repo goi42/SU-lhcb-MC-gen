@@ -111,3 +111,7 @@ venv.bak/
 
 # Markdown
 ._*md
+
+# submit_to_condor.py
+CondorSubmission*.submit
+error*.log
