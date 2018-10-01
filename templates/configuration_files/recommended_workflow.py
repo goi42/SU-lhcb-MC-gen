@@ -82,7 +82,7 @@ gaussgroup = parser.add_argument_group('Gauss parameters')
 gaussgroup.add_argument('--GAUSS_VERSION', default='<<<<select default>>>>')
 gaussgroup.add_argument('--EVENT_TYPE', type=int, default=int('<<<<select default (this is the EventNumber from your DecFile)>>>>'))
 gaussgroup.add_argument('--FIRST_EVENT', type=int, default=1)
-gaussgroup.add_argument('--NUM_EVENT', help='number of events to save per job', type=int, default=100)
+gaussgroup.add_argument('--NUM_EVENT', help='number of events to save per job', type=int, default=int('<<<<set default (recommend 20)>>>>'))
 gaussgroup.add_argument('--REDECAY', type=int, default=int('<<<<select default (recommend 20)>>>>'),
                         help='Number of times to ReDecay. Set to 0 for no ReDecay.')
 gaussgroup.add_argument('--BEAM_VERSION', default='<<<<select default (recommend Beam6500GeV-md100-2016-nu1.6 for 2016)>>>>')
