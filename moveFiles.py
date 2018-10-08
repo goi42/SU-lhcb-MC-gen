@@ -20,13 +20,14 @@ class AtLeastZero(argparse.Action):
 
 
 parser = argparse.ArgumentParser(
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='move completed MC jobs to final destination. Assumes CLEANWORK was used in run_stages.py. Will ignore a given output if log/ but no data/')
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    description='move completed MC jobs to final destination. Assumes CLEANWORK was used in run_stages.py. Will ignore a given output if log/ but no data/')
 parser.add_argument('signal_name',
                     help='name used to sort output')
 parser.add_argument('--run_sys', default='/data2', type=os.path.abspath,
-                    help='system where files are created')
+                    help='system where files should be created (or moved from)')
 parser.add_argument('--store_sys', default='/data6', type=os.path.abspath,
-                    help='system where files should be stored')
+                    help='system where files should be stored (or moved to)')
 parser.add_argument('--user', default=getpass.getuser(),
                     help='username (used to locate "work", "data", and "log" directories)')
 parser.add_argument('--minallowed', default=None, type=int,
@@ -34,18 +35,17 @@ parser.add_argument('--minallowed', default=None, type=int,
 parser.add_argument('--maxallowed', default=None, type=int,
                     help='maximum allowed subdirectory number, exclusive')
 parser.add_argument('--waittilnotrunning', action='store_true',
-                    help='''If this flag is set, moveFiles will not return True just because the work directories are missing.
-                    This can be useful if there are other jobs running for the user that might delay these jobs from starting.
-                    Note that this also means moveFiles will not think it's finished if the user has other jobs running.
-                    Does nothing if justdata used.
-                    ''')
+                    help='If this flag is set, moveFiles will not return True just because the work directories are missing.'
+                    ' This can be useful if there are other jobs running for the user that might delay these jobs from starting.'
+                    ' Note that this also means moveFiles will not think it\'s finished if the user has other jobs running.'
+                    ' Does nothing if justdata used.')
 parser.add_argument('--justdata', action='store_true',
-                    help='option to just move data without checking work directories or moving log directories or checking running jobs')
+                    help='flag to just move data without checking work directories or moving log directories or checking running jobs')
 f = parser.add_mutually_exclusive_group()  # ensure copyfrom and movefrom are not both set
-f.add_argument('--copyfrom', default=None,
-               help='option to copy files from an old name instead of moving them. parameter should be the signal_name for the original run. (signal_name will be name these files end up with.)')
-f.add_argument('--movefrom', default=None,
-               help='option to move files from an old name to a new name. parameter should be the signal_name for the original run. (signal_name will be name these files end up with.)')
+f.add_argument('--copyfrom', metavar='OLDNAME', default=None,
+               help='option to copy (not move) files from OLDNAME to signal_name')
+f.add_argument('--movefrom', metavar='OLDNAME', default=None,
+               help='option to move files from OLDNAME to signal_name')
 contgroup = parser.add_argument_group('arguments for running continuously')
 contgroup.add_argument('--continuous', action='store_true',
                        help='runs over and over at specified interval until WORK_DIR is empty or maxwaittime exceeded')
@@ -65,7 +65,7 @@ args = parser.parse_args() if IsMain else parser.parse_args(args=['DUMMYSIGNALNA
 def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed, justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, waittilnotrunning=args.waittilnotrunning):
     '''justdata changes behavior in complicated ways--pay attention
     '''
-    # print '----------------moveFiles-----------------'
+    print '----------------moveFiles from {} to {}-----------------'.format(run_sys, store_sys)
     
     if justdata and lessthan > 0:
         raise ValueError('lessthan > 0 does not do anything if justdata=True')
@@ -81,9 +81,9 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
     thingstr = 'move' if copyfrom is None else 'copy'
     
     # -- print program intentions
-    print 'will {THING} files with signal_name {NAME} from {OLD} to {NEW}'.format(THING=thingstr, NAME=signal_name if allcmNone else cmfrom, OLD=run_sys, NEW=store_sys),
+    print 'will {THING} files with signal_name "{NAME}" from {OLD} to {NEW}'.format(THING=thingstr, NAME=signal_name if allcmNone else cmfrom, OLD=run_sys, NEW=store_sys),
     if not allcmNone:
-        print 'under signal_name {NAME}'.format(NAME=signal_name),
+        print 'under signal_name "{NAME}"'.format(NAME=signal_name),
     print 'for user {USER}'.format(USER=user)
     if any(x is not None for x in [minallowed, maxallowed]):
         print 'subdirs [{}, {})'.format(minallowed, maxallowed)
@@ -129,7 +129,7 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
         return subdirlist
     
     def endstep():
-        # print '----------------moveFiles done------------'
+        print '----------------end moveFiles------------'
         if justdata:
             # -- ensure all the directories have been moved or copied
             return not makesubdirlist() if copyfrom is None else (len(makesubdirlist(dtdir_old)) == len(makesubdirlist(dtdir_new)))
