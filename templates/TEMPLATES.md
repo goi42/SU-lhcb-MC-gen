@@ -16,6 +16,8 @@ spots you need to edit in order for the script to work. (Make sure you overwrite
 the `<<<<` `>>>>`. They are not part of the script.) If there are no `<<<<` or
 `>>>>` left in the script, it's ready to use!
 
+> If your editor supports RegEx searches, you can search for `<<<<.*>>>>`.
+
 Just point `run_stages.py` or `submit_to_condor.py` (after testing &mdash; see
 README.md) at your edited configuration file. As always, _make sure not to edit
 or move_ your configuration file while `submit_to_condor.py` is running; this
