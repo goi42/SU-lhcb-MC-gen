@@ -231,7 +231,7 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
             'name': GAUSS_STAGE_NAME,
             'scripts': {GAUSS_SCRIPT_NAME: GAUSS_SCRIPT_CONTENT},
             'log': GAUSS_LOG,
-            'call_string': additional_pre_script + 'lb-run -c best --user-area /home/{USER}/cmtuser Gauss/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(USER=USER, GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
+            'call_string': additional_pre_script + 'lb-run -c best --user-area /home/{USER} GaussDev/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(USER=USER, GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
             'to_remove': [],
             'required': [],
             'data': [GAUSS_DATA],

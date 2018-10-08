@@ -180,7 +180,7 @@ HistogramPersistencySvc().OutputFile = "{GAUSS_ROOT}"
             'name': GAUSS_STAGE_NAME,
             'scripts': {GAUSS_SCRIPT_NAME: GAUSS_SCRIPT_CONTENT},
             'log': GAUSS_LOG,
-            'call_string': 'lb-run -c best --user-area <<<</absolute/path/to/the/directory/containing/Gauss[Dev]_version>>>> <<<<Gauss[Dev]>>>>/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
+            'call_string': 'lb-run -c <<<<platform you want to use, e.g., x86_64-slc6-gcc62-opt (recommend best, which auto-selects the platform)>>>> --user-area <<<</absolute/path/to/the/directory/containing/Gauss[Dev]_version>>>> <<<<Gauss[Dev]>>>>/{GAUSS_VERSION} gaudirun.py {GAUSS_SCRIPT_NAME}'.format(GAUSS_VERSION=GAUSS_VERSION, GAUSS_SCRIPT_NAME=GAUSS_SCRIPT_NAME),
             'to_remove': [],
             'required': [],
             'data': [GAUSS_DATA],

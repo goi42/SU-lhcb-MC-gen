@@ -20,57 +20,62 @@ class AtLeastZero(argparse.Action):
 
 
 parser = argparse.ArgumentParser(
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter, description='move completed MC jobs to final destination. Assumes CLEANWORK was used in run_stages.py. Will ignore a given output if log/ but no data/')
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    description='move completed MC jobs to final destination. Assumes CLEANWORK was used in run_stages.py. Will ignore a given output if log/ but no data/')
 parser.add_argument('signal_name',
                     help='name used to sort output')
 parser.add_argument('--run_sys', default='/data2', type=os.path.abspath,
-                    help='system where files are created')
+                    help='system where files should be created (or moved from)')
 parser.add_argument('--store_sys', default='/data6', type=os.path.abspath,
-                    help='system where files should be stored')
+                    help='system where files should be stored (or moved to)')
 parser.add_argument('--user', default=getpass.getuser(),
                     help='username (used to locate "work", "data", and "log" directories)')
 parser.add_argument('--minallowed', default=None, type=int,
                     help='minimum allowed subdirectory number, inclusive')
 parser.add_argument('--maxallowed', default=None, type=int,
                     help='maximum allowed subdirectory number, exclusive')
-parser.add_argument('--waittilnotrunning', action='store_true',
-                    help='''If this flag is set, moveFiles will not return True just because the work directories are missing.
-                    This can be useful if there are other jobs running for the user that might delay these jobs from starting.
-                    Note that this also means moveFiles will not think it's finished if the user has other jobs running.
-                    Does nothing if justdata used.
-                    ''')
+parser.add_argument('--idontcareaboutotherjobs', action='store_true',
+                    help='If this flag is set, moveFiles will return True just because the work directories for signal_name are missing.'
+                    ' (It won\'t matter if there are still jobs running on Condor.)'
+                    ' WARNING: this can cause unusual behavior if you have other jobs running.'
+                    # help text from waittilnotrunning (here for posterity):
+                    # ' This can be useful if there are other jobs running for the user that might delay these jobs from starting.'
+                    # ' Note that this also means moveFiles will not think it\'s finished if the user has other jobs running.'
+                    # ' Does nothing if justdata used.')
+                    )
 parser.add_argument('--justdata', action='store_true',
-                    help='option to just move data without checking work directories or moving log directories or checking running jobs')
+                    help='flag to just move data without checking work directories or moving log directories or checking running jobs')
 f = parser.add_mutually_exclusive_group()  # ensure copyfrom and movefrom are not both set
-f.add_argument('--copyfrom', default=None,
-               help='option to copy files from an old name instead of moving them. parameter should be the signal_name for the original run. (signal_name will be name these files end up with.)')
-f.add_argument('--movefrom', default=None,
-               help='option to move files from an old name to a new name. parameter should be the signal_name for the original run. (signal_name will be name these files end up with.)')
+f.add_argument('--copyfrom', metavar='OLDNAME', default=None,
+               help='option to copy (not move) files from OLDNAME to signal_name')
+f.add_argument('--movefrom', metavar='OLDNAME', default=None,
+               help='option to move files from OLDNAME to signal_name')
 contgroup = parser.add_argument_group('arguments for running continuously')
-contgroup.add_argument('--continuous', action='store_true',
-                       help='runs over and over at specified interval until WORK_DIR is empty or maxwaittime exceeded')
+contgroup.add_argument('--interval', type=float, default=0, action=AtLeastZero,
+                       help='Runs moveFiles over and over every INTERVAL until WORK_DIR is empty or maxwaittime exceeded.'
+                       ' (If moveFiles is run directly from the commandline, a value of 0 means do not do this.)')
 contgroup.add_argument('--lessthan', default=0, type=int, action=AtLeastZero,
-                       help='if there are fewer jobs than this running for the user, moveFiles returns True (and runMoveFilesContinuously starts the next iteration); a value of 0 ignores this')
-contgroup.add_argument('--interval', type=float, default=1800,
-                       help='time to wait (in seconds) if --continuous used')
-contgroup.add_argument('--maxwaittime', default=0, type=float,
-                       help='time after which to give up (in seconds) if --continuous used and WORK_DIR not empty; will not give up by default')
-contgroup.add_argument('--waittostart', action='store_true',
-                       help='will wait for jobs to start before initial call to moveFiles\nNOTE: this function only checks whether the USER has ANY jobs running')
-contgroup.add_argument('--waitcheckdelay', default=1, type=float,
-                       help='how long to wait between checks in seconds if waittostart set')
+                       help='If there are fewer jobs than this running for the user, moveFiles returns True (and runMoveFilesContinuously starts the next iteration).'
+                       ' (A value of 0 ignores this.)')
+contgroup.add_argument('--maxwaittime', default=0, type=float, action=AtLeastZero,
+                       help='Time after which to give up and exit (in seconds) if --interval used and WORK_DIR not empty.'
+                       ' (Will not give up if 0.)')
+contgroup.add_argument('--waittostart', default=0, type=float, action=AtLeastZero,
+                       help='How often to check (in seconds) if ANY of the user\'s jobs have started before initial call to moveFiles.'
+                       ' (0 means do not check.)')
 args = parser.parse_args() if IsMain else parser.parse_args(args=['DUMMYSIGNALNAME'])
 
 
-def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed, justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, waittilnotrunning=args.waittilnotrunning):
+def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed,
+              justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, idontcareaboutotherjobs=args.idontcareaboutotherjobs):
     '''justdata changes behavior in complicated ways--pay attention
     '''
-    # print '----------------moveFiles-----------------'
+    print '----------------moveFiles from {} to {}-----------------'.format(run_sys, store_sys)
     
     if justdata and lessthan > 0:
         raise ValueError('lessthan > 0 does not do anything if justdata=True')
-    if justdata and waittilnotrunning:
-        raise ValueError('waittilnotrunning=True does not do anything if justdata=True')
+    if justdata and idontcareaboutotherjobs:
+        raise ValueError('idontcareaboutotherjobs=True does not do anything if justdata=True')
     if all(x is not None for x in (copyfrom, movefrom)):
         # this is critical to the logic of moveFiles
         raise IOError('One or both copyfrom and movefrom must be None!')
@@ -81,9 +86,9 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
     thingstr = 'move' if copyfrom is None else 'copy'
     
     # -- print program intentions
-    print 'will {THING} files with signal_name {NAME} from {OLD} to {NEW}'.format(THING=thingstr, NAME=signal_name if allcmNone else cmfrom, OLD=run_sys, NEW=store_sys),
+    print 'will {THING} files with signal_name "{NAME}" from {OLD} to {NEW}'.format(THING=thingstr, NAME=signal_name if allcmNone else cmfrom, OLD=run_sys, NEW=store_sys),
     if not allcmNone:
-        print 'under signal_name {NAME}'.format(NAME=signal_name),
+        print 'under signal_name "{NAME}"'.format(NAME=signal_name),
     print 'for user {USER}'.format(USER=user)
     if any(x is not None for x in [minallowed, maxallowed]):
         print 'subdirs [{}, {})'.format(minallowed, maxallowed)
@@ -129,7 +134,7 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
         return subdirlist
     
     def endstep():
-        # print '----------------moveFiles done------------'
+        print '----------------end moveFiles------------'
         if justdata:
             # -- ensure all the directories have been moved or copied
             return not makesubdirlist() if copyfrom is None else (len(makesubdirlist(dtdir_old)) == len(makesubdirlist(dtdir_new)))
@@ -138,7 +143,7 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
                 print 'there are still directories in {}, but all the condor jobs have finished'.format(wkdir_old)
             if Njobs(user) < lessthan and not nojobsrunning(user):
                 print 'there are still {} condor jobs running, but this is fewer than {}'.format(Njobs(user), lessthan)
-            return True if (nojobsrunning(user) or (not subdirsinrange(wkdir_old) and not waittilnotrunning) or Njobs(user) < lessthan) else False
+            return True if (nojobsrunning(user) or (not subdirsinrange(wkdir_old) and idontcareaboutotherjobs) or Njobs(user) < lessthan) else False
     
     subdirlist = makesubdirlist()
     if not subdirlist:
@@ -193,7 +198,7 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
     return endstep()
     
     
-def runMoveFilesContinuously(user=args.user, interval=args.interval, maxwaittime=args.maxwaittime, waittostart=args.waittostart, waitcheckdelay=args.waitcheckdelay, *largs, **kwargs):
+def runMoveFilesContinuously(user=args.user, interval=args.interval, maxwaittime=args.maxwaittime, waittostart=args.waittostart, *largs, **kwargs):
     '''runs moveFiles(user=user, *largs, **kwargs) continuously (see parser description and help)
     '''
     import time
@@ -233,7 +238,7 @@ def runMoveFilesContinuously(user=args.user, interval=args.interval, maxwaittime
                     raise Exception('There may be a problem with the jobs. They seem not to have started.')
                 
                 print 'Waiting for jobs to start...'
-                ntdelt = datetime.timedelta(seconds=waitcheckdelay)
+                ntdelt = datetime.timedelta(seconds=waittostart)
             else:
                 print 'Not done moving (or copying) files yet...'
                 ntdelt = datetime.timedelta(seconds=interval)
@@ -249,7 +254,7 @@ def runMoveFilesContinuously(user=args.user, interval=args.interval, maxwaittime
 
 
 if IsMain:
-    if args.continuous:
+    if args.interval:
         runMoveFilesContinuously()
     else:
         moveFiles()
