@@ -81,7 +81,7 @@ submissionlist = makelohilist(intlistdirs, args.chunks_of)
 # -- submit jobs in a loop -- #
 print '----------------submit "{}" from configfile "{}" to Condor-----------------'.format(args.signal_name, args.configfile)
 for minnum, maxnum in submissionlist:
-    print 'lowest (inclusive) = {}, highest (inclusive) = {}, number = {}'.format(lowest, highest, number)
+    print '\nlowest (inclusive) = {}, highest (inclusive) = {}, number = {}'.format(lowest, highest, number)
     print '----------------on files in range [{}, {})-----------------'.format(minnum, maxnum)
     
     if args.runfromstorage:
