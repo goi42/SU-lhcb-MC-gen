@@ -34,11 +34,15 @@ parser.add_argument('--minallowed', default=None, type=int,
                     help='minimum allowed subdirectory number, inclusive')
 parser.add_argument('--maxallowed', default=None, type=int,
                     help='maximum allowed subdirectory number, exclusive')
-parser.add_argument('--waittilnotrunning', action='store_true',
-                    help='If this flag is set, moveFiles will not return True just because the work directories are missing.'
-                    ' This can be useful if there are other jobs running for the user that might delay these jobs from starting.'
-                    ' Note that this also means moveFiles will not think it\'s finished if the user has other jobs running.'
-                    ' Does nothing if justdata used.')
+parser.add_argument('--idontcareaboutotherjobs', action='store_true',
+                    help='If this flag is set, moveFiles will return True just because the work directories for signal_name are missing.'
+                    ' (It won\'t matter if there are still jobs running on Condor.)'
+                    ' WARNING: this can cause unusual behavior if you have other jobs running.'
+                    # help text from waittilnotrunning (here for posterity):
+                    # ' This can be useful if there are other jobs running for the user that might delay these jobs from starting.'
+                    # ' Note that this also means moveFiles will not think it\'s finished if the user has other jobs running.'
+                    # ' Does nothing if justdata used.')
+                    )
 parser.add_argument('--justdata', action='store_true',
                     help='flag to just move data without checking work directories or moving log directories or checking running jobs')
 f = parser.add_mutually_exclusive_group()  # ensure copyfrom and movefrom are not both set
@@ -63,15 +67,15 @@ args = parser.parse_args() if IsMain else parser.parse_args(args=['DUMMYSIGNALNA
 
 
 def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed,
-              justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, waittilnotrunning=args.waittilnotrunning):
+              justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, idontcareaboutotherjobs=args.idontcareaboutotherjobs):
     '''justdata changes behavior in complicated ways--pay attention
     '''
     print '----------------moveFiles from {} to {}-----------------'.format(run_sys, store_sys)
     
     if justdata and lessthan > 0:
         raise ValueError('lessthan > 0 does not do anything if justdata=True')
-    if justdata and waittilnotrunning:
-        raise ValueError('waittilnotrunning=True does not do anything if justdata=True')
+    if justdata and idontcareaboutotherjobs:
+        raise ValueError('idontcareaboutotherjobs=True does not do anything if justdata=True')
     if all(x is not None for x in (copyfrom, movefrom)):
         # this is critical to the logic of moveFiles
         raise IOError('One or both copyfrom and movefrom must be None!')
@@ -139,7 +143,7 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
                 print 'there are still directories in {}, but all the condor jobs have finished'.format(wkdir_old)
             if Njobs(user) < lessthan and not nojobsrunning(user):
                 print 'there are still {} condor jobs running, but this is fewer than {}'.format(Njobs(user), lessthan)
-            return True if (nojobsrunning(user) or (not subdirsinrange(wkdir_old) and not waittilnotrunning) or Njobs(user) < lessthan) else False
+            return True if (nojobsrunning(user) or (not subdirsinrange(wkdir_old) and idontcareaboutotherjobs) or Njobs(user) < lessthan) else False
     
     subdirlist = makesubdirlist()
     if not subdirlist:

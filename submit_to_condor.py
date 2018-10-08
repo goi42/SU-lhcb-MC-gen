@@ -22,11 +22,11 @@ Run run_stages.py using the specified configfile by transferring files from stor
 Arguments specific to this script are in the 'submit_to_condor options' group.
 Unknown arguments are assumed to be intended for configfile.
 This script uses a number of arguments from moveFiles.py (with some changes to default values; use --help), but it overrides some of them:
-minallowed, maxallowed, justdata, lessthan, copyfrom, waittilnotrunning are overriden.
+minallowed, maxallowed, justdata, lessthan, copyfrom, idontcareaboutotherjobs are overriden.
 lessthan is overridden for all movement from store_sys and for the final chunk of movement to store_sys (set to 0).
 copyfrom is only overriden for the move back (set to None)
 (therefore, specifying copyfrom copies from store_sys to run_sys but then moves them from store_sys to run_sys under signal_name).
-waittilnotrunning is only overridden for the initial movement (though it doesn't actually matter since justdata gets used anyway).
+idontcareaboutotherjobs is only overridden for the initial movement (set to False since `justdata` is used).
 '''
 parser.set_defaults(interval=240, maxwaittime=0, lessthan=50, waittostart=60)
 submit_to_condorgroup = parser.add_argument_group('submit_to_condor options')
@@ -87,7 +87,7 @@ for minnum, maxnum in submissionlist:
     if args.runfromstorage:
         # move files to run_sys
         print 'moving files from store_sys to run_sys...'
-        succeeded = moveFiles(store_sys=args.run_sys, run_sys=args.store_sys, minallowed=minnum, maxallowed=maxnum, justdata=True, lessthan=0, waittilnotrunning=False,
+        succeeded = moveFiles(store_sys=args.run_sys, run_sys=args.store_sys, minallowed=minnum, maxallowed=maxnum, justdata=True, lessthan=0, idontcareaboutotherjobs=False,
                               signal_name=args.signal_name, user=args.user, copyfrom=args.copyfrom)  # returns True when done
         if not succeeded:
             raise Exception('problem with moveFiles. [{}, {})'.format(minnum, maxnum))
@@ -120,7 +120,7 @@ for minnum, maxnum in submissionlist:
         lt = 0 if minnum is submissionlist[-1][0] else args.lessthan
         succeeded = runMoveFilesContinuously(lessthan=lt, justdata=False, minallowed=None, maxallowed=None, copyfrom=None, signal_name=args.signal_name, run_sys=args.run_sys,
                                              store_sys=args.store_sys, user=args.user, interval=args.interval, maxwaittime=args.maxwaittime, waittostart=args.waittostart,
-                                             waittilnotrunning=args.waittilnotrunning, )  # returns True when done
+                                             idontcareaboutotherjobs=args.idontcareaboutotherjobs, )  # returns True when done
         if not succeeded:
             raise Exception('problem with runMoveFilesContinuously. [{}, {})'.format(minnum, maxnum))
 print '----------------{} submission done-----------------'.format(args.signal_name)
