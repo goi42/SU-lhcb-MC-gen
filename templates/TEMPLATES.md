@@ -19,9 +19,9 @@ the `<<<<` `>>>>`. They are not part of the script.) If there are no `<<<<` or
 > If your editor supports RegEx searches, you can search for `<<<<.*>>>>`.
 
 Just point `run_stages.py` or `submit_to_condor.py` (after testing &mdash; see
-README.md) at your edited configuration file. As always, _make sure not to edit
-or move_ your configuration file while `submit_to_condor.py` is running; this
-can result in your jobs changing behavior mid-stream.
+[../README.md](README.md)) at your edited configuration file. As always, _make
+sure not to edit or move_ your configuration file while `submit_to_condor.py`
+is running; this can result in your jobs changing behavior mid-stream.
 
 > Note that templates are community-contributed and are _not_ guaranteed to work
 > . You are responsible for your own code. Be especially careful to make sure
@@ -29,4 +29,5 @@ can result in your jobs changing behavior mid-stream.
 > the `<<<<` `>>>>`.
 
 ## Contributing templates
-Contributions to the template library are encouraged. See CONTRIBUTING.md.
+Contributions to the template library are encouraged. See
+[CONTRIBUTING.md](CONTRIBUTING.md).
