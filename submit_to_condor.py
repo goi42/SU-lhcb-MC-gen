@@ -28,7 +28,7 @@ copyfrom is only overriden for the move back (set to None)
 (therefore, specifying copyfrom copies from store_sys to run_sys but then moves them from store_sys to run_sys under signal_name).
 waittilnotrunning is only overridden for the initial movement (though it doesn't actually matter since justdata gets used anyway).
 '''
-parser.set_defaults(interval=240, maxwaittime=0, waitcheckdelay=60, lessthan=50, waittostart=True)
+parser.set_defaults(interval=240, maxwaittime=0, lessthan=50, waittostart=60)
 submit_to_condorgroup = parser.add_argument_group('submit_to_condor options')
 submit_to_condorgroup.add_argument('configfile', type=os.path.abspath,
                                    help='the configfile you want run_stages to use')
@@ -87,7 +87,8 @@ for minnum, maxnum in submissionlist:
     if args.runfromstorage:
         # move files to run_sys
         print 'moving files from store_sys to run_sys...'
-        succeeded = moveFiles(store_sys=args.run_sys, run_sys=args.store_sys, minallowed=minnum, maxallowed=maxnum, justdata=True, lessthan=0, waittilnotrunning=False, signal_name=args.signal_name, user=args.user, copyfrom=args.copyfrom)  # returns True when done
+        succeeded = moveFiles(store_sys=args.run_sys, run_sys=args.store_sys, minallowed=minnum, maxallowed=maxnum, justdata=True, lessthan=0, waittilnotrunning=False,
+                              signal_name=args.signal_name, user=args.user, copyfrom=args.copyfrom)  # returns True when done
         if not succeeded:
             raise Exception('problem with moveFiles. [{}, {})'.format(minnum, maxnum))
     
@@ -117,7 +118,9 @@ for minnum, maxnum in submissionlist:
         # move files to store_sys
         print 'moving files from run_sys to store_sys...'
         lt = 0 if minnum is submissionlist[-1][0] else args.lessthan
-        succeeded = runMoveFilesContinuously(lessthan=lt, justdata=False, minallowed=None, maxallowed=None, copyfrom=None, signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, interval=args.interval, maxwaittime=args.maxwaittime, waittostart=args.waittostart, waitcheckdelay=args.waitcheckdelay, waittilnotrunning=args.waittilnotrunning, )  # returns True when done
+        succeeded = runMoveFilesContinuously(lessthan=lt, justdata=False, minallowed=None, maxallowed=None, copyfrom=None, signal_name=args.signal_name, run_sys=args.run_sys,
+                                             store_sys=args.store_sys, user=args.user, interval=args.interval, maxwaittime=args.maxwaittime, waittostart=args.waittostart,
+                                             waittilnotrunning=args.waittilnotrunning, )  # returns True when done
         if not succeeded:
             raise Exception('problem with runMoveFilesContinuously. [{}, {})'.format(minnum, maxnum))
 print '----------------{} submission done-----------------'.format(args.signal_name)

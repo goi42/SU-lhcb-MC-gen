@@ -47,22 +47,23 @@ f.add_argument('--copyfrom', metavar='OLDNAME', default=None,
 f.add_argument('--movefrom', metavar='OLDNAME', default=None,
                help='option to move files from OLDNAME to signal_name')
 contgroup = parser.add_argument_group('arguments for running continuously')
-contgroup.add_argument('--continuous', action='store_true',
-                       help='runs over and over at specified interval until WORK_DIR is empty or maxwaittime exceeded')
+contgroup.add_argument('--interval', type=float, default=0, action=AtLeastZero,
+                       help='Runs moveFiles over and over every INTERVAL until WORK_DIR is empty or maxwaittime exceeded.'
+                       ' (If moveFiles is run directly from the commandline, a value of 0 means do not do this.)')
 contgroup.add_argument('--lessthan', default=0, type=int, action=AtLeastZero,
-                       help='if there are fewer jobs than this running for the user, moveFiles returns True (and runMoveFilesContinuously starts the next iteration); a value of 0 ignores this')
-contgroup.add_argument('--interval', type=float, default=1800,
-                       help='time to wait (in seconds) if --continuous used')
-contgroup.add_argument('--maxwaittime', default=0, type=float,
-                       help='time after which to give up (in seconds) if --continuous used and WORK_DIR not empty; will not give up by default')
-contgroup.add_argument('--waittostart', action='store_true',
-                       help='will wait for jobs to start before initial call to moveFiles\nNOTE: this function only checks whether the USER has ANY jobs running')
-contgroup.add_argument('--waitcheckdelay', default=1, type=float,
-                       help='how long to wait between checks in seconds if waittostart set')
+                       help='If there are fewer jobs than this running for the user, moveFiles returns True (and runMoveFilesContinuously starts the next iteration).'
+                       ' (A value of 0 ignores this.)')
+contgroup.add_argument('--maxwaittime', default=0, type=float, action=AtLeastZero,
+                       help='Time after which to give up and exit (in seconds) if --interval used and WORK_DIR not empty.'
+                       ' (Will not give up if 0.)')
+contgroup.add_argument('--waittostart', default=0, type=float, action=AtLeastZero,
+                       help='How often to check (in seconds) if ANY of the user\'s jobs have started before initial call to moveFiles.'
+                       ' (0 means do not check.)')
 args = parser.parse_args() if IsMain else parser.parse_args(args=['DUMMYSIGNALNAME'])
 
 
-def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed, justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, waittilnotrunning=args.waittilnotrunning):
+def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args.store_sys, user=args.user, minallowed=args.minallowed, maxallowed=args.maxallowed,
+              justdata=args.justdata, lessthan=args.lessthan, copyfrom=args.copyfrom, movefrom=args.movefrom, waittilnotrunning=args.waittilnotrunning):
     '''justdata changes behavior in complicated ways--pay attention
     '''
     print '----------------moveFiles from {} to {}-----------------'.format(run_sys, store_sys)
@@ -193,7 +194,7 @@ def moveFiles(signal_name=args.signal_name, run_sys=args.run_sys, store_sys=args
     return endstep()
     
     
-def runMoveFilesContinuously(user=args.user, interval=args.interval, maxwaittime=args.maxwaittime, waittostart=args.waittostart, waitcheckdelay=args.waitcheckdelay, *largs, **kwargs):
+def runMoveFilesContinuously(user=args.user, interval=args.interval, maxwaittime=args.maxwaittime, waittostart=args.waittostart, *largs, **kwargs):
     '''runs moveFiles(user=user, *largs, **kwargs) continuously (see parser description and help)
     '''
     import time
@@ -233,7 +234,7 @@ def runMoveFilesContinuously(user=args.user, interval=args.interval, maxwaittime
                     raise Exception('There may be a problem with the jobs. They seem not to have started.')
                 
                 print 'Waiting for jobs to start...'
-                ntdelt = datetime.timedelta(seconds=waitcheckdelay)
+                ntdelt = datetime.timedelta(seconds=waittostart)
             else:
                 print 'Not done moving (or copying) files yet...'
                 ntdelt = datetime.timedelta(seconds=interval)
@@ -249,7 +250,7 @@ def runMoveFilesContinuously(user=args.user, interval=args.interval, maxwaittime
 
 
 if IsMain:
-    if args.continuous:
+    if args.interval:
         runMoveFilesContinuously()
     else:
         moveFiles()
