@@ -1,6 +1,7 @@
 from shutil import move, rmtree
 from subprocess import call
 import os
+import argparse
 from os.path import join as opj
 from time import sleep
 from imp import load_source
@@ -28,11 +29,37 @@ copyfrom is only overriden for the move back (set to None)
 (therefore, specifying copyfrom copies from store_sys to run_sys but then moves them from store_sys to run_sys under signal_name).
 idontcareaboutotherjobs is only overridden for the initial movement (set to False since `justdata` is used).
 '''
+
+
+class EnforceLoHi(argparse.Action):
+    'requires 2 non-negative integers, the second > the first'
+    'based on https://stackoverflow.com/a/8624107/4655426'
+    def __call__(self, parser, args, values, option_string=None):
+        # -- ensure two values
+        if len(values) != 2:
+            raise parser.error('EnforceLoHi assumes 2 values; did you mean to use it?')
+        
+        # -- ensure integers
+        if not all(isinstance(x, int) for x in values):
+            raise parser.error('EnforceLoHi assumes integer values; did you mean to use it?')
+        
+        # -- ensure non-negative
+        for v, n in zip(values, ('LO', 'HI')):
+            if v < 0:
+                raise parser.error('{} ({}) is less than 0! You must provide a positive integer.'.format(v, n))
+        
+        # -- check hi > lo
+        if values[1] <= values[0]:
+            raise parser.error('{} (LO) >= {} (HI)!'.format(values[0], values[1]))
+        
+        setattr(args, self.dest, values)
+
+
 parser.set_defaults(interval=240, maxwaittime=0, lessthan=50, waittostart=60)
 submit_to_condorgroup = parser.add_argument_group('submit_to_condor options')
 submit_to_condorgroup.add_argument('configfile', type=os.path.abspath,
                                    help='the configfile you want run_stages to use')
-submit_to_condorgroup.add_argument('--setlohi', nargs=2, type=int, default=None, metavar=('LO', 'HI'),
+submit_to_condorgroup.add_argument('--setlohi', nargs=2, type=int, default=None, metavar=('LO', 'HI'), action=EnforceLoHi,
                                    help='set the lowest (inclusive) and highest (exclusive) job numbers;'
                                    ' if set, these limits also apply to run numbers found by runfromstorage')
 submit_to_condorgroup.add_argument('--runfromstorage', action='store_true',
