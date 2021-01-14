@@ -1,6 +1,9 @@
 # SU-lhcb-MC-gen
 A suite of scripts for generating MC on lhcb-dev
 
+## Deprecated
+This project has been superseded by [SU-LHCb-MC](https://gitlab.cern.ch/sulhcbgrads/SU-LHCb-MC) on GitLab.
+
 ## About
 This is a suite of scripts designed to make life easier for people submitting
 MC jobs (or any jobs) to Condor on lhcb-dev. It revolves around the use of
